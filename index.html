@@ -11614,5 +11614,58 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
     };
   </script>
 
+
+  <script id="mjThanjavurPaambuSunriseScript">
+    // 🌅 தஞ்சை பாம்பு பஞ்சாங்க சூரியோதய அட்டவணை (12 தமிழ் மாதங்கள் × 6 ஐந்து-நாள் பிரிவுகள்: 1-5, 6-10, 11-15, 16-20, 21-25, 26+)
+    window.THANJAVUR_PAAMBU_SUNRISE_TABLE = [
+      ["06:07", "06:04", "06:01", "05:59", "05:57", "05:56"], // 0: சித்திரை
+      ["05:54", "05:53", "05:53", "05:52", "05:53", "05:53"], // 1: வைகாசி
+      ["05:54", "05:55", "05:56", "05:57", "05:58", "06:00"], // 2: ஆனி
+      ["06:01", "06:02", "06:04", "06:05", "06:05", "06:06"], // 3: ஆடி
+      ["06:06", "06:07", "06:07", "06:06", "06:06", "06:06"], // 4: ஆவணி
+      ["06:06", "06:05", "06:05", "06:05", "06:05", "06:05"], // 5: புரட்டாசி
+      ["06:06", "06:06", "06:07", "06:08", "06:09", "06:11"], // 6: ஐப்பசி
+      ["06:12", "06:14", "06:16", "06:19", "06:21", "06:24"], // 7: கார்த்திகை
+      ["06:27", "06:30", "06:32", "06:34", "06:36", "06:38"], // 8: மார்கழி
+      ["06:39", "06:40", "06:40", "06:40", "06:40", "06:39"], // 9: தை
+      ["06:38", "06:36", "06:35", "06:32", "06:30", "06:27"], // 10: மாசி
+      ["06:24", "06:21", "06:18", "06:15", "06:12", "06:09"]  // 11: பங்குனி
+    ];
+
+    (function() {
+      const _origComputeSunrise = computeAccurateSunriseHHMM;
+      let _inThanjavurSrLookup = false;
+      computeAccurateSunriseHHMM = function(dateStr, latDeg, lonDeg, tzHours, mode) {
+        if (_inThanjavurSrLookup || !dateStr) {
+          return _origComputeSunrise(dateStr, latDeg, lonDeg, tzHours, mode);
+        }
+        try {
+          _inThanjavurSrLookup = true;
+          if (typeof computePaambuSolarMonthAndDate === "function") {
+            const solar = computePaambuSolarMonthAndDate(dateStr, "06:06", Number(tzHours) || 5.5, "12:00:00");
+            const mIdx = (solar && typeof solar.monthIdx === "number") ? ((solar.monthIdx % 12) + 12) % 12 : -1;
+            const tDate = (solar && Number(solar.tamilDateNum)) ? Number(solar.tamilDateNum) : 1;
+            if (mIdx >= 0 && mIdx < 12) {
+              // 5-day bracket: 1..5 -> 0, 6..10 -> 1, 11..15 -> 2, 16..20 -> 3, 21..25 -> 4, 26+ -> 5
+              const bIdx = Math.max(0, Math.min(5, Math.floor((Math.max(1, tDate) - 1) / 5)));
+              const hhmm24 = window.THANJAVUR_PAAMBU_SUNRISE_TABLE[mIdx][bIdx];
+              const parts = hhmm24.split(":").map(Number);
+              const hh = parts[0], mm = parts[1];
+              const h12 = (hh % 12) || 12;
+              const hhmm12 = String(h12).padStart(2, "0") + ":" + String(mm).padStart(2, "0") + " AM";
+              return { hh: hh, mm: mm, hhmm24: hhmm24, hhmm12: hhmm12, source: "thanjavur_paambu_table", monthIdx: mIdx, tamilDateNum: tDate, bracketIdx: bIdx };
+            }
+          }
+        } catch (e) {
+          console.warn("Thanjavur sunrise lookup warning:", e);
+        } finally {
+          _inThanjavurSrLookup = false;
+        }
+        return _origComputeSunrise(dateStr, latDeg, lonDeg, tzHours, mode);
+      };
+      window.computeAccurateSunriseHHMM = computeAccurateSunriseHHMM;
+    })();
+  </script>
+
 </body>
 </html>
