@@ -1,0 +1,9 @@
+{
+  "name": "முருகேசன் ஜோதிடம் — கைக்கணக்கு பதிப்பு",
+  "short_name": "கைக்கணக்கு ஆப்",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fffdf9",
+  "theme_color": "#6b0f22",
+  "description": "முருகேசன் ஜோதிடம் - 6-படி பாரம்பரிய கைக்கணக்கு & 26-பக்க ஜாதகப் புத்தகம் (Firebase Cloud App)"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "முருகேசன் ஜோதிடம் — முதன்மை கைக்கணக்கு ஆப்",
+  "short_name": "முதன்மை கைக்கணக்கு",
+  "start_url": "./master.html",
+  "display": "standalone",
+  "background_color": "#fffdf9",
+  "theme_color": "#3b0711",
+  "description": "முருகேசன் ஜோதிடம் - முதன்மை கைக்கணக்கு ஆப் & Live OTP கட்டுப்பாட்டு மையம்"
+}
