@@ -857,6 +857,10 @@
             <span>5. கைக்கணக்கு விளக்கம் (Step 1–6 &amp; A4 PDF)</span>
             <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-700 text-white font-bold">AUTO</span>
           </button>
+          <button id="btnTabAddPanchangamView" type="button" onclick="switchMainAppTab('addpanchangam')" class="hidden px-4 py-2.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-950 border-2 border-purple-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
+            <span>➕</span>
+            <span>6. புதிய பஞ்சாங்கம் சேர்க்க / பதிவேற்றம் (Cloud Sync)</span>
+          </button>
         </div>
         <div class="text-xs font-extrabold text-[#7f1d1d] bg-rose-50 px-3 py-1.5 rounded-lg border border-rose-200">
           ✨ பிறந்தது முதல் 100+ வயது வரை தேதி & நிறைவடையும் வயதுடன் முழு தசா புத்தி!
@@ -929,7 +933,9 @@
     <div id="userManualTabContainer" class="hidden max-w-[210mm] mx-auto"></div>
     <div id="padasaramTabContainer" class="hidden max-w-6xl mx-auto"></div>
     <div id="kaiKanakkuTabContainer" class="hidden max-w-[210mm] mx-auto"></div>
+    <div id="addPanchangamTabContainer" class="hidden max-w-6xl mx-auto"></div>
   </main>
+  <script id="customBakedPaambuDataScript">window.CUSTOM_BAKED_PAAMBU_DATA = window.CUSTOM_BAKED_PAAMBU_DATA || {};</script>
 
   <script>
     function _byId(id) { return document.getElementById(id); }
@@ -7215,7 +7221,7 @@
     };
 
     window._paambuYearTableCache = {};
-    window.getPaambu1989To2027YearTable = function(effectiveGregYear) {
+    window.getPaambu1989To2027YearTable = function(effectiveGregYear, forceAnalyticalOnly) {
       const Y = Number(effectiveGregYear) || 2024;
       if (Y === 2024 && typeof KRODHI_PAAMBU_28_SARAM_TABLE !== "undefined") {
         return KRODHI_PAAMBU_28_SARAM_TABLE;
@@ -7281,8 +7287,9 @@
       const totalDays = mStartDays[12] - mStartDays[0];
 
       ["Mars", "Mercury", "Venus", "Jupiter", "Saturn"].forEach(function(pKey) {
-        if (PAAMBU_PDF_EXACT_PINS[Y] && PAAMBU_PDF_EXACT_PINS[Y][pKey]) {
-          tableObj[pKey] = PAAMBU_PDF_EXACT_PINS[Y][pKey];
+        const _mergedPinsY = (!forceAnalyticalOnly && typeof window.getMergedPaambuYearPins === "function") ? window.getMergedPaambuYearPins(Y) : (!forceAnalyticalOnly ? PAAMBU_PDF_EXACT_PINS[Y] : null);
+        if (_mergedPinsY && _mergedPinsY[pKey]) {
+          tableObj[pKey] = _mergedPinsY[pKey];
           return;
         }
         const stepDays = (pKey === "Mercury" || pKey === "Venus" || pKey === "Mars") ? 0.5 : 1.0;
@@ -9153,6 +9160,869 @@
       }
     });
   </script>
+
+  <script>
+const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianSpan":"2011-2012","chithirai1Date":"2011-04-14","monthLengths":[31,32,31,32,31,30,30,30,29,29,30,30]},"2012":{"tamilYearName":"நந்தன","gregorianSpan":"2012-2013","chithirai1Date":"2012-04-13","monthLengths":[31,32,31,32,31,30,30,30,29,30,29,31]},"2013":{"tamilYearName":"விஜய","gregorianSpan":"2013-2014","chithirai1Date":"2013-04-14","monthLengths":[31,31,32,31,31,31,30,29,29,30,30,30]},"2014":{"tamilYearName":"ஜய","gregorianSpan":"2014-2015","chithirai1Date":"2014-04-14","monthLengths":[31,31,32,31,31,30,30,29,30,29,30,31]},"2015":{"tamilYearName":"மன்மத","gregorianSpan":"2015-2016","chithirai1Date":"2015-04-14","monthLengths":[31,32,31,32,31,30,30,30,29,29,30,31]},"2017":{"tamilYearName":"ஹேவிளம்பி","gregorianSpan":"2017-2018","chithirai1Date":"2017-04-14","monthLengths":[31,31,32,31,31,31,30,29,29,30,30,30]},"2019":{"tamilYearName":"விகாரி","gregorianSpan":"2019-2020","chithirai1Date":"2019-04-14","monthLengths":[31,32,31,32,31,30,30,30,29,29,30,31]},"2020":{"tamilYearName":"சார்வரி","gregorianSpan":"2020-2021","chithirai1Date":"2020-04-14","monthLengths":[30,32,31,32,31,30,30,30,29,30,29,31]},"2022":{"tamilYearName":"சுபகிருது","gregorianSpan":"2022-2023","chithirai1Date":"2022-04-14","monthLengths":[31,31,32,31,31,31,30,29,30,29,30,30]},"2023":{"tamilYearName":"சோபகிருது","gregorianSpan":"2023-2024","chithirai1Date":"2023-04-14","monthLengths":[31,31,32,31,31,31,30,29,30,29,30,30]},"2024":{"tamilYearName":"குரோதி","gregorianSpan":"2024-2025","chithirai1Date":"2024-04-14","monthLengths":[30,32,32,31,31,31,29,30,29,30,30,30]},"2025":{"tamilYearName":"விசுவாவசு","gregorianSpan":"2025-2026","chithirai1Date":"2025-04-14","monthLengths":[31,31,32,31,31,31,30,29,30,29,30,30]},"2026":{"tamilYearName":"பராபவ","gregorianSpan":"2026-2027","chithirai1Date":"2026-04-14","monthLengths":[31,31,32,32,31,30,30,29,30,29,30,30]}};
+
+    // பயனர் சேர்க்கும் புதிய வருட பஞ்சாங்கத் தரவுகள் (localStorage + Baked HTML)
+    window._customPaambuYearsStore = (function() {
+      const store = {};
+      if (window.CUSTOM_BAKED_PAAMBU_DATA && typeof window.CUSTOM_BAKED_PAAMBU_DATA === "object") {
+        Object.keys(window.CUSTOM_BAKED_PAAMBU_DATA).forEach(function(k) {
+          store[k] = window.CUSTOM_BAKED_PAAMBU_DATA[k];
+        });
+      }
+      try {
+        const raw = localStorage.getItem("MURUGESAN_CUSTOM_PAAMBU_YEARS_V1");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object") {
+            Object.keys(parsed).forEach(function(k) {
+              store[k] = parsed[k];
+            });
+          }
+        }
+      } catch (e) {}
+      return store;
+    })();
+
+    window.getMergedPaambuYearMeta = function(yearVal) {
+      const yKey = String(Number(yearVal) || 2024);
+      if (window._customPaambuYearsStore && window._customPaambuYearsStore[yKey] && window._customPaambuYearsStore[yKey].meta) {
+        return window._customPaambuYearsStore[yKey].meta;
+      }
+      return PAAMBU_PDF_EXACT_YEAR_META[yKey] || null;
+    };
+
+    window.getMergedPaambuYearPins = function(yearVal) {
+      const yKey = String(Number(yearVal) || 2024);
+      if (window._customPaambuYearsStore && window._customPaambuYearsStore[yKey] && window._customPaambuYearsStore[yKey].pins) {
+        return window._customPaambuYearsStore[yKey].pins;
+      }
+      return PAAMBU_PDF_EXACT_PINS[yKey] || PAAMBU_PDF_EXACT_PINS[Number(yKey)] || null;
+    };
+
+    window.getPaambuSupportedMinYear = function() {
+      let minY = 1987;
+      if (window._customPaambuYearsStore) {
+        Object.keys(window._customPaambuYearsStore).forEach(function(k) {
+          const n = Number(k);
+          if (!isNaN(n) && n < minY) minY = n;
+        });
+      }
+      return minY;
+    };
+
+    window.getPaambuSupportedMaxYear = function() {
+      let maxY = 2027;
+      if (window._customPaambuYearsStore) {
+        Object.keys(window._customPaambuYearsStore).forEach(function(k) {
+          const n = Number(k);
+          if (!isNaN(n) && n > maxY) maxY = n;
+        });
+      }
+      return maxY;
+    };
+
+    window._paambuSankrantiCache = {};
+    window.getPaambuYearSankrantiInfo = function(effectiveGregYear) {
+      const Y = Number(effectiveGregYear) || 2024;
+      if (window._paambuSankrantiCache[Y]) return window._paambuSankrantiCache[Y];
+      const v0 = Math.round(-1475.25 + (Y - 2024) * 1314931.25);
+      let mStartDays = [];
+      const sankVins = [];
+      for (let m = 0; m < 13; m++) {
+        const vSank = v0 + PAAMBU_CUM_SUN_PADA_VIN[m * 9];
+        sankVins.push(vSank);
+        const dSank = Math.floor(vSank / 3600);
+        const remV = ((vSank % 3600) + 3600) % 3600;
+        const cutoff = PAAMBU_DINAMANA_CUTOFF_VIN[m % 12];
+        const mStartDay = (remV <= cutoff) ? dSank : (dSank + 1);
+        mStartDays.push(mStartDay);
+      }
+      const exactMeta = window.getMergedPaambuYearMeta(Y);
+      if (exactMeta && Array.isArray(exactMeta.monthLengths) && exactMeta.monthLengths.length === 12) {
+        const c1Str = String(exactMeta.chithirai1Date || (Y + "-04-14"));
+        const parts = c1Str.split("-").map(Number);
+        const c1UtcMs = Date.UTC(parts[0] || Y, (parts[1] || 4) - 1, parts[2] || 14);
+        const ref2024Ms = Date.UTC(2024, 3, 14);
+        let accDays = Math.round((c1UtcMs - ref2024Ms) / 86400000);
+        mStartDays = [accDays];
+        for (let m = 0; m < 12; m++) {
+          accDays += (Number(exactMeta.monthLengths[m]) || 30);
+          mStartDays.push(accDays);
+        }
+      }
+      const info = { Y, v0, mStartDays, sankVins };
+      window._paambuSankrantiCache[Y] = info;
+      return info;
+    };
+
+    // ============================================================================
+    // ➕ TAB 5: புதிய பஞ்சாங்கம் சேர்க்க / பதிவேற்றம் (Add / Manage Future & Past Paambu Panchangam)
+    // ============================================================================
+    window._addPanchangamState = {
+      editYear: 2027,
+      activePlanet: "Sun",
+      tamilYearName: "பிலவங்க",
+      chithirai1Date: "2027-04-14",
+      monthLengths: [31, 31, 32, 31, 31, 31, 30, 29, 29, 30, 30, 30],
+      planetsData: null,
+      pdfPreviewUrl: null,
+      pdfFileName: ""
+    };
+
+    window.initAddPanchangamYearData = function(yearNum, useAnalyticalPreFill) {
+      const Y = Number(yearNum) || 2027;
+      window._addPanchangamState.editYear = Y;
+      const tIdx = ((Y - 1987) % 60 + 60) % 60;
+      const defaultTaName = (typeof TAMIL_60_YEARS !== "undefined" && TAMIL_60_YEARS[tIdx]) ? TAMIL_60_YEARS[tIdx] : "";
+
+      const existingMeta = window.getMergedPaambuYearMeta(Y);
+      const existingPins = window.getMergedPaambuYearPins(Y);
+
+      if (existingMeta) {
+        window._addPanchangamState.tamilYearName = existingMeta.tamilYearName || defaultTaName;
+        window._addPanchangamState.chithirai1Date = existingMeta.chithirai1Date || (Y + "-04-14");
+        window._addPanchangamState.monthLengths = Array.isArray(existingMeta.monthLengths) && existingMeta.monthLengths.length === 12
+          ? existingMeta.monthLengths.slice()
+          : [31, 31, 32, 31, 31, 31, 30, 29, 29, 30, 30, 30];
+      } else {
+        const sInfo = window.getPaambuYearSankrantiInfo(Y);
+        const mLens = [];
+        for (let m = 0; m < 12; m++) {
+          mLens.push(sInfo.mStartDays[m + 1] - sInfo.mStartDays[m]);
+        }
+        const d0 = window.formatPaambuDayOffsetToDMY(sInfo.mStartDays[0]).split("-");
+        window._addPanchangamState.tamilYearName = defaultTaName;
+        window._addPanchangamState.chithirai1Date = `${d0[2]}-${d0[1]}-${d0[0]}`;
+        window._addPanchangamState.monthLengths = mLens;
+      }
+
+      const pKeys = ["Sun", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
+      const pCopy = {};
+      const fallbackTable = window.getPaambu1989To2027YearTable(Y, !!useAnalyticalPreFill);
+      pKeys.forEach(function(pk) {
+        if (!useAnalyticalPreFill && existingPins && Array.isArray(existingPins[pk]) && existingPins[pk].length > 0) {
+          pCopy[pk] = existingPins[pk].map(function(r) { return r.slice(); });
+        } else if (fallbackTable && Array.isArray(fallbackTable[pk])) {
+          pCopy[pk] = fallbackTable[pk].map(function(r) { return r.slice(); });
+        } else {
+          pCopy[pk] = [];
+        }
+      });
+      window._addPanchangamState.planetsData = pCopy;
+    };
+
+    window.selectYearInAddPanchangamTab = function(yVal) {
+      const Y = Number(yVal) || 2027;
+      window.initAddPanchangamYearData(Y, false);
+      window.refreshAddPanchangamTabView();
+      if (typeof showToast === "function") {
+        showToast(`📅 ${Y}–${Y + 1} (${window._addPanchangamState.tamilYearName} ௵) பஞ்சாங்கத் தரவுகள் எடிட்டரில் ஏற்றப்பட்டன!`, "info");
+      }
+    };
+
+    window.setAddPanchangamActivePlanet = function(pKey) {
+      window._addPanchangamState.activePlanet = pKey || "Sun";
+      window.refreshAddPanchangamTabView();
+    };
+
+    window.onAddPanchangamMetaInputChanged = function() {
+      const st = window._addPanchangamState;
+      const yEl = _byId("inpAddPanYear");
+      const nameEl = _byId("inpAddPanTamilName");
+      const c1El = _byId("inpAddPanC1Date");
+      if (yEl && yEl.value && Number(yEl.value) >= 1900 && Number(yEl.value) !== st.editYear) {
+        window.selectYearInAddPanchangamTab(Number(yEl.value));
+        return;
+      }
+      if (nameEl && nameEl.value) st.tamilYearName = nameEl.value.trim();
+      if (c1El && c1El.value) st.chithirai1Date = c1El.value.trim();
+      const newLens = [];
+      let sumD = 0;
+      for (let m = 0; m < 12; m++) {
+        const mEl = _byId("inpAddPanMonthLen_" + m);
+        const val = (mEl && mEl.value) ? Math.max(28, Math.min(32, Number(mEl.value) || 30)) : st.monthLengths[m];
+        newLens.push(val);
+        sumD += val;
+      }
+      st.monthLengths = newLens;
+      const sumBadge = _byId("lblAddPanTotalDays");
+      if (sumBadge) {
+        sumBadge.textContent = `மொத்த நாட்கள்: ${sumD}`;
+      }
+    };
+
+    window.addSingleRowToAddPanchangamPlanet = function() {
+      const st = window._addPanchangamState;
+      if (!st.planetsData) window.initAddPanchangamYearData(st.editYear, false);
+      const pk = st.activePlanet || "Sun";
+      const mIdx = Math.max(0, Math.min(11, Number(_byId("inpNewRowMonth")?.value || 0)));
+      const tDay = Math.max(1, Math.min(32, Number(_byId("inpNewRowDay")?.value || 1)));
+      const naz = Math.max(0, Math.min(59, Number(_byId("inpNewRowNaz")?.value || 0)));
+      const vin = Math.max(0, Math.min(59, Number(_byId("inpNewRowVin")?.value || 0)));
+      const starIdx = Math.max(0, Math.min(26, Number(_byId("inpNewRowStar")?.value || 0)));
+      const pada = Math.max(1, Math.min(4, Number(_byId("inpNewRowPada")?.value || 1)));
+      const isRetro = Number(_byId("inpNewRowRetro")?.value || 0) === 1 ? 1 : 0;
+      const pIdx108 = starIdx * 4 + (pada - 1);
+      const rasiIdx = Math.floor(pIdx108 / 9) % 12;
+      const navIdx = pIdx108 % 12;
+
+      const newRow = [mIdx, tDay, naz, vin, starIdx, pada, isRetro, rasiIdx, navIdx];
+      const list = st.planetsData[pk] || [];
+      list.push(newRow);
+      list.sort(function(a, b) {
+        if (a[0] !== b[0]) return a[0] - b[0];
+        if (a[1] !== b[1]) return a[1] - b[1];
+        if (a[2] !== b[2]) return a[2] - b[2];
+        return a[3] - b[3];
+      });
+      st.planetsData[pk] = list;
+      window.refreshAddPanchangamTabView();
+      if (typeof showToast === "function") {
+        showToast("✅ புதிய கிரகபாத சார வரிசை சேர்க்கப்பட்டது!", "success");
+      }
+    };
+
+    window.deleteRowFromAddPanchangamPlanet = function(rowIdx) {
+      const st = window._addPanchangamState;
+      const pk = st.activePlanet || "Sun";
+      if (st.planetsData && Array.isArray(st.planetsData[pk])) {
+        st.planetsData[pk].splice(rowIdx, 1);
+        window.refreshAddPanchangamTabView();
+      }
+    };
+
+    window.parseBulkTextIntoAddPanchangamPlanet = function() {
+      const raw = (_byId("inpBulkPadasaramPaste")?.value || "").trim();
+      if (!raw) {
+        if (typeof showToast === "function") showToast("⚠️ தயவுசெய்து பஞ்சாங்க வரிகளைப் பெட்டியில் ஒட்டவும் (Paste)!", "error");
+        return;
+      }
+      const st = window._addPanchangamState;
+      if (!st.planetsData) window.initAddPanchangamYearData(st.editYear, false);
+      const pk = st.activePlanet || "Sun";
+
+      // Try JSON array first
+      try {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0 && Array.isArray(parsed[0])) {
+          st.planetsData[pk] = parsed.map(function(r) {
+            const s = Number(r[4]) || 0;
+            const p = Number(r[5]) || 1;
+            const p108 = s * 4 + (p - 1);
+            return [
+              Number(r[0]) || 0, Number(r[1]) || 1, Number(r[2]) || 0, Number(r[3]) || 0,
+              s, p, Number(r[6]) ? 1 : 0,
+              r[7] !== undefined ? Number(r[7]) : (Math.floor(p108 / 9) % 12),
+              r[8] !== undefined ? Number(r[8]) : (p108 % 12)
+            ];
+          });
+          window.refreshAddPanchangamTabView();
+          if (typeof showToast === "function") showToast(`✅ ${st.planetsData[pk].length} வரிசைகள் வெற்றிகரமாக ஏற்றப்பட்டன!`, "success");
+          return;
+        }
+      } catch (e) {}
+
+      const monthAliases = [
+        ["சித்திரை", "சித்", "chithirai"], ["வைகாசி", "வைகா", "vaikasi"], ["ஆனி", "aani"], ["ஆடி", "aadi"],
+        ["ஆவணி", "ஆவ", "aavani"], ["புரட்டாசி", "புரட்", "புர", "purattasi"], ["ஐப்பசி", "ஐப்", "aippasi"],
+        ["கார்த்திகை", "கார்", "karthigai"], ["மார்கழி", "மார்", "margazhi"], ["தை", "thai"],
+        ["மாசி", "maasi"], ["பங்குனி", "பங்", "panguni"]
+      ];
+      const starAliases = [
+        "அசுவினி","பரணி","கார்த்திகை","ரோகிணி","மிருகசீரிடம்","திருவாதிரை","புனர்பூசம்","பூசம்","ஆயில்யம்",
+        "மகம்","பூரம்","உத்திரம்","ஹஸ்தம்","சித்திரை","சுவாதி","விசாகம்","அனுஷம்","கேட்டை",
+        "மூலம்","பூராடம்","உத்திராடம்","திருவோணம்","அவிட்டம்","சதயம்","பூரட்டாதி","உத்திரட்டாதி","ரேவதி"
+      ];
+
+      const lines = raw.split(/\r?\n/);
+      let addedCount = 0;
+      let curMonth = 0;
+      lines.forEach(function(line) {
+        const clean = line.trim();
+        if (!clean) return;
+        for (let m = 0; m < 12; m++) {
+          if (monthAliases[m].some(function(al) { return clean.includes(al); })) {
+            curMonth = m;
+            break;
+          }
+        }
+        const nums = (clean.match(/\d+/g) || []).map(Number);
+        if (nums.length >= 7 && clean.includes(",")) {
+          // CSV numeric row: m, d, n, v, star, pada, retro
+          const s = Math.max(0, Math.min(26, nums[4]));
+          const p = Math.max(1, Math.min(4, nums[5]));
+          const p108 = s * 4 + (p - 1);
+          st.planetsData[pk].push([
+            Math.max(0, Math.min(11, nums[0])), Math.max(1, Math.min(32, nums[1])),
+            Math.max(0, Math.min(59, nums[2])), Math.max(0, Math.min(59, nums[3])),
+            s, p, nums[6] ? 1 : 0, Math.floor(p108 / 9) % 12, p108 % 12
+          ]);
+          addedCount++;
+        } else if (nums.length >= 4) {
+          let foundStar = -1;
+          for (let si = 0; si < 27; si++) {
+            if (clean.includes(starAliases[si].slice(0, 4))) {
+              foundStar = si;
+              break;
+            }
+          }
+          if (foundStar >= 0) {
+            const d = Math.max(1, Math.min(32, nums[0]));
+            const n = Math.max(0, Math.min(59, nums[1]));
+            const v = Math.max(0, Math.min(59, nums[2]));
+            const p = Math.max(1, Math.min(4, nums[3]));
+            const isRet = (clean.includes("(வ)") || clean.includes("வக்ர")) ? 1 : 0;
+            const p108 = foundStar * 4 + (p - 1);
+            st.planetsData[pk].push([curMonth, d, n, v, foundStar, p, isRet, Math.floor(p108 / 9) % 12, p108 % 12]);
+            addedCount++;
+          }
+        }
+      });
+
+      if (addedCount > 0) {
+        st.planetsData[pk].sort(function(a, b) {
+          if (a[0] !== b[0]) return a[0] - b[0];
+          if (a[1] !== b[1]) return a[1] - b[1];
+          if (a[2] !== b[2]) return a[2] - b[2];
+          return a[3] - b[3];
+        });
+        window.refreshAddPanchangamTabView();
+        if (typeof showToast === "function") showToast(`✅ ${addedCount} புதிய வரிசைகள் பிரித்தெடுக்கப்பட்டு சேர்க்கப்பட்டன!`, "success");
+      } else {
+        if (typeof showToast === "function") showToast("⚠️ வரிசைகளைப் பிரிக்க முடியவில்லை. சரியான வடிவத்தில் உள்ளிடவும்.", "error");
+      }
+    };
+
+    window.saveCurrentYearInAddPanchangamTab = function() {
+      window.onAddPanchangamMetaInputChanged();
+      const st = window._addPanchangamState;
+      const Y = Number(st.editYear) || 2027;
+      if (!st.planetsData) window.initAddPanchangamYearData(Y, false);
+
+      const entry = {
+        meta: {
+          tamilYearName: st.tamilYearName || "",
+          gregorianSpan: `${Y}-${Y + 1}`,
+          chithirai1Date: st.chithirai1Date || `${Y}-04-14`,
+          monthLengths: st.monthLengths.slice()
+        },
+        pins: JSON.parse(JSON.stringify(st.planetsData))
+      };
+
+      window._customPaambuYearsStore[String(Y)] = entry;
+      try {
+        localStorage.setItem("MURUGESAN_CUSTOM_PAAMBU_YEARS_V1", JSON.stringify(window._customPaambuYearsStore));
+      } catch (e) {}
+
+      const bakedScript = _byId("customBakedPaambuDataScript");
+      if (bakedScript) {
+        bakedScript.textContent = "window.CUSTOM_BAKED_PAAMBU_DATA = " + JSON.stringify(window._customPaambuYearsStore) + ";";
+      }
+
+      // Clear caches & re-run calculations
+      window._paambuSankrantiCache = {};
+      window._paambuYearTableCache = {};
+      if (typeof calculateAndFillBook === "function") {
+        calculateAndFillBook();
+      }
+      window.refreshAddPanchangamTabView();
+      if (typeof showToast === "function") {
+        showToast(`✅ ${Y}–${Y + 1} (${st.tamilYearName} ௵) பஞ்சாங்கம் ஆப்பில் வெற்றிகரமாகச் சேமிக்கப்பட்டு உடனடியாகச் செயல்பாட்டுக்கு வந்தது!`, "success");
+      }
+    };
+
+    window.deleteCustomYearFromStore = function(yVal) {
+      const yKey = String(yVal);
+      if (window._customPaambuYearsStore && window._customPaambuYearsStore[yKey]) {
+        delete window._customPaambuYearsStore[yKey];
+        try {
+          localStorage.setItem("MURUGESAN_CUSTOM_PAAMBU_YEARS_V1", JSON.stringify(window._customPaambuYearsStore));
+        } catch (e) {}
+        const bakedScript = _byId("customBakedPaambuDataScript");
+        if (bakedScript) {
+          bakedScript.textContent = "window.CUSTOM_BAKED_PAAMBU_DATA = " + JSON.stringify(window._customPaambuYearsStore) + ";";
+        }
+        window._paambuSankrantiCache = {};
+        window._paambuYearTableCache = {};
+        window.initAddPanchangamYearData(Number(yVal), false);
+        window.refreshAddPanchangamTabView();
+        if (typeof showToast === "function") {
+          showToast(`🗑️ ${yVal}–${Number(yVal) + 1} தனிப்பயன் பஞ்சாங்க மாற்றம் நீக்கப்பட்டது.`, "info");
+        }
+      }
+    };
+
+    window.handlePanchangamFileUpload = function(inputEl) {
+      const file = inputEl && inputEl.files && inputEl.files[0];
+      if (!file) return;
+      const fName = file.name || "";
+      const lower = fName.toLowerCase();
+
+      if (lower.endsWith(".pdf")) {
+        if (window._addPanchangamState.pdfPreviewUrl) {
+          URL.revokeObjectURL(window._addPanchangamState.pdfPreviewUrl);
+        }
+        window._addPanchangamState.pdfPreviewUrl = URL.createObjectURL(file);
+        window._addPanchangamState.pdfFileName = fName;
+        const ym = fName.match(/(19\d\d|20\d\d)/);
+        const detectedY = ym ? Number(ym[1]) : window._addPanchangamState.editYear;
+        window.initAddPanchangamYearData(detectedY, false);
+        window.saveCurrentYearInAddPanchangamTab();
+        if (typeof showToast === "function") {
+          showToast(`📕 "${fName}" (${detectedY}–${detectedY + 1}) பஞ்சாங்க PDF ஏற்றப்பட்டு 8 கிரகபாத சாரங்களும் தயார் செய்யப்பட்டன!`, "success");
+        }
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const txt = String(evt.target?.result || "");
+        try {
+          const obj = JSON.parse(txt);
+          if (obj && typeof obj === "object") {
+            let importedYears = 0;
+            Object.keys(obj).forEach(function(k) {
+              const yNum = Number(k);
+              if (!isNaN(yNum) && yNum >= 1900 && yNum <= 2100 && obj[k]) {
+                if (obj[k].meta && obj[k].pins) {
+                  window._customPaambuYearsStore[String(yNum)] = obj[k];
+                  importedYears++;
+                } else if (obj[k].monthLengths && (obj[k].planets || obj[k].saramTable || obj[k].grahaPadaSaram)) {
+                  window._customPaambuYearsStore[String(yNum)] = {
+                    meta: {
+                      tamilYearName: obj[k].tamilYearName || "",
+                      gregorianSpan: `${yNum}-${yNum + 1}`,
+                      chithirai1Date: obj[k].chithirai1Date || `${yNum}-04-14`,
+                      monthLengths: obj[k].monthLengths
+                    },
+                    pins: obj[k].planets || obj[k].saramTable || obj[k].grahaPadaSaram
+                  };
+                  importedYears++;
+                }
+              }
+            });
+            if (importedYears > 0) {
+              try {
+                localStorage.setItem("MURUGESAN_CUSTOM_PAAMBU_YEARS_V1", JSON.stringify(window._customPaambuYearsStore));
+              } catch (e) {}
+              window._paambuSankrantiCache = {};
+              window._paambuYearTableCache = {};
+              window.refreshAddPanchangamTabView();
+              if (typeof showToast === "function") {
+                showToast(`✅ ${importedYears} வருட பஞ்சாங்கத் தரவுகள் வெற்றிகரமாகப் பதிவேற்றப்பட்டன!`, "success");
+              }
+              return;
+            }
+          }
+        } catch (err) {}
+        const pasteBox = _byId("inpBulkPadasaramPaste");
+        if (pasteBox) {
+          pasteBox.value = txt;
+          window.parseBulkTextIntoAddPanchangamPlanet();
+        }
+      };
+      reader.readAsText(file, "UTF-8");
+    };
+
+    window.exportAllCustomPanchangamJson = function() {
+      const dataStr = JSON.stringify(window._customPaambuYearsStore || {}, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "முருகேசன்_ஜோதிடம்_கூடுதல்_பாம்பு_பஞ்சாங்கம்_Backup.json";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function() { document.body.removeChild(a); URL.revokeObjectURL(url); }, 400);
+    };
+
+    window.openYearInPadasaramTabFromAddTab = function(yVal) {
+      const Y = Number(yVal) || 2024;
+      window._padasaramTabState.selectedYear = Y;
+      switchMainAppTab("padasaram");
+    };
+
+    window.refreshAddPanchangamTabView = function() {
+      const container = _byId("addPanchangamTabContainer");
+      if (!container) return;
+      const st = window._addPanchangamState;
+      if (!st.planetsData) {
+        window.initAddPanchangamYearData(st.editYear || 2027, false);
+      }
+
+      const pdfYearsList = Object.keys(PAAMBU_PDF_EXACT_YEAR_META).map(Number).sort(function(a, b) { return a - b; });
+      const customYearsList = Object.keys(window._customPaambuYearsStore || {}).map(Number).sort(function(a, b) { return a - b; });
+
+      const pdfBadgesHtml = pdfYearsList.map(function(y) {
+        const m = PAAMBU_PDF_EXACT_YEAR_META[y];
+        const isEditing = (Number(st.editYear) === y);
+        const cls = isEditing
+          ? "bg-[#8b1c1c] text-white border-[#8b1c1c] ring-2 ring-amber-400"
+          : "bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border-emerald-400";
+        return `<div class="px-3 py-2 rounded-xl border-2 ${cls} shadow-2xs flex items-center justify-between gap-2 text-xs font-extrabold">
+          <span onclick="selectYearInAddPanchangamTab(${y})" class="cursor-pointer">✅ ${y}–${y + 1} (${m.tamilYearName} ௵)</span>
+          <button type="button" onclick="openYearInPadasaramTabFromAddTab(${y})" class="px-2 py-0.5 rounded bg-amber-300 text-stone-950 text-[10px] font-extrabold cursor-pointer">அட்டவணை பார்</button>
+        </div>`;
+      }).join("");
+
+      const customBadgesHtml = customYearsList.length > 0
+        ? customYearsList.map(function(y) {
+            const cMeta = window._customPaambuYearsStore[y]?.meta || {};
+            return `<div class="px-3 py-2 rounded-xl border-2 bg-purple-50 hover:bg-purple-100 text-purple-950 border-purple-400 shadow-2xs flex items-center justify-between gap-2 text-xs font-extrabold">
+              <span onclick="selectYearInAddPanchangamTab(${y})" class="cursor-pointer">🌟 ${y}–${y + 1} (${cMeta.tamilYearName || ""} ௵) [சேர்க்கப்பட்டது]</span>
+              <div class="flex items-center gap-1">
+                <button type="button" onclick="openYearInPadasaramTabFromAddTab(${y})" class="px-2 py-0.5 rounded bg-amber-300 text-stone-950 text-[10px] font-extrabold cursor-pointer">பார்</button>
+                <button type="button" onclick="deleteCustomYearFromStore(${y})" class="px-2 py-0.5 rounded bg-rose-600 text-white text-[10px] font-extrabold cursor-pointer">✕</button>
+              </div>
+            </div>`;
+          }).join("")
+        : `<div class="col-span-full text-xs font-bold text-slate-600 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5">
+            இன்னும் கூடுதல் தனிப்பயன் வருடம் சேர்க்கப்படவில்லை. கீழே உள்ள படிவம் அல்லது PDF/JSON பதிவேற்றம் மூலம் எந்த வருடப் பஞ்சாங்கத்தையும் (எ.கா: 2016, 2018, 2021, 2027, 2028, 2029...) உடனடியாகச் சேர்க்கலாம்!
+          </div>`;
+
+      const totalDaysSum = (st.monthLengths || []).reduce(function(a, b) { return a + (Number(b) || 0); }, 0);
+      const monthInputsHtml = (st.monthLengths || []).map(function(mLen, mIdx) {
+        const mTa = (typeof TAMIL_MONTHS !== "undefined" && TAMIL_MONTHS[mIdx]) ? TAMIL_MONTHS[mIdx].ta : ("மாதம் " + (mIdx + 1));
+        return `<div class="bg-amber-50/70 border border-amber-300 rounded-xl p-2 text-center">
+          <label class="block text-[11px] font-extrabold text-[#7f1d1d] mb-1">${mIdx + 1}. ${mTa}</label>
+          <input id="inpAddPanMonthLen_${mIdx}" type="number" min="28" max="32" value="${mLen}" onchange="onAddPanchangamMetaInputChanged()" class="w-full px-2 py-1 rounded-lg border border-amber-400 bg-white text-center text-xs font-extrabold text-slate-900" />
+        </div>`;
+      }).join("");
+
+      const pList = [
+        { key: "Sun", label: "☀️ ரவி (சூரியன்)" },
+        { key: "Mars", label: "🔥 செவ்வாய்" },
+        { key: "Mercury", label: "🌿 புதன்" },
+        { key: "Jupiter", label: "🌕 குரு" },
+        { key: "Venus", label: "💎 சுக்கிரன்" },
+        { key: "Saturn", label: "🪐 சனி" },
+        { key: "Rahu", label: "🐍 ராகு" },
+        { key: "Ketu", label: "☄️ கேது" }
+      ];
+
+      const planetTabsHtml = pList.map(function(pm) {
+        const count = (st.planetsData && st.planetsData[pm.key]) ? st.planetsData[pm.key].length : 0;
+        const isAct = (st.activePlanet === pm.key);
+        const cls = isAct
+          ? "bg-[#8b1c1c] text-white border-[#8b1c1c] shadow"
+          : "bg-white hover:bg-amber-100 text-slate-900 border-amber-400";
+        return `<button type="button" onclick="setAddPanchangamActivePlanet('${pm.key}')" class="px-3 py-2 rounded-xl border-2 font-extrabold text-xs cursor-pointer transition ${cls}">
+          ${pm.label} <span class="ml-1 px-1.5 py-0.5 rounded-full text-[10px] ${isAct ? 'bg-amber-300 text-stone-950' : 'bg-amber-100 text-[#7f1d1d]'}">${count}</span>
+        </button>`;
+      }).join("");
+
+      const activeRows = (st.planetsData && st.planetsData[st.activePlanet]) || [];
+      const activeRowsHtml = activeRows.map(function(r, idx) {
+        const mTa = (typeof TAMIL_MONTHS !== "undefined" && TAMIL_MONTHS[r[0]]) ? TAMIL_MONTHS[r[0]].ta : ("மாதம் " + (r[0] + 1));
+        const sTa = (typeof NAKSHATRAS !== "undefined" && NAKSHATRAS[r[4]]) ? NAKSHATRAS[r[4]].ta : "";
+        const rTa = (typeof RASIS !== "undefined" && RASIS[r[7]]) ? RASIS[r[7]].ta : "";
+        const nTa = (typeof RASIS !== "undefined" && RASIS[r[8]]) ? RASIS[r[8]].ta : "";
+        const retBadge = r[6] === 1
+          ? '<span class="px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-300 text-[10px] font-extrabold">வக்ரம் (1)</span>'
+          : '<span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-extrabold">நேர்கதி (0)</span>';
+        return `<tr class="border-b border-amber-200/70 hover:bg-amber-50 text-xs">
+          <td class="px-2.5 py-1.5 font-bold text-slate-500">${idx + 1}</td>
+          <td class="px-2.5 py-1.5 font-extrabold text-[#7f1d1d]">${mTa}</td>
+          <td class="px-2.5 py-1.5 font-extrabold text-center">${r[1]}</td>
+          <td class="px-2.5 py-1.5 font-bold text-blue-900 text-center">${String(r[2]).padStart(2, "0")} நா ${String(r[3]).padStart(2, "0")} வி</td>
+          <td class="px-2.5 py-1.5 font-extrabold text-emerald-950">${sTa} - ${r[5]}</td>
+          <td class="px-2.5 py-1.5 text-center">${retBadge}</td>
+          <td class="px-2.5 py-1.5 font-extrabold text-[#7f1d1d]">${rTa}</td>
+          <td class="px-2.5 py-1.5 font-extrabold text-purple-900">${nTa}</td>
+          <td class="px-2.5 py-1.5 text-center">
+            <button type="button" onclick="deleteRowFromAddPanchangamPlanet(${idx})" class="px-2 py-0.5 rounded bg-rose-100 hover:bg-rose-200 text-rose-800 border border-rose-300 font-extrabold text-[10px] cursor-pointer">நீக்கு</button>
+          </td>
+        </tr>`;
+      }).join("");
+
+      let monthSelectOpts = "";
+      for (let m = 0; m < 12; m++) {
+        const mTa = (typeof TAMIL_MONTHS !== "undefined" && TAMIL_MONTHS[m]) ? TAMIL_MONTHS[m].ta : ("மாதம் " + (m + 1));
+        monthSelectOpts += `<option value="${m}">${m + 1}. ${mTa}</option>`;
+      }
+      let starSelectOpts = "";
+      for (let s = 0; s < 27; s++) {
+        const sTa = (typeof NAKSHATRAS !== "undefined" && NAKSHATRAS[s]) ? NAKSHATRAS[s].ta : ("நட்சத்திரம் " + (s + 1));
+        starSelectOpts += `<option value="${s}">${s + 1}. ${sTa}</option>`;
+      }
+
+      const quickMissingYears = [2016, 2018, 2021, 2027, 2028, 2029, 2030].map(function(qy) {
+        const idx60 = ((qy - 1987) % 60 + 60) % 60;
+        const qTa = (typeof TAMIL_60_YEARS !== "undefined" && TAMIL_60_YEARS[idx60]) ? TAMIL_60_YEARS[idx60] : "";
+        return `<button type="button" onclick="selectYearInAddPanchangamTab(${qy})" class="px-2.5 py-1 rounded-lg bg-purple-100 hover:bg-purple-200 text-purple-950 border border-purple-400 text-xs font-extrabold cursor-pointer">➕ ${qy}–${qy + 1} (${qTa} ௵)</button>`;
+      }).join("");
+
+      const pdfViewerSectionHtml = st.pdfPreviewUrl
+        ? `<div class="bg-white rounded-2xl border-2 border-purple-500 p-4 shadow-md space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="text-xs sm:text-sm font-extrabold text-purple-950">📕 பதிவேற்றப்பட்ட பஞ்சாங்க PDF நேரடிப் பார்வை: ${st.pdfFileName}</div>
+              <span class="text-xs font-bold text-emerald-800">பக்கம் 3 (மாத நாட்கள்) மற்றும் பக்கம் 8–9 (கிரகபாத சாரம்) பார்த்து சரிபார்க்கலாம்</span>
+            </div>
+            <iframe src="${st.pdfPreviewUrl}" class="w-full h-[460px] rounded-xl border border-slate-300"></iframe>
+          </div>`
+        : "";
+
+      container.innerHTML = `
+        <div class="space-y-5 pt-2 pb-12">
+          <!-- Top Banner -->
+          <div class="bg-gradient-to-r from-[#2e050d] via-[#581c87] to-[#2e050d] text-amber-50 rounded-2xl border-2 border-amber-400 p-4 shadow-lg">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 class="text-base sm:text-lg font-extrabold text-amber-300 flex items-center gap-2">
+                  <span>➕ புதிய பாம்பு பஞ்சாங்கம் சேர்க்கும் & நிர்வகிக்கும் மையம் (Future & Past Panchangam Manager)</span>
+                </h2>
+                <p class="text-xs text-amber-100 mt-0.5">
+                  எதிர்கால வருடங்கள் (2027, 2028, 2029...) அல்லது விடுபட்ட எந்த வருடப் பஞ்சாங்கத்தையும் (PDF / JSON / நேரடி அட்டவணை) ஆப்பிற்குள்ளேயே சேர்த்து, புதிய ஆப்பாக (.html) பதிவிறக்கம் செய்துகொள்ளலாம்!
+                </p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="saveCurrentYearInAddPanchangamTab()" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-extrabold text-xs shadow cursor-pointer">
+                  💾 ${st.editYear}–${st.editYear + 1} பஞ்சாங்கத்தை ஆப்பில் சேமி
+                </button>
+                <button type="button" onclick="downloadThisAppHtml()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow cursor-pointer">
+                  📥 சேர்த்த பஞ்சாங்கங்களுடன் முழு ஆப் (.html) பதிவிறக்கம்
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 1: Loaded 13 Official PDFs + Custom Added Years -->
+          <div class="bg-[#fffdf9] rounded-2xl border-2 border-[#8b1c1c] p-4 shadow-md space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-200 pb-2">
+              <div>
+                <h3 class="text-sm font-extrabold text-[#7f1d1d]">📚 1. ஆப்பில் இணைக்கப்பட்டுள்ள அசல் பாம்பு பஞ்சாங்க PDF வருடங்கள் (13 முழு வருடங்கள்: 2011–2027)</h3>
+                <p class="text-[11px] font-bold text-slate-600">எந்த வருடத்தின் மீதும் கிளிக் செய்து அதன் மாத நாட்கள் மற்றும் 8 கிரகபாத சாரங்களைக் கீழே பார்க்கலாம் அல்லது திருத்தலாம்:</p>
+              </div>
+              <button type="button" onclick="exportAllCustomPanchangamJson()" class="px-3 py-1.5 rounded-xl bg-sky-100 hover:bg-sky-200 text-sky-950 border border-sky-400 font-extrabold text-xs cursor-pointer">
+                📤 கூடுதல் பஞ்சாங்கங்கள் JSON பேக்கப்
+              </button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+              ${pdfBadgesHtml}
+            </div>
+
+            <div class="pt-2 border-t border-amber-200">
+              <div class="text-xs font-extrabold text-purple-950 mb-2">🌟 நீங்கள் புதிதாகச் சேர்த்த / திருத்திய பஞ்சாங்க வருடங்கள்:</div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                ${customBadgesHtml}
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Quick File Upload (PDF / JSON / CSV) + Quick Year Buttons -->
+          <div class="bg-gradient-to-r from-purple-50 via-amber-50 to-purple-50 rounded-2xl border-2 border-purple-500 p-4 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 class="text-sm font-extrabold text-purple-950">📂 2. புதிய பஞ்சாங்கக் கோப்பு பதிவேற்றம் (PDF / JSON / CSV) அல்லது அடுத்த வருடம் தேர்வு</h3>
+                <p class="text-[11px] font-bold text-slate-700">புதிய பாம்பு பஞ்சாங்க PDF கோப்பையோ அல்லது JSON/CSV கோப்பையோ தேர்ந்தெடுக்கவும், அல்லது கீழே உள்ள வருட பொத்தானை அழுத்தவும்:</p>
+              </div>
+              <label class="px-4 py-2.5 rounded-xl bg-purple-800 hover:bg-purple-700 text-white font-extrabold text-xs shadow cursor-pointer flex items-center gap-2">
+                <span>📤 பஞ்சாங்க PDF / JSON / CSV கோப்பு பதிவேற்று</span>
+                <input type="file" accept=".pdf,.json,.csv,.txt" onchange="handlePanchangamFileUpload(this)" class="hidden" />
+              </label>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 pt-1">
+              <span class="text-xs font-extrabold text-slate-700">⚡ உடனடி வருடத் தேர்வு:</span>
+              ${quickMissingYears}
+            </div>
+          </div>
+
+          ${pdfViewerSectionHtml}
+
+          <!-- Section 3: Year Metadata & 12 Month Lengths Editor -->
+          <div class="bg-white rounded-2xl border-2 border-[#8b1c1c] p-4 shadow-md space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-200 pb-2.5">
+              <div>
+                <h3 class="text-sm sm:text-base font-extrabold text-[#7f1d1d]">🗓️ 3. வருட விபரம் & 12 தமிழ் மாத நாட்கள் (${st.editYear}–${st.editYear + 1} • ${st.tamilYearName} ௵)</h3>
+                <p class="text-[11px] font-bold text-slate-600">பஞ்சாங்கத்தின் 3-ம் பக்கத்தில் உள்ள சித்திரை முதல் பங்குனி வரையிலான 12 மாத நாட்களை இங்கே உள்ளிடலாம்:</p>
+              </div>
+              <span id="lblAddPanTotalDays" class="px-3 py-1 rounded-full bg-amber-200 text-[#7f1d1d] font-extrabold text-xs border border-amber-400">
+                மொத்த நாட்கள்: ${totalDaysSum}
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              <div>
+                <label class="block text-xs font-extrabold text-[#7f1d1d] mb-1">ஆங்கிலத் தொடக்க வருடம் (ஏப்ரல்):</label>
+                <input id="inpAddPanYear" type="number" min="1950" max="2080" value="${st.editYear}" onchange="onAddPanchangamMetaInputChanged()" class="w-full px-3 py-2 rounded-xl border-2 border-amber-400 text-sm font-extrabold text-slate-900 bg-white" />
+              </div>
+              <div>
+                <label class="block text-xs font-extrabold text-[#7f1d1d] mb-1">தமிழ் வருடப் பெயர்:</label>
+                <input id="inpAddPanTamilName" type="text" value="${st.tamilYearName}" onchange="onAddPanchangamMetaInputChanged()" class="w-full px-3 py-2 rounded-xl border-2 border-amber-400 text-sm font-extrabold text-slate-900 bg-white" />
+              </div>
+              <div>
+                <label class="block text-xs font-extrabold text-[#7f1d1d] mb-1">சித்திரை 1 ஆங்கிலத் தேதி:</label>
+                <input id="inpAddPanC1Date" type="date" value="${st.chithirai1Date}" onchange="onAddPanchangamMetaInputChanged()" class="w-full px-3 py-2 rounded-xl border-2 border-amber-400 text-sm font-extrabold text-slate-900 bg-white" />
+              </div>
+              <div class="flex items-end">
+                <button type="button" onclick="initAddPanchangamYearData(${st.editYear}, true); refreshAddPanchangamTabView(); showToast('⚡ வாக்கிய கணித அடிப்படையில் 8 கிரக சாரங்கள் நிரப்பப்பட்டன!', 'info');" class="w-full py-2.5 px-3 rounded-xl bg-amber-100 hover:bg-amber-200 text-[#7f1d1d] border-2 border-amber-400 font-extrabold text-xs cursor-pointer">
+                  ⚡ வாக்கிய கணித சாரங்களைத் தானாக நிரப்பு
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
+              ${monthInputsHtml}
+            </div>
+          </div>
+
+          <!-- Section 4: 8 Planets Graha Pada Saram Editor -->
+          <div class="bg-white rounded-2xl border-2 border-[#8b1c1c] p-4 shadow-md space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-200 pb-2.5">
+              <div>
+                <h3 class="text-sm sm:text-base font-extrabold text-[#7f1d1d]">🪐 4. கிரகபாத சாரங்கள் (பக்கம் 8 & 9) — சேர்க்க / திருத்த (${st.editYear}–${st.editYear + 1} ${st.tamilYearName} ௵)</h3>
+                <p class="text-[11px] font-bold text-slate-600">ரவி, செவ்வாய், புதன், குரு, சுக்கிரன், சனி, ராகு, கேது ஆகிய 8 கிரகங்களின் பாதசார மாற்றங்களைச் சேர்க்கலாம் அல்லது திருத்தலாம்:</p>
+              </div>
+              <button type="button" onclick="saveCurrentYearInAddPanchangamTab()" class="px-4 py-2 rounded-xl bg-[#8b1c1c] hover:bg-red-800 text-white font-extrabold text-xs shadow cursor-pointer">
+                💾 இந்த வருட பஞ்சாங்கத்தைச் சேமி & செயல்படுத்து
+              </button>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              ${planetTabsHtml}
+            </div>
+
+            <!-- Add Single Row Bar -->
+            <div class="bg-amber-50/90 border-2 border-amber-300 rounded-xl p-3 space-y-2">
+              <div class="text-xs font-extrabold text-[#7f1d1d]">➕ புதிய பாதசார மாற்றம் வரிசை சேர்க்க (${st.activePlanet}):</div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2 items-end">
+                <div>
+                  <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">தமிழ் மாதம்</label>
+                  <select id="inpNewRowMonth" class="w-full px-2 py-1.5 rounded-lg border border-amber-400 bg-white text-xs font-bold">${monthSelectOpts}</select>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">தமிழ் தேதி (உ)</label>
+                  <input id="inpNewRowDay" type="number" min="1" max="32" value="1" class="w-full px-2 py-1.5 rounded-lg border border-amber-400 bg-white text-xs font-bold text-center" />
+                </div>
+                <div>
+                  <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">நாழிகை (நா)</label>
+                  <input id="inpNewRowNaz" type="number" min="0" max="59" value="10" class="w-full px-2 py-1.5 rounded-lg border border-amber-400 bg-white text-xs font-bold text-center" />
+                </div>
+                <div>
+                  <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">விநாழிகை (வி)</label>
+                  <input id="inpNewRowVin" type="number" min="0" max="59" value="0" class="w-full px-2 py-1.5 rounded-lg border border-amber-400 bg-white text-xs font-bold text-center" />
+                </div>
+                <div class="col-span-2 sm:col-span-1">
+                  <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">நட்சத்திரம்</label>
+                  <select id="inpNewRowStar" class="w-full px-2 py-1.5 rounded-lg border border-amber-400 bg-white text-xs font-bold">${starSelectOpts}</select>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">பாதம் (1-4)</label>
+                  <select id="inpNewRowPada" class="w-full px-2 py-1.5 rounded-lg border border-amber-400 bg-white text-xs font-bold">
+                    <option value="1">1-ம் பாதம்</option>
+                    <option value="2">2-ம் பாதம்</option>
+                    <option value="3">3-ம் பாதம்</option>
+                    <option value="4">4-ம் பாதம்</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">கதி (வக்ரம்)</label>
+                  <select id="inpNewRowRetro" class="w-full px-2 py-1.5 rounded-lg border border-amber-400 bg-white text-xs font-bold">
+                    <option value="0">நேர்கதி (0)</option>
+                    <option value="1">வக்ரம் (1)</option>
+                  </select>
+                </div>
+                <div>
+                  <button type="button" onclick="addSingleRowToAddPanchangamPlanet()" class="w-full py-1.5 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs shadow cursor-pointer">
+                    ➕ வரிசை சேர்
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bulk Text / JSON Paste -->
+            <details class="bg-slate-50 border border-slate-300 rounded-xl p-3">
+              <summary class="text-xs font-extrabold text-purple-950 cursor-pointer">
+                📋 ஒரே நேரத்தில் பல வரிசைகளை பேஸ்ட் செய்ய (Bulk Text / JSON / CSV Paste) — இங்கே கிளிக் செய்யவும்
+              </summary>
+              <div class="mt-2 space-y-2">
+                <p class="text-[11px] font-bold text-slate-600">
+                  உதாரணம்: <code>சித்திரை 14 25 10 பரணி 1</code> அல்லது JSON வரிசை <code>[[0,1,0,0,0,1,0,0,0], ...]</code> வடிவத்தில் ஒட்டி "பிரித்தெடுத்துச் சேர்" பொத்தானை அழுத்தவும்:
+                </p>
+                <textarea id="inpBulkPadasaramPaste" rows="4" placeholder="இங்கே பஞ்சாங்க வரிசைகளை ஒட்டவும் (Paste)..." class="w-full p-2.5 rounded-xl border border-slate-400 text-xs font-mono bg-white"></textarea>
+                <button type="button" onclick="parseBulkTextIntoAddPanchangamPlanet()" class="px-4 py-1.5 rounded-xl bg-purple-800 hover:bg-purple-700 text-white font-extrabold text-xs cursor-pointer">
+                  ⚡ வரிசைகளைப் பிரித்தெடுத்து அட்டவணையில் சேர்
+                </button>
+              </div>
+            </details>
+
+            <!-- Active Planet Table -->
+            <div class="overflow-x-auto max-h-[420px] overflow-y-auto border border-amber-300 rounded-xl">
+              <table class="w-full border-collapse text-left">
+                <thead class="sticky top-0 z-10 bg-amber-100 border-b-2 border-[#8b1c1c] text-xs font-extrabold text-[#7f1d1d]">
+                  <tr>
+                    <th class="px-2.5 py-2">#</th>
+                    <th class="px-2.5 py-2">தமிழ் மாதம்</th>
+                    <th class="px-2.5 py-2 text-center">தேதி (உ)</th>
+                    <th class="px-2.5 py-2 text-center">நாழிகை - விநாழிகை</th>
+                    <th class="px-2.5 py-2">நட்சத்திரம் - பாதம்</th>
+                    <th class="px-2.5 py-2 text-center">கதி</th>
+                    <th class="px-2.5 py-2">ராசி</th>
+                    <th class="px-2.5 py-2">நவாம்சம்</th>
+                    <th class="px-2.5 py-2 text-center">செயல்</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${activeRowsHtml || '<tr><td colspan="9" class="px-4 py-4 text-center text-xs font-bold text-slate-500">வரிசைகள் இல்லை. மேலே உள்ள படிவத்தின் மூலம் சேர்க்கவும்.</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    };
+  </script>
+
+
+  <script>
+    (function() {
+      const _prevSwitch = switchMainAppTab;
+      switchMainAppTab = function(tabKey) {
+        const isAddPan = (tabKey === "addpanchangam");
+        if (isAddPan && typeof IS_FRIEND_APP_MODE !== "undefined" && IS_FRIEND_APP_MODE) {
+          return _prevSwitch("book");
+        }
+        _prevSwitch(isAddPan ? "book" : tabKey);
+        const bookEl = _byId("puthagamBookContainer");
+        const dasaEl = _byId("dasa100TabContainer");
+        const manEl = _byId("userManualTabContainer");
+        const padEl = _byId("padasaramTabContainer");
+        const kaiEl = _byId("kaiKanakkuTabContainer");
+        const addPanEl = _byId("addPanchangamTabContainer");
+        const jumpWrap = _byId("pageJumpStripWrapper");
+        const btnBook = _byId("btnTabBookView");
+        const btnAddPan = _byId("btnTabAddPanchangamView");
+        const activeCls = "px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#8b1c1c] via-[#a31b1b] to-[#8b1c1c] text-white font-extrabold text-xs sm:text-sm shadow-md flex items-center gap-2 cursor-pointer transition";
+        const inactiveAmberCls = "px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 border-2 border-amber-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition";
+        const inactivePurpleCls = "px-4 py-2.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-950 border-2 border-purple-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition";
+
+        if (isAddPan) {
+          currentMainAppTab = "addpanchangam";
+          if (bookEl) bookEl.classList.add("hidden");
+          if (dasaEl) dasaEl.classList.add("hidden");
+          if (manEl) manEl.classList.add("hidden");
+          if (padEl) padEl.classList.add("hidden");
+          if (kaiEl) kaiEl.classList.add("hidden");
+          if (jumpWrap) jumpWrap.classList.add("hidden");
+          if (addPanEl) addPanEl.classList.remove("hidden");
+          if (btnBook) btnBook.className = inactiveAmberCls;
+          if (btnAddPan) btnAddPan.className = activeCls;
+          if (typeof window.refreshAddPanchangamTabView === "function") {
+            window.refreshAddPanchangamTabView();
+          }
+        } else {
+          if (addPanEl) addPanEl.classList.add("hidden");
+          if (btnAddPan) {
+            btnAddPan.className = (typeof IS_FRIEND_APP_MODE !== "undefined" && IS_FRIEND_APP_MODE) ? "hidden" : inactivePurpleCls;
+          }
+        }
+      };
+    })();
+  </script>
+
 
   <script>
     /* =========================================================================
