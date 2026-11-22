@@ -467,6 +467,15 @@
         break-after: avoid !important;
       }
     }
+
+    @keyframes mjBlinkAlert {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.45); border-color: #dc2626; }
+      50% { opacity: 0.45; box-shadow: 0 0 0 6px rgba(220, 38, 38, 0.08); border-color: #f59e0b; }
+    }
+    .mj-blink-hint-box {
+      animation: mjBlinkAlert 1.3s ease-in-out infinite;
+    }
+
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -596,6 +605,24 @@
         </div>
         <div class="text-xs font-extrabold px-3 py-1.5 rounded-xl bg-amber-100 text-[#8b1c1c] border border-amber-300">
           📄 PDF டவுன்லோட் பெயர்: ஜாதகர் பெயரில் தானாகச் சேமிக்கப்படும்
+        </div>
+      </div>
+
+      <!-- 🔔 Blinking Reset Hint + Top Reset & Refresh Buttons -->
+      <div id="mjTopResetRefreshBar" class="mt-2 mb-2 p-2.5 sm:p-3 rounded-2xl bg-gradient-to-r from-rose-50 via-amber-50 to-sky-50 border-2 border-rose-300 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+        <div class="mj-blink-hint-box px-3 py-2 rounded-xl bg-amber-100/95 border-2 border-rose-600 text-rose-900 font-extrabold text-xs sm:text-sm flex items-center gap-2">
+          <span class="text-base">🔔</span>
+          <span>புதிய ஜாதகம் தொடங்கும் முன் <strong>"மீட்டமை (Reset)"</strong> செய்துவிட்டு தொடங்கவும்!</span>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button id="btnTopFormReset" type="button" onclick="mjResetNewHoroscopeForm()" class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-700 hover:to-red-800 text-white font-extrabold text-xs sm:text-sm shadow-md flex items-center justify-center gap-1.5 cursor-pointer transition active:scale-95">
+            <span>↺</span>
+            <span>மீட்டமை (Reset)</span>
+          </button>
+          <button id="btnTopPageRefresh" type="button" onclick="mjRefreshPageNow()" class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white font-extrabold text-xs sm:text-sm shadow-md flex items-center justify-center gap-1.5 cursor-pointer transition active:scale-95">
+            <span>🔄</span>
+            <span>புதுப்பி (Refresh)</span>
+          </button>
         </div>
       </div>
 
@@ -11513,5 +11540,46 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       mjInitFirebase();
     });
   </script>
+
+  <script id="mjTopResetRefreshScript">
+    window.mjResetNewHoroscopeForm = function() {
+      try {
+        ["inpName","inpFather","inpMother","inpDob","inpTob","inpTown","inpDistrict","inpTownSelect","mjClientPhoneSearch","mjClientPhoneInput","inpManPrevStarDot","inpManCurrStarDot","inpManSunRemDot"].forEach(function(id) {
+          const el = document.getElementById(id);
+          if (el) el.value = "";
+        });
+        ["inpPadaAdjMars","inpPadaAdjSaturn","inpPadaAdjJupiter","inpPadaAdjMercury","inpPadaAdjVenus"].forEach(function(id) {
+          const el = document.getElementById(id);
+          if (el) el.value = "0";
+        });
+        const rp = document.getElementById("inpRasiPramanamType");
+        if (rp) rp.value = "tn_exact";
+        const townInp = document.getElementById("inpTown");
+        if (townInp) townInp.classList.add("hidden");
+        if (typeof calculateAndFillBook === "function") calculateAndFillBook();
+        if (typeof showToast === "function") {
+          showToast("✅ படிவம் மீட்டமைக்கப்பட்டது! புதிய ஜாதக விவரங்களை உள்ளிடலாம்.", "success");
+        }
+        const nameEl = document.getElementById("inpName");
+        if (nameEl && typeof nameEl.focus === "function") nameEl.focus();
+      } catch (e) {
+        console.warn("Reset warning:", e);
+      }
+    };
+
+    window.mjRefreshPageNow = function() {
+      try {
+        if (typeof showToast === "function") {
+          showToast("🔄 பக்கம் புதுப்பிக்கப்படுகிறது...", "success");
+        }
+        setTimeout(function() {
+          window.location.reload();
+        }, 120);
+      } catch (e) {
+        window.location.reload();
+      }
+    };
+  </script>
+
 </body>
 </html>
