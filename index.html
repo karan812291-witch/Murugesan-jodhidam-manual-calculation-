@@ -686,6 +686,74 @@
       </div>
 
 
+
+      <!-- 🧮 நோட்புக் கைக்கணக்கு நேரடி பஞ்சாங்க திருத்தம் (Optional Manual Panchangam Override) -->
+      <details id="mjManualOverridePanel" class="mt-3 rounded-2xl border-2 border-violet-300 bg-violet-50/70 p-3 shadow-2xs">
+        <summary class="cursor-pointer font-extrabold text-xs sm:text-sm text-violet-950 flex flex-wrap items-center justify-between gap-2 select-none">
+          <span>🧮 நோட்புக் கைக்கணக்கு நேரடி திருத்தம் (அச்சிட்ட பஞ்சாங்க நாழிகை / பாதசாரம் உள்ளீடு — விருப்பம்)</span>
+          <span class="text-[11px] px-2 py-0.5 rounded-full bg-violet-700 text-white font-bold">100% நோட்புக் பொருத்தம்</span>
+        </summary>
+        <div class="mt-3 pt-3 border-t border-violet-200 space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-extrabold text-violet-950 mb-1">ராசி பிரமாண அட்டவணை</label>
+              <select id="inpRasiPramanamType" onchange="calculateAndFillBook()" class="w-full px-2.5 py-1.5 rounded-xl border border-violet-300 text-xs font-bold bg-white text-slate-900">
+                <option value="tn_exact" selected>தமிழ்நாடு துல்லியம் (11.9° N — Default)</option>
+                <option value="classic_notebook">பாரம்பரிய நோட்புக் (4.15 / 4.45 / 5.15 / 5.30)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-extrabold text-violet-950 mb-1">நேற்றைய நட்சத்திர முடிவு (எ.கா: 37.10)</label>
+              <input id="inpManPrevStarDot" type="text" value="" placeholder="தானியங்கி (காலியாக விடலாம்)" oninput="calculateAndFillBook()" class="w-full px-2.5 py-1.5 rounded-xl border border-violet-300 text-xs font-bold bg-white text-slate-900" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-extrabold text-violet-950 mb-1">இன்றைய நட்சத்திர முடிவு (எ.கா: 39.11)</label>
+              <input id="inpManCurrStarDot" type="text" value="" placeholder="தானியங்கி (காலியாக விடலாம்)" oninput="calculateAndFillBook()" class="w-full px-2.5 py-1.5 rounded-xl border border-violet-300 text-xs font-bold bg-white text-slate-900" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-extrabold text-violet-950 mb-1">சூரியன் இருப்பு நாழிகை (எ.கா: 2.24)</label>
+              <input id="inpManSunRemDot" type="text" value="" placeholder="தானியங்கி (காலியாக விடலாம்)" oninput="calculateAndFillBook()" class="w-full px-2.5 py-1.5 rounded-xl border border-violet-300 text-xs font-bold bg-white text-slate-900" />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-1">
+            <div>
+              <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">செவ்வாய் பாதம்</label>
+              <select id="inpPadaAdjMars" onchange="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white">
+                <option value="0" selected>தானியங்கி</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">சனி பாதம்</label>
+              <select id="inpPadaAdjSaturn" onchange="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white">
+                <option value="0" selected>தானியங்கி</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">குரு பாதம்</label>
+              <select id="inpPadaAdjJupiter" onchange="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white">
+                <option value="0" selected>தானியங்கி</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">புதன் பாதம்</label>
+              <select id="inpPadaAdjMercury" onchange="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white">
+                <option value="0" selected>தானியங்கி</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">சுக்கிரன் பாதம்</label>
+              <select id="inpPadaAdjVenus" onchange="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white">
+                <option value="0" selected>தானியங்கி</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option>
+              </select>
+            </div>
+            <div class="flex items-end">
+              <button type="button" onclick="mjResetManualOverrides()" class="w-full px-2 py-1.5 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-900 border border-rose-300 font-extrabold text-[11px] cursor-pointer">↺ மீட்டமை (Reset)</button>
+            </div>
+          </div>
+          <p class="text-[11px] font-semibold text-violet-900/90">💡 அச்சிட்ட பாம்பு பஞ்சாங்கத்தில் உள்ள <strong>நேற்றைய &amp; இன்றைய நட்சத்திர நாழிகை</strong> (எ.கா: <code>37.10</code>, <code>39.11</code>) உள்ளிட்டால், ஆதி–இருப்பு–செல் மற்றும் தசா இருப்பு <strong>நோட்புக் கைக்கணக்கு போல ஒரு நாள் கூட மாறாமல்</strong> துல்லியமாகக் கணக்கிடப்படும்.</p>
+        </div>
+      </details>
+
       <!-- ☁️ Firebase Firestore வாடிக்கையாளர் தரவுத்தளம் (Client Save & Phone Search) -->
       <div id="firebaseClientDbPanel" class="mt-3 p-3.5 rounded-2xl bg-gradient-to-br from-emerald-50/90 via-amber-50/70 to-orange-50/80 border-2 border-emerald-400/80 space-y-3 shadow-xs">
         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-200 pb-2">
@@ -10033,15 +10101,32 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
 
   <script>
     // ============================================================================
-    // 🧮 FULL MANUAL KAI-KANAKKU ENGINE (முழு கைக்கணக்கு முறை — பாரம்பரிய நோட்புக் கணிப்பு)
-    // Applies:
-    //  1) Traditional Manual Udayathi Nazhigai (24 min = 1 Nazhigai)
-    //  2) Pure Standard 12-Rasi Pramanam Addition Chain for Lagnam (no spherical trig)
-    //  3) Traditional 108-Pada (3°20') Midpoint Planet Grid (Panchangam Pada-Saram)
-    //  4) Classic 60.00-Nazhigai (3600 Vinazhigai) & 360-Day Savana Dasa Balance
+    // 🧮 FULL MANUAL KAI-KANAKKU ENGINE + OPTIONAL PANCHANGAM NOTEBOOK OVERRIDE
     // ============================================================================
+    window.mjResetManualOverrides = function() {
+      ["inpManPrevStarDot","inpManCurrStarDot","inpManSunRemDot"].forEach(function(id) {
+        const el = document.getElementById(id); if (el) el.value = "";
+      });
+      ["inpPadaAdjMars","inpPadaAdjSaturn","inpPadaAdjJupiter","inpPadaAdjMercury","inpPadaAdjVenus"].forEach(function(id) {
+        const el = document.getElementById(id); if (el) el.value = "0";
+      });
+      const rp = document.getElementById("inpRasiPramanamType");
+      if (rp) rp.value = "tn_exact";
+      if (typeof calculateAndFillBook === "function") calculateAndFillBook();
+    };
+
     (function() {
       const _origCalcFull = calculateFullJathagam;
+      const CLASSIC_NOTEBOOK_VIN = [255, 285, 315, 330, 315, 300, 300, 315, 330, 315, 285, 255];
+
+      function _parseDotToVin(str) {
+        const s = String(str || "").trim();
+        if (!s || !/^\d+(\.\d{1,2})?$/.test(s)) return null;
+        const parts = s.split(".");
+        const n = parseInt(parts[0], 10) || 0;
+        const v = parts[1] ? parseInt(parts[1].padEnd(2, "0").slice(0, 2), 10) : 0;
+        return n * 60 + v;
+      }
       function _fmtDot(vin) {
         const v = Math.max(0, Math.round(Number(vin) || 0));
         return Math.floor(v / 60) + "." + String(v % 60).padStart(2, "0");
@@ -10053,35 +10138,43 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         if (mm >= 60) return (dd + 1) + "° 00'";
         return dd + "° " + String(mm).padStart(2, "0") + "'";
       }
+
       calculateFullJathagam = function(profile) {
         const calc = _origCalcFull(profile);
         try {
           if (!calc || !calc.planets || !calc.planets.Sun || !calc.planets.Moon || !calc.planets.Lagnam) return calc;
 
-          // 1. Manual Udayathi Nazhigai (24 min = 1 Nazhigai = 60 Vinazhigai)
+          const rpMode = profile.rasiPramanamType || (document.getElementById("inpRasiPramanamType")?.value) || "tn_exact";
+          const prevStarVin = _parseDotToVin(profile.manPrevStarDot ?? document.getElementById("inpManPrevStarDot")?.value);
+          const currStarVin = _parseDotToVin(profile.manCurrStarDot ?? document.getElementById("inpManCurrStarDot")?.value);
+          const sunRemOverrideVin = _parseDotToVin(profile.manSunRemDot ?? document.getElementById("inpManSunRemDot")?.value);
+
+          const RASI_VIN_ARR = (rpMode === "classic_notebook")
+            ? CLASSIC_NOTEBOOK_VIN
+            : RASI_PRAMANAM_NAZHIGAI.map(function(r) { return r.vinazhigai; });
+
           const srStr = (profile.customSunrise && /^\d{2}:\d{2}/.test(profile.customSunrise))
             ? profile.customSunrise
             : ((calc.paambuExtras && calc.paambuExtras.sunrise24) || "06:00");
           const uday = computeUdayathiNazhigai(profile.dob, profile.tob, srStr);
           const udayVin = uday.totalVinazhigai;
 
-          // 2. Pure Standard 12-Rasi Pramanam Addition Chain for Lagnam
           const sunRasiIdx = calc.planets.Sun.rasiIdx;
-          const tDate = (calc.paambuExtras && calc.paambuExtras.tamilDateNum) ? Number(calc.paambuExtras.tamilDateNum) : 15;
-          const sunRasiFullVin = RASI_PRAMANAM_NAZHIGAI[sunRasiIdx].vinazhigai;
-          // Traditional manual Sun Remaining Nazhigai from Tamil Date (30-day manual rule)
+          const sunRasiFullVin = RASI_VIN_ARR[sunRasiIdx];
           const sunDegInRasi = ((calc.planets.Sun.longitude % 30) + 30) % 30;
-          const sunRemVin = Math.max(5, Math.min(sunRasiFullVin, Math.round(((30.0 - sunDegInRasi) / 30.0) * sunRasiFullVin)));
+          const sunRemVin = (sunRemOverrideVin !== null)
+            ? Math.max(1, Math.min(sunRasiFullVin, sunRemOverrideVin))
+            : Math.max(5, Math.min(sunRasiFullVin, Math.round(((30.0 - sunDegInRasi) / 30.0) * sunRasiFullVin)));
 
           let cumVin = sunRemVin;
           let lagnaRasiIdx = sunRasiIdx;
           let stepL = 1;
           while (cumVin < udayVin && stepL <= 12) {
             lagnaRasiIdx = (sunRasiIdx + stepL) % 12;
-            cumVin += RASI_PRAMANAM_NAZHIGAI[lagnaRasiIdx].vinazhigai;
+            cumVin += RASI_VIN_ARR[lagnaRasiIdx];
             stepL++;
           }
-          const lagnaFullVin = RASI_PRAMANAM_NAZHIGAI[lagnaRasiIdx].vinazhigai;
+          const lagnaFullVin = RASI_VIN_ARR[lagnaRasiIdx];
           const lagnaIruppuVin = Math.max(0, cumVin - udayVin);
           const lagnaSelVin = Math.max(0, lagnaFullVin - lagnaIruppuVin);
           const lagnaDegInRasiNum = Math.max(0, Math.min(29.99, (lagnaSelVin / lagnaFullVin) * 30.0));
@@ -10092,13 +10185,13 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           const lagnaPada = (lagnaGlobalPada % 4) + 1;
           const lagnaNavIdx = lagnaGlobalPada % 12;
 
-          // Update Lagnam object
           const L = calc.planets.Lagnam;
           L.longitude = manualLagnaLon;
           L.rasiIdx = lagnaRasiIdx;
           L.rasi = RASIS[lagnaRasiIdx];
           L.navamsaIdx = lagnaNavIdx;
           L.navamsa = RASIS[lagnaNavIdx];
+          L.navamsaRasi = RASIS[lagnaNavIdx];
           L.nakIdx = lagnaNakIdx;
           L.nakshatra = NAKSHATRAS[lagnaNakIdx];
           L.pada = lagnaPada;
@@ -10106,41 +10199,74 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           L.degInRasi = _fmtDegMin(lagnaDegInRasiNum);
           L.degNum = lagnaDegInRasiNum;
 
-          // 3. Traditional 108-Pada (3°20') Midpoint Grid for Planets (Manual Panchangam Pada-Saram)
           const padaSpan = 360.0 / 108.0;
+          const padaAdjMap = {
+            Mars: Number(profile.padaAdjMars ?? document.getElementById("inpPadaAdjMars")?.value ?? 0) || 0,
+            Saturn: Number(profile.padaAdjSaturn ?? document.getElementById("inpPadaAdjSaturn")?.value ?? 0) || 0,
+            Jupiter: Number(profile.padaAdjJupiter ?? document.getElementById("inpPadaAdjJupiter")?.value ?? 0) || 0,
+            Mercury: Number(profile.padaAdjMercury ?? document.getElementById("inpPadaAdjMercury")?.value ?? 0) || 0,
+            Venus: Number(profile.padaAdjVenus ?? document.getElementById("inpPadaAdjVenus")?.value ?? 0) || 0
+          };
           ["Sun", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"].forEach(function(pk) {
             const pl = calc.planets[pk];
             if (!pl) return;
-            const gPada = (pl.nakIdx * 4) + ((pl.pada || 1) - 1);
+            const adj = padaAdjMap[pk] || 0;
+            const gPada = (((pl.nakIdx * 4) + ((pl.pada || 1) - 1) + adj) % 108 + 108) % 108;
+            const newNakIdx = Math.floor(gPada / 4) % 27;
+            const newPada = (gPada % 4) + 1;
+            const newRasiIdx = Math.floor(gPada / 9) % 12;
+            const newNavIdx = gPada % 12;
             const midLon = ((gPada * padaSpan + padaSpan * 0.5) % 360 + 360) % 360;
             pl.longitude = midLon;
             pl.degNum = midLon % 30.0;
             pl.degInRasi = _fmtDegMin(pl.degNum);
+            pl.nakIdx = newNakIdx;
+            pl.nakshatra = NAKSHATRAS[newNakIdx];
+            pl.pada = newPada;
+            pl.starLord = DASA_LORDS[NAKSHATRAS[newNakIdx].lordIdx];
+            pl.rasiIdx = newRasiIdx;
+            pl.rasi = RASIS[newRasiIdx];
+            pl.navamsaIdx = newNavIdx;
+            pl.navamsa = RASIS[newNavIdx];
+            pl.navamsaRasi = RASIS[newNavIdx];
           });
 
-          // Recalculate houseFromLagna for all planets after manual Lagnam update
           Object.keys(calc.planets).forEach(function(pk) {
             const pl = calc.planets[pk];
-            if (pl) {
-              pl.houseFromLagna = ((pl.rasiIdx - lagnaRasiIdx + 12) % 12) + 1;
-            }
+            if (pl) pl.houseFromLagna = ((pl.rasiIdx - lagnaRasiIdx + 12) % 12) + 1;
           });
 
-          // 4. Classic 60.00-Nazhigai (3600 Vinazhigai) & 360-Day Savana Manual Dasa Balance
           const moonPl = calc.planets.Moon;
           const nakSpan = 360.0 / 27.0;
           const moonFracInNak = ((moonPl.longitude % nakSpan) + nakSpan) % nakSpan / nakSpan;
-          const manualAathiVin = 3600; // Fixed 60.00 Nazhigai textbook standard
-          const manualSelVin = Math.max(0, Math.min(3599, Math.round(moonFracInNak * 3600)));
-          const manualIruppuVin = manualAathiVin - manualSelVin;
+
+          let manualAathiVin = 3600;
+          let manualSelVin = Math.max(0, Math.min(3599, Math.round(moonFracInNak * 3600)));
+          let manualIruppuVin = manualAathiVin - manualSelVin;
+          let usedExactNotebookOverride = false;
+
+          if (prevStarVin !== null && currStarVin !== null && currStarVin > 0) {
+            const prevRemVin = Math.max(0, 3600 - prevStarVin);
+            manualAathiVin = prevRemVin + currStarVin;
+            manualIruppuVin = currStarVin - udayVin;
+            if (manualIruppuVin < 0) manualIruppuVin += 3600;
+            manualIruppuVin = Math.max(0, Math.min(manualAathiVin, manualIruppuVin));
+            manualSelVin = Math.max(0, manualAathiVin - manualIruppuVin);
+            usedExactNotebookOverride = true;
+          }
 
           const firstLord = (calc.dasa && calc.dasa.firstLord) || DASA_LORDS[NAKSHATRAS[moonPl.nakIdx].lordIdx];
           const fullYears = firstLord.years || 10;
-          const totalBalDays = Math.round((manualIruppuVin / 3600.0) * fullYears * 360);
+          const numY = manualIruppuVin * fullYears;
+          const balY = Math.floor(numY / manualAathiVin);
+          const remAfterY = numY % manualAathiVin;
+          const numM = remAfterY * 12;
+          const balM = Math.floor(numM / manualAathiVin);
+          const remAfterM = numM % manualAathiVin;
+          const balD = Math.floor((remAfterM * 30) / manualAathiVin);
+
+          const totalBalDays = balY * 360 + balM * 30 + balD;
           const totalElapDays = Math.max(0, fullYears * 360 - totalBalDays);
-          const balY = Math.floor(totalBalDays / 360);
-          const balM = Math.floor((totalBalDays % 360) / 30);
-          const balD = totalBalDays % 30;
           const elapY = Math.floor(totalElapDays / 360);
           const elapM = Math.floor((totalElapDays % 360) / 30);
           const elapD = totalElapDays % 30;
@@ -10158,7 +10284,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             calc.paambuExtras.sunRemVinAtSunrise = sunRemVin;
             calc.paambuExtras.sunRemDot = _fmtDot(sunRemVin);
             calc.paambuExtras.starAathiVin = manualAathiVin;
-            calc.paambuExtras.starAathiDot = "60.00";
+            calc.paambuExtras.starAathiDot = _fmtDot(manualAathiVin);
             calc.paambuExtras.starSelVin = manualSelVin;
             calc.paambuExtras.starSelDot = _fmtDot(manualSelVin);
             calc.paambuExtras.starIruppuVin = manualIruppuVin;
@@ -10167,11 +10293,14 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             calc.paambuExtras.lagnaSelVin = lagnaSelVin;
             calc.paambuExtras.lagnaIruppuVin = lagnaIruppuVin;
             calc.paambuExtras.isFullManualMode = true;
+            calc.paambuExtras.usedExactNotebookOverride = usedExactNotebookOverride;
           }
           if (calc.panchangam) {
-            calc.panchangam.remStarNazhigaiText = "இருப்பு: " + Math.floor(manualIruppuVin / 60) + " நாழிகை " + (manualIruppuVin % 60) + " விநாழிகை (60.00 கைக்கணக்கு)";
+            calc.panchangam.remStarNazhigaiText = "இருப்பு: " + Math.floor(manualIruppuVin / 60) + " நாழிகை " + (manualIruppuVin % 60) + " விநாழிகை (" + _fmtDot(manualAathiVin) + " கைக்கணக்கு)";
           }
-          calc.modeLabelTa = "🧮 முழு கைக்கணக்கு முறை (பாரம்பரிய ராசி பிரமாணம் + 108-பாத சாரம் + 60.00 நாழிகை தசா இருப்பு)";
+          calc.modeLabelTa = usedExactNotebookOverride
+            ? "🧮 100% நோட்புக் கைக்கணக்கு (நேரடி பஞ்சாங்க நாழிகை ஆதி " + _fmtDot(manualAathiVin) + ")"
+            : "🧮 முழு கைக்கணக்கு முறை (ராசி பிரமாணம் + 108-பாத சாரம் + 60.00 நாழிகை தசா இருப்பு)";
         } catch (err) {
           console.warn("Full Manual Kai-Kanakku Engine warning:", err);
         }
