@@ -666,6 +666,7 @@
         <div>
           <label class="block text-xs font-extrabold text-amber-950 mb-1">ஆங்கிலப் பிறந்த தேதி</label>
           <input id="inpDob" type="date" value="" onchange="onFriendDateTimeInputChanged('📅 பிறந்த தேதி மாற்றப்பட்டது! புதிய குறியீடு உருவாக்கப்பட்டுள்ளது.')" oninput="onFriendDateTimeInputChanged('📅 பிறந்த தேதி மாற்றப்பட்டது! புதிய குறியீடு உருவாக்கப்பட்டுள்ளது.')" class="w-full px-3 py-2 rounded-xl border border-amber-300 text-sm font-bold text-slate-900" />
+          <div id="mjLiveTamilDatePopup" class="hidden mt-1.5 px-2.5 py-2 rounded-xl bg-gradient-to-r from-amber-100 via-yellow-50 to-rose-50 border-2 border-amber-500 shadow-sm text-[11px] sm:text-xs font-extrabold text-[#7f1d1d] leading-snug"></div>
         </div>
         <div>
           <label class="block text-xs font-extrabold text-amber-950 mb-1">பிறந்த நேரம்</label>
@@ -11665,6 +11666,63 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       };
       window.computeAccurateSunriseHHMM = computeAccurateSunriseHHMM;
     })();
+  </script>
+
+
+  <script id="mjLiveTamilDatePopupScript">
+    window.mjUpdateLiveTamilDatePopup = function() {
+      const pop = document.getElementById("mjLiveTamilDatePopup");
+      if (!pop) return;
+      const dob = (document.getElementById("inpDob")?.value || "").trim();
+      if (!dob || !/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
+        pop.classList.add("hidden");
+        pop.innerHTML = "";
+        return;
+      }
+      try {
+        const tobRaw = (document.getElementById("inpTob")?.value || "").trim() || "12:00";
+        const tob = tobRaw.length === 5 ? (tobRaw + ":00") : tobRaw;
+        const srRaw = (document.getElementById("inpSunrise")?.value || "").trim() || "06:06";
+        let tYear = "", tMonth = "", tDate = "";
+        if (typeof computePaambuSolarMonthAndDate === "function") {
+          const sol = computePaambuSolarMonthAndDate(dob, srRaw, 5.5, tob);
+          const mNames = ["சித்திரை","வைகாசி","ஆனி","ஆடி","ஆவணி","புரட்டாசி","ஐப்பசி","கார்த்திகை","மார்கழி","தை","மாசி","பங்குனி"];
+          const mIdx = (sol && typeof sol.monthIdx === "number") ? ((sol.monthIdx % 12) + 12) % 12 : 0;
+          tMonth = mNames[mIdx] || "";
+          tDate = sol.tamilDateNum || "";
+          const effY = sol.effectiveGregYear || parseInt(dob.slice(0, 4), 10);
+          const tYears = ["பிரபவ","விபவ","சுக்ல","பிரமோதூத","பிரஜோற்பத்தி","ஆங்கீரச","ஸ்ரீமுக","பவ","யுவ","தாது","ஈஸ்வர","வெகுதான்ய","பிரமாதி","விக்கிரம","விஷு","சித்திரபானு","சுபானு","தாரண","பார்த்திப","விய","சர்வஜித்","சர்வதாரி","விரோதி","விக்ருதி","கர","நந்தன","விஜய","ஜய","மன்மத","துர்முகி","ஹேவிளம்பி","விளம்பி","விகாரி","சார்வரி","பிலவ","சுபகிருது","சோபகிருது","குரோதி","விசுவாவசு","பராபவ","பிலவங்க","கீலக","சௌமிய","சாதாரண","விரோதிகிருது","பரிதாபி","பிரமாதீச","ஆனந்த","ராட்சச","நள","பிங்கள","காளயுக்தி","சித்தார்த்தி","ரௌத்திரி","துன்மதி","துந்துபி","ருத்ரோத்காரி","ரக்தாட்சி","குரோதன","அட்சய"];
+          tYear = tYears[(((effY - 1987) % 60) + 60) % 60] || "";
+        }
+        const parts = dob.split("-").map(Number);
+        const dt = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+        const wdNames = ["ஞாயிறு", "திங்கள்", "செவ்வாய்", "புதன்", "வியாழன்", "வெள்ளி", "சனி"];
+        const wd = wdNames[dt.getUTCDay()] || "";
+        const dmy = String(parts[2]).padStart(2, "0") + "-" + String(parts[1]).padStart(2, "0") + "-" + parts[0];
+        pop.innerHTML = `<div class="flex items-start gap-1.5"><span>📅</span><div><div class="text-[10px] font-bold text-amber-900">தமிழ் தேதி சரிபார்ப்பு (${dmy})</div><div>${tYear} வருடம் • ${tMonth} மாதம் ${tDate}-ம் தேதி (${wd})</div></div></div>`;
+        pop.classList.remove("hidden");
+      } catch (e) {
+        console.warn("Tamil date popup warning:", e);
+      }
+    };
+
+    document.addEventListener("DOMContentLoaded", function() {
+      ["inpDob", "inpTob", "inpSunrise"].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener("change", window.mjUpdateLiveTamilDatePopup);
+          el.addEventListener("input", window.mjUpdateLiveTamilDatePopup);
+        }
+      });
+      if (typeof window.mjResetNewHoroscopeForm === "function") {
+        const _origReset = window.mjResetNewHoroscopeForm;
+        window.mjResetNewHoroscopeForm = function() {
+          _origReset();
+          window.mjUpdateLiveTamilDatePopup();
+        };
+      }
+      window.mjUpdateLiveTamilDatePopup();
+    });
   </script>
 
 </body>
