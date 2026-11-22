@@ -8722,11 +8722,11 @@
         setT("kpiStarAathi", `${pe.aathiStarDot || "--"} / ${pe.iruppuStarDot || "--"}`);
         setT("kpiStarAathiSub", `செல்: ${pe.selStarDot || "--"} நாழிகை`);
 
-        const shortMode = meta.mode === "vakya_paambu_28"
+        const shortMode = "🧮 முழு கைக்கணக்கு"; const _unusedMode = meta.mode === "vakya_paambu_28"
           ? "28-நம்பர் பாம்பு"
           : (meta.mode === "vakya_paambu_arcot" ? "ஆற்காடு பாம்பு" : "திருக்கணிதம்");
         setT("kpiEngine", shortMode);
-        setT("kpiEngineSub", `✓ அயனாம்சம் ${calc.ayanamsaDMS || calc.ayanamsa}`);
+        setT("kpiEngineSub", "✓ ராசி பிரமாணம் + 60.00 நாழிகை கைக்கணக்கு");
       } catch (e) {
         console.warn("KPI update warning:", e);
       }
@@ -9990,6 +9990,157 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
     })();
   </script>
 
+
+  <script>
+    // ============================================================================
+    // 🧮 FULL MANUAL KAI-KANAKKU ENGINE (முழு கைக்கணக்கு முறை — பாரம்பரிய நோட்புக் கணிப்பு)
+    // Applies:
+    //  1) Traditional Manual Udayathi Nazhigai (24 min = 1 Nazhigai)
+    //  2) Pure Standard 12-Rasi Pramanam Addition Chain for Lagnam (no spherical trig)
+    //  3) Traditional 108-Pada (3°20') Midpoint Planet Grid (Panchangam Pada-Saram)
+    //  4) Classic 60.00-Nazhigai (3600 Vinazhigai) & 360-Day Savana Dasa Balance
+    // ============================================================================
+    (function() {
+      const _origCalcFull = calculateFullJathagam;
+      function _fmtDot(vin) {
+        const v = Math.max(0, Math.round(Number(vin) || 0));
+        return Math.floor(v / 60) + "." + String(v % 60).padStart(2, "0");
+      }
+      function _fmtDegMin(deg) {
+        const d = ((deg % 30) + 30) % 30;
+        const dd = Math.floor(d);
+        const mm = Math.round((d - dd) * 60);
+        if (mm >= 60) return (dd + 1) + "° 00'";
+        return dd + "° " + String(mm).padStart(2, "0") + "'";
+      }
+      calculateFullJathagam = function(profile) {
+        const calc = _origCalcFull(profile);
+        try {
+          if (!calc || !calc.planets || !calc.planets.Sun || !calc.planets.Moon || !calc.planets.Lagnam) return calc;
+
+          // 1. Manual Udayathi Nazhigai (24 min = 1 Nazhigai = 60 Vinazhigai)
+          const srStr = (profile.customSunrise && /^\d{2}:\d{2}/.test(profile.customSunrise))
+            ? profile.customSunrise
+            : ((calc.paambuExtras && calc.paambuExtras.sunrise24) || "06:00");
+          const uday = computeUdayathiNazhigai(profile.dob, profile.tob, srStr);
+          const udayVin = uday.totalVinazhigai;
+
+          // 2. Pure Standard 12-Rasi Pramanam Addition Chain for Lagnam
+          const sunRasiIdx = calc.planets.Sun.rasiIdx;
+          const tDate = (calc.paambuExtras && calc.paambuExtras.tamilDateNum) ? Number(calc.paambuExtras.tamilDateNum) : 15;
+          const sunRasiFullVin = RASI_PRAMANAM_NAZHIGAI[sunRasiIdx].vinazhigai;
+          // Traditional manual Sun Remaining Nazhigai from Tamil Date (30-day manual rule)
+          const remDaysInMonth = Math.max(0.5, Math.min(30, 30.5 - tDate));
+          const sunRemVin = Math.max(5, Math.min(sunRasiFullVin, Math.round((remDaysInMonth / 30.0) * sunRasiFullVin)));
+
+          let cumVin = sunRemVin;
+          let lagnaRasiIdx = sunRasiIdx;
+          let stepL = 1;
+          while (cumVin < udayVin && stepL <= 12) {
+            lagnaRasiIdx = (sunRasiIdx + stepL) % 12;
+            cumVin += RASI_PRAMANAM_NAZHIGAI[lagnaRasiIdx].vinazhigai;
+            stepL++;
+          }
+          const lagnaFullVin = RASI_PRAMANAM_NAZHIGAI[lagnaRasiIdx].vinazhigai;
+          const lagnaIruppuVin = Math.max(0, cumVin - udayVin);
+          const lagnaSelVin = Math.max(0, lagnaFullVin - lagnaIruppuVin);
+          const lagnaDegInRasiNum = Math.max(0, Math.min(29.99, (lagnaSelVin / lagnaFullVin) * 30.0));
+          const manualLagnaLon = ((lagnaRasiIdx * 30.0 + lagnaDegInRasiNum) % 360 + 360) % 360;
+          const lagnaPada1To9 = Math.max(1, Math.min(9, Math.ceil((lagnaSelVin / (lagnaFullVin / 9.0)) || 0.01)));
+          const lagnaGlobalPada = lagnaRasiIdx * 9 + (lagnaPada1To9 - 1);
+          const lagnaNakIdx = Math.floor(lagnaGlobalPada / 4) % 27;
+          const lagnaPada = (lagnaGlobalPada % 4) + 1;
+          const lagnaNavIdx = lagnaGlobalPada % 12;
+
+          // Update Lagnam object
+          const L = calc.planets.Lagnam;
+          L.longitude = manualLagnaLon;
+          L.rasiIdx = lagnaRasiIdx;
+          L.rasi = RASIS[lagnaRasiIdx];
+          L.navamsaIdx = lagnaNavIdx;
+          L.navamsa = RASIS[lagnaNavIdx];
+          L.nakIdx = lagnaNakIdx;
+          L.nakshatra = NAKSHATRAS[lagnaNakIdx];
+          L.pada = lagnaPada;
+          L.starLord = DASA_LORDS[NAKSHATRAS[lagnaNakIdx].lordIdx];
+          L.degInRasi = _fmtDegMin(lagnaDegInRasiNum);
+          L.degNum = lagnaDegInRasiNum;
+
+          // 3. Traditional 108-Pada (3°20') Midpoint Grid for Planets (Manual Panchangam Pada-Saram)
+          const padaSpan = 360.0 / 108.0;
+          ["Sun", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"].forEach(function(pk) {
+            const pl = calc.planets[pk];
+            if (!pl) return;
+            const gPada = (pl.nakIdx * 4) + ((pl.pada || 1) - 1);
+            const midLon = ((gPada * padaSpan + padaSpan * 0.5) % 360 + 360) % 360;
+            pl.longitude = midLon;
+            pl.degNum = midLon % 30.0;
+            pl.degInRasi = _fmtDegMin(pl.degNum);
+          });
+
+          // Recalculate houseFromLagna for all planets after manual Lagnam update
+          Object.keys(calc.planets).forEach(function(pk) {
+            const pl = calc.planets[pk];
+            if (pl) {
+              pl.houseFromLagna = ((pl.rasiIdx - lagnaRasiIdx + 12) % 12) + 1;
+            }
+          });
+
+          // 4. Classic 60.00-Nazhigai (3600 Vinazhigai) & 360-Day Savana Manual Dasa Balance
+          const moonPl = calc.planets.Moon;
+          const nakSpan = 360.0 / 27.0;
+          const moonFracInNak = ((moonPl.longitude % nakSpan) + nakSpan) % nakSpan / nakSpan;
+          const manualAathiVin = 3600; // Fixed 60.00 Nazhigai textbook standard
+          const manualSelVin = Math.max(0, Math.min(3599, Math.round(moonFracInNak * 3600)));
+          const manualIruppuVin = manualAathiVin - manualSelVin;
+
+          const firstLord = (calc.dasa && calc.dasa.firstLord) || DASA_LORDS[NAKSHATRAS[moonPl.nakIdx].lordIdx];
+          const fullYears = firstLord.years || 10;
+          const totalBalDays = Math.round((manualIruppuVin / 3600.0) * fullYears * 360);
+          const totalElapDays = Math.max(0, fullYears * 360 - totalBalDays);
+          const balY = Math.floor(totalBalDays / 360);
+          const balM = Math.floor((totalBalDays % 360) / 30);
+          const balD = totalBalDays % 30;
+          const elapY = Math.floor(totalElapDays / 360);
+          const elapM = Math.floor((totalElapDays % 360) / 30);
+          const elapD = totalElapDays % 30;
+
+          if (calc.dasa) {
+            calc.dasa.firstLord = firstLord;
+            calc.dasa.balanceText = firstLord.ta + " தசா இருப்பு: " + balY + " வருடம், " + balM + " மாதம், " + balD + " நாள்";
+            calc.dasa.elapsedText = firstLord.ta + " தசா செல்: " + elapY + " வருடம், " + elapM + " மாதம், " + elapD + " நாள்";
+            calc.dasa.balanceTextEn = firstLord.en + " Dasa Balance: " + balY + "y " + balM + "m " + balD + "d";
+          }
+
+          if (calc.paambuExtras) {
+            calc.paambuExtras.nazhigai = uday.nazhigai;
+            calc.paambuExtras.vinazhigai = uday.vinazhigai;
+            calc.paambuExtras.sunRemVinAtSunrise = sunRemVin;
+            calc.paambuExtras.sunRemDot = _fmtDot(sunRemVin);
+            calc.paambuExtras.starAathiVin = manualAathiVin;
+            calc.paambuExtras.starAathiDot = "60.00";
+            calc.paambuExtras.starSelVin = manualSelVin;
+            calc.paambuExtras.starSelDot = _fmtDot(manualSelVin);
+            calc.paambuExtras.starIruppuVin = manualIruppuVin;
+            calc.paambuExtras.starIruppuDot = _fmtDot(manualIruppuVin);
+            calc.paambuExtras.lagnaFullVin = lagnaFullVin;
+            calc.paambuExtras.lagnaSelVin = lagnaSelVin;
+            calc.paambuExtras.lagnaIruppuVin = lagnaIruppuVin;
+            calc.paambuExtras.isFullManualMode = true;
+          }
+          if (calc.panchangam) {
+            calc.panchangam.remStarNazhigaiText = "இருப்பு: " + Math.floor(manualIruppuVin / 60) + " நாழிகை " + (manualIruppuVin % 60) + " விநாழிகை (60.00 கைக்கணக்கு)";
+          }
+          calc.modeLabelTa = "🧮 முழு கைக்கணக்கு முறை (பாரம்பரிய ராசி பிரமாணம் + 108-பாத சாரம் + 60.00 நாழிகை தசா இருப்பு)";
+        } catch (err) {
+          console.warn("Full Manual Kai-Kanakku Engine warning:", err);
+        }
+        return calc;
+      };
+      window.calculateFullJathagam = calculateFullJathagam;
+    })();
+
+  </script>
 
   <script>
     /* =========================================================================
