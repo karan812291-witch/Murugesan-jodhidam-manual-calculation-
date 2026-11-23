@@ -12307,5 +12307,103 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
     })();
   </script>
 
+
+  <script id="mjSessionAutoPersistScript">
+    (function() {
+      const STORAGE_KEY = (typeof IS_FRIEND_APP_MODE !== "undefined" && IS_FRIEND_APP_MODE ? "MJ_SESS_FRIEND_" : "MJ_SESS_MASTER_")
+        + (document.title.includes("கைக்கணக்கு") ? "KAI_V1" : "MAIN_V1");
+
+      const FIELD_IDS = [
+        "inpName","inpFather","inpMother","inpGender","inpDob","inpTob","inpCity","inpSunrise",
+        "inpDistrict","inpTownSelect","inpTown","inpMode","inpPage0Deity",
+        "inpRasiPramanamType","inpManPrevStarDot","inpManCurrStarDot","inpManSunRemDot",
+        "inpPadaAdjMars","inpPadaAdjSaturn","inpPadaAdjJupiter","inpPadaAdjMercury","inpPadaAdjVenus"
+      ];
+
+      window.mjSaveSessionDraft = function() {
+        try {
+          const data = { fields: {}, chkDeg: false, savedAt: Date.now() };
+          FIELD_IDS.forEach(function(id) {
+            const el = document.getElementById(id);
+            if (el) data.fields[id] = el.value;
+          });
+          const chk = document.getElementById("chkShowKattamDegrees");
+          if (chk) data.chkDeg = Boolean(chk.checked);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {}
+      };
+
+      window.mjClearSessionDraft = function() {
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+      };
+
+      window.mjRestoreSessionDraft = function() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return false;
+          const data = JSON.parse(raw);
+          if (!data || !data.fields) return false;
+          // Restore district first so cascading town dropdown populates cleanly
+          if (data.fields.inpDistrict && document.getElementById("inpDistrict")) {
+            document.getElementById("inpDistrict").value = data.fields.inpDistrict;
+            if (typeof window.mjOnDistrictChanged === "function") window.mjOnDistrictChanged("client");
+          }
+          FIELD_IDS.forEach(function(id) {
+            if (id === "inpDistrict") return;
+            const el = document.getElementById(id);
+            if (el && data.fields[id] !== undefined && data.fields[id] !== null && data.fields[id] !== "") {
+              el.value = data.fields[id];
+            }
+          });
+          if (data.fields.inpTown && document.getElementById("inpTownSelect") && document.getElementById("inpTownSelect").value === "__OTHER__") {
+            const tInp = document.getElementById("inpTown");
+            if (tInp) tInp.classList.remove("hidden");
+          }
+          const chk = document.getElementById("chkShowKattamDegrees");
+          if (chk && typeof data.chkDeg === "boolean") chk.checked = data.chkDeg;
+          if (typeof window.mjUpdateLiveTamilDatePopup === "function") window.mjUpdateLiveTamilDatePopup();
+          if (data.fields.inpDob && data.fields.inpTob && typeof calculateAndFillBook === "function") {
+            calculateAndFillBook();
+          }
+          return true;
+        } catch (e) {
+          return false;
+        }
+      };
+
+      // Attach listeners & wrap Reset button cleanly
+      document.addEventListener("DOMContentLoaded", function() {
+        // Slight delay so district dropdowns initialize first
+        setTimeout(function() {
+          window.mjRestoreSessionDraft();
+        }, 120);
+
+        FIELD_IDS.forEach(function(id) {
+          const el = document.getElementById(id);
+          if (el) {
+            el.addEventListener("input", window.mjSaveSessionDraft);
+            el.addEventListener("change", window.mjSaveSessionDraft);
+          }
+        });
+        const chk = document.getElementById("chkShowKattamDegrees");
+        if (chk) chk.addEventListener("change", window.mjSaveSessionDraft);
+
+        window.addEventListener("pagehide", window.mjSaveSessionDraft);
+        document.addEventListener("visibilitychange", function() {
+          if (document.visibilityState === "hidden") window.mjSaveSessionDraft();
+        });
+
+        if (typeof window.mjResetNewHoroscopeForm === "function") {
+          const _prevReset = window.mjResetNewHoroscopeForm;
+          window.mjResetNewHoroscopeForm = function() {
+            window.mjClearSessionDraft();
+            _prevReset();
+            window.mjClearSessionDraft();
+          };
+        }
+      });
+    })();
+  </script>
+
 </body>
 </html>
