@@ -11143,6 +11143,103 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
     // --- 📜 Firebase Cloud Panchangam Sync (Master -> All Friend Apps Live) ---
     let mjPanchangamUnsub = null;
 
+
+    window._mjLastCloudSyncStatus = window._mjLastCloudSyncStatus || "⏳ Cloud இணைக்கப்படுகிறது...";
+
+    window.mjApplyPanchangamSnapshot = function(snap) {
+      if (!snap) return;
+      if (!window._customPaambuYearsStore) window._customPaambuYearsStore = {};
+      const nextPdfMap = {};
+      let changed = 0;
+      snap.forEach(function(doc) {
+        const d = doc.data();
+        if (!d) return;
+        if (d.isPdfMeta || String(doc.id || "").startsWith("pdf_meta_")) {
+          const py = String(d.year || String(doc.id || "").replace("pdf_meta_", "")).trim();
+          if (py) nextPdfMap[py] = Object.assign({ year: Number(py) }, d);
+          return;
+        }
+        if (d.isPdfChunk || String(doc.id || "").startsWith("pdf_chunk_")) return;
+        const yKey = String(doc.id || d.year || "").trim();
+        if (!yKey || !d.payloadJson) return;
+        try {
+          const entry = JSON.parse(d.payloadJson);
+          if (entry && entry.meta && entry.pins) {
+            const prevStr = JSON.stringify(window._customPaambuYearsStore[yKey] || null);
+            const nextStr = JSON.stringify(entry);
+            if (prevStr !== nextStr) {
+              window._customPaambuYearsStore[yKey] = entry;
+              changed++;
+            }
+          }
+        } catch (e) {}
+      });
+
+      const prevPdfStr = JSON.stringify(window._mjCloudPdfMetaMap || {});
+      const nextPdfStr = JSON.stringify(nextPdfMap);
+      window._mjCloudPdfMetaMap = nextPdfMap;
+      try { localStorage.setItem("MJ_CLOUD_PDF_META_CACHE_V1", nextPdfStr); } catch (e) {}
+
+      if (changed > 0) {
+        try { localStorage.setItem("MURUGESAN_CUSTOM_PAAMBU_YEARS_V1", JSON.stringify(window._customPaambuYearsStore)); } catch (e) {}
+        const bakedScript = document.getElementById("customBakedPaambuDataScript");
+        if (bakedScript) bakedScript.textContent = "window.CUSTOM_BAKED_PAAMBU_DATA = " + JSON.stringify(window._customPaambuYearsStore) + ";";
+        window._paambuSankrantiCache = {};
+        window._paambuYearTableCache = {};
+        if (typeof calculateAndFillBook === "function") calculateAndFillBook();
+      }
+
+      const dataCount = Object.keys(window._customPaambuYearsStore || {}).length;
+      const pdfCount = Object.keys(nextPdfMap).length;
+      window._mjLastCloudSyncStatus = "✅ Cloud இணைப்பு சரி (" + dataCount + " ஆண்டு தரவு • " + pdfCount + " PDF)";
+
+      if (changed > 0 || prevPdfStr !== nextPdfStr) {
+        if (typeof window.refreshAddPanchangamTabView === "function" && typeof currentMainAppTab !== "undefined" && currentMainAppTab === "addpanchangam") {
+          window.refreshAddPanchangamTabView();
+        }
+        if (typeof window.mjRenderFullPanchangamViewerTab === "function" && typeof currentMainAppTab !== "undefined" && currentMainAppTab === "fullpanchangam") {
+          window.mjRenderFullPanchangamViewerTab();
+        }
+      }
+      const stEl = document.getElementById("mjCloudSyncLiveBadge");
+      if (stEl) stEl.textContent = window._mjLastCloudSyncStatus;
+    };
+
+    window.mjForceCloudSyncNow = async function(showFeedback) {
+      try {
+        if (typeof mjInitFirebase === "function" && (!mjFirebaseReady || !mjDb)) mjInitFirebase();
+        if (!mjDb) {
+          window._mjLastCloudSyncStatus = "⚠️ Firebase Cloud இணைக்கப்படவில்லை (இணையம் சரிபார்க்கவும்)";
+          if (showFeedback && typeof showToast === "function") showToast(window._mjLastCloudSyncStatus, "error");
+          return false;
+        }
+        window._mjLastCloudSyncStatus = "⏳ Cloud-லிருந்து தரவு எடுக்கப்படுகிறது...";
+        const stEl = document.getElementById("mjCloudSyncLiveBadge");
+        if (stEl) stEl.textContent = window._mjLastCloudSyncStatus;
+        let snap;
+        try {
+          snap = await mjDb.collection("panchangam_years").get({ source: "server" });
+        } catch (e1) {
+          snap = await mjDb.collection("panchangam_years").get();
+        }
+        window.mjApplyPanchangamSnapshot(snap);
+        if (typeof window.refreshAddPanchangamTabView === "function" && typeof currentMainAppTab !== "undefined" && currentMainAppTab === "addpanchangam") {
+          window.refreshAddPanchangamTabView();
+        }
+        if (typeof window.mjRenderFullPanchangamViewerTab === "function" && typeof currentMainAppTab !== "undefined" && currentMainAppTab === "fullpanchangam") {
+          window.mjRenderFullPanchangamViewerTab();
+        }
+        if (showFeedback && typeof showToast === "function") showToast(window._mjLastCloudSyncStatus, "success");
+        return true;
+      } catch (err) {
+        window._mjLastCloudSyncStatus = "❌ Cloud Sync பிழை: " + (err && err.message ? err.message : err);
+        const stEl = document.getElementById("mjCloudSyncLiveBadge");
+        if (stEl) stEl.textContent = window._mjLastCloudSyncStatus;
+        if (showFeedback && typeof showToast === "function") showToast(window._mjLastCloudSyncStatus, "error");
+        return false;
+      }
+    };
+
     function mjStartPanchangamCloudSync() {
       if (!mjFirebaseReady || !mjDb) return;
       if (mjPanchangamUnsub) { try { mjPanchangamUnsub(); } catch (e) {} }
@@ -11230,7 +11327,13 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           payloadJson: JSON.stringify(entry),
           updatedAt: new Date().toISOString(),
           updatedBy: (typeof IS_FRIEND_APP_MODE !== "undefined" && IS_FRIEND_APP_MODE) ? "FriendApp" : "MasterApp"
-        }, { merge: true });
+        }, { merge: true }, function(err) {
+        window._mjLastCloudSyncStatus = "❌ Cloud பிழை: " + (err && err.message ? err.message : err);
+        const stEl = document.getElementById("mjCloudSyncLiveBadge");
+        if (stEl) stEl.textContent = window._mjLastCloudSyncStatus;
+      });
+      setTimeout(function() { if (typeof window.mjForceCloudSyncNow === "function") window.mjForceCloudSyncNow(false); }, 300);
+
         if (typeof showToast === "function") {
           showToast("☁️ " + yKey + " பஞ்சாங்கம் Firebase Cloud-ல் சேமிக்கப்பட்டது! அனைத்து ஆப்களிலும் தானாக update ஆகும்.", "success");
         }
@@ -13087,6 +13190,10 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             </div>
 
             ${lastHtml}
+            <div class="flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-xl bg-sky-50 border-2 border-sky-300">
+              <span id="mjCloudSyncLiveBadge" class="text-[11px] sm:text-xs font-extrabold text-sky-950">${window._mjLastCloudSyncStatus || "⏳ Cloud இணைக்கப்படுகிறது..."}</span>
+              <button type="button" onclick="mjForceCloudSyncNow(true)" class="px-3 py-1 rounded-lg bg-sky-700 hover:bg-sky-800 text-white font-extrabold text-[11px] cursor-pointer shadow">☁️ Cloud Sync புதுப்பி</button>
+            </div>
             <div id="mjAddTabStatusMsg" class="hidden p-3 rounded-xl bg-indigo-50 border-2 border-indigo-400 text-xs font-extrabold text-indigo-950"></div>
 
             <!-- 1. SEPARATE SECTION: NEW / FUTURE YEAR PANCHANGAM ADD (2027, 2028, 2029...) -->
