@@ -10252,6 +10252,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             btnAddPan.className = (typeof IS_FRIEND_APP_MODE !== "undefined" && IS_FRIEND_APP_MODE) ? "hidden" : inactivePurpleCls;
           }
         }
+        if (typeof window.mjRenderMultiPdfQueue === "function" && window._mjMultiPdfQueue && window._mjMultiPdfQueue.length) window.mjRenderMultiPdfQueue();
       };
     })();
   </script>
@@ -11178,55 +11179,36 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
 
 
     window._mjLastCloudSyncStatus = window._mjLastCloudSyncStatus || "⏳ Cloud இணைக்கப்படுகிறது...";
+    let mjPanchangamMetaUnsub = null;
 
-    window.mjApplyPanchangamSnapshot = function(snap) {
+    window.mjApplyJsonYearsSnapshot = function(snap) {
       if (!snap) return;
       if (!window._customPaambuYearsStore) window._customPaambuYearsStore = {};
-      const nextPdfMap = {};
-      let changed = 0;
+      const nextStore = {};
       snap.forEach(function(doc) {
         const d = doc.data();
-        if (!d) return;
-        if (d.isPdfMeta || String(doc.id || "").startsWith("pdf_meta_")) {
-          const py = String(d.year || String(doc.id || "").replace("pdf_meta_", "")).trim();
-          if (py) nextPdfMap[py] = Object.assign({ year: Number(py) }, d);
-          return;
-        }
-        if (d.isPdfChunk || String(doc.id || "").startsWith("pdf_chunk_")) return;
+        if (!d || !d.payloadJson) return;
         const yKey = String(doc.id || d.year || "").trim();
-        if (!yKey || !d.payloadJson) return;
+        if (!yKey) return;
         try {
           const entry = JSON.parse(d.payloadJson);
-          if (entry && entry.meta && entry.pins) {
-            const prevStr = JSON.stringify(window._customPaambuYearsStore[yKey] || null);
-            const nextStr = JSON.stringify(entry);
-            if (prevStr !== nextStr) {
-              window._customPaambuYearsStore[yKey] = entry;
-              changed++;
-            }
-          }
+          if (entry && entry.meta && entry.pins) nextStore[yKey] = entry;
         } catch (e) {}
       });
-
-      const prevPdfStr = JSON.stringify(window._mjCloudPdfMetaMap || {});
-      const nextPdfStr = JSON.stringify(nextPdfMap);
-      window._mjCloudPdfMetaMap = nextPdfMap;
-      try { localStorage.setItem("MJ_CLOUD_PDF_META_CACHE_V1", nextPdfStr); } catch (e) {}
-
-      if (changed > 0) {
-        try { localStorage.setItem("MURUGESAN_CUSTOM_PAAMBU_YEARS_V1", JSON.stringify(window._customPaambuYearsStore)); } catch (e) {}
+      const prevStr = JSON.stringify(window._customPaambuYearsStore || {});
+      const nextStr = JSON.stringify(nextStore);
+      const changed = prevStr !== nextStr;
+      window._customPaambuYearsStore = nextStore;
+      if (changed) {
+        try { localStorage.setItem("MURUGESAN_CUSTOM_PAAMBU_YEARS_V1", nextStr); } catch (e) {}
         const bakedScript = document.getElementById("customBakedPaambuDataScript");
-        if (bakedScript) bakedScript.textContent = "window.CUSTOM_BAKED_PAAMBU_DATA = " + JSON.stringify(window._customPaambuYearsStore) + ";";
+        if (bakedScript) bakedScript.textContent = "window.CUSTOM_BAKED_PAAMBU_DATA = " + nextStr + ";";
         window._paambuSankrantiCache = {};
         window._paambuYearTableCache = {};
         if (typeof calculateAndFillBook === "function") calculateAndFillBook();
       }
-
-      const dataCount = Object.keys(window._customPaambuYearsStore || {}).length;
-      const pdfCount = Object.keys(nextPdfMap).length;
-      window._mjLastCloudSyncStatus = "✅ Cloud இணைப்பு சரி (" + dataCount + " ஆண்டு தரவு • " + pdfCount + " PDF)";
-
-      if (changed > 0 || prevPdfStr !== nextPdfStr) {
+      window._mjUpdateCloudBadgeText();
+      if (changed) {
         if (typeof window.refreshAddPanchangamTabView === "function" && typeof currentMainAppTab !== "undefined" && currentMainAppTab === "addpanchangam") {
           window.refreshAddPanchangamTabView();
         }
@@ -11234,6 +11216,36 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           window.mjRenderFullPanchangamViewerTab();
         }
       }
+    };
+
+    window.mjApplyPdfMetaSnapshot = function(snap) {
+      if (!snap) return;
+      const nextPdfMap = {};
+      snap.forEach(function(doc) {
+        const d = doc.data();
+        if (!d) return;
+        const py = String(d.year || String(doc.id || "").replace("pdf_meta_", "")).trim();
+        if (py) nextPdfMap[py] = Object.assign({ year: Number(py) }, d);
+      });
+      const prevPdfStr = JSON.stringify(window._mjCloudPdfMetaMap || {});
+      const nextPdfStr = JSON.stringify(nextPdfMap);
+      window._mjCloudPdfMetaMap = nextPdfMap;
+      try { localStorage.setItem("MJ_CLOUD_PDF_META_CACHE_V1", nextPdfStr); } catch (e) {}
+      window._mjUpdateCloudBadgeText();
+      if (prevPdfStr !== nextPdfStr) {
+        if (typeof window.refreshAddPanchangamTabView === "function" && typeof currentMainAppTab !== "undefined" && currentMainAppTab === "addpanchangam") {
+          window.refreshAddPanchangamTabView();
+        }
+        if (typeof window.mjRenderFullPanchangamViewerTab === "function" && typeof currentMainAppTab !== "undefined" && currentMainAppTab === "fullpanchangam") {
+          window.mjRenderFullPanchangamViewerTab();
+        }
+      }
+    };
+
+    window._mjUpdateCloudBadgeText = function() {
+      const dataCount = Object.keys(window._customPaambuYearsStore || {}).length;
+      const pdfCount = Object.keys(window._mjCloudPdfMetaMap || {}).length;
+      window._mjLastCloudSyncStatus = "✅ Cloud இணைப்பு சரி (" + dataCount + " ஆண்டு தரவு • " + pdfCount + " PDF)";
       const stEl = document.getElementById("mjCloudSyncLiveBadge");
       if (stEl) stEl.textContent = window._mjLastCloudSyncStatus;
     };
@@ -11246,16 +11258,25 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           if (showFeedback && typeof showToast === "function") showToast(window._mjLastCloudSyncStatus, "error");
           return false;
         }
-        window._mjLastCloudSyncStatus = "⏳ Cloud-லிருந்து தரவு எடுக்கப்படுகிறது...";
+        window._mjLastCloudSyncStatus = "⚡ Cloud-லிருந்து விரைவு Sync...";
         const stEl = document.getElementById("mjCloudSyncLiveBadge");
         if (stEl) stEl.textContent = window._mjLastCloudSyncStatus;
-        let snap;
+
+        const col = mjDb.collection("panchangam_years");
+        const fetchBoth = async function(srcOpt) {
+          return await Promise.all([
+            srcOpt ? col.orderBy("payloadJson").get(srcOpt) : col.orderBy("payloadJson").get(),
+            srcOpt ? col.where("isPdfMeta", "==", true).get(srcOpt) : col.where("isPdfMeta", "==", true).get()
+          ]);
+        };
+        let res;
         try {
-          snap = await mjDb.collection("panchangam_years").get({ source: "server" });
+          res = await fetchBoth({ source: "server" });
         } catch (e1) {
-          snap = await mjDb.collection("panchangam_years").get();
+          res = await fetchBoth(null);
         }
-        window.mjApplyPanchangamSnapshot(snap);
+        window.mjApplyJsonYearsSnapshot(res[0]);
+        window.mjApplyPdfMetaSnapshot(res[1]);
         if (typeof window.refreshAddPanchangamTabView === "function" && typeof currentMainAppTab !== "undefined" && currentMainAppTab === "addpanchangam") {
           window.refreshAddPanchangamTabView();
         }
@@ -11276,78 +11297,23 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
     function mjStartPanchangamCloudSync() {
       if (!mjFirebaseReady || !mjDb) return;
       if (mjPanchangamUnsub) { try { mjPanchangamUnsub(); } catch (e) {} }
+      if (mjPanchangamMetaUnsub) { try { mjPanchangamMetaUnsub(); } catch (e) {} }
 
-      mjPanchangamUnsub = mjDb.collection("panchangam_years").onSnapshot(function(snap) {
-        if (!window._customPaambuYearsStore) window._customPaambuYearsStore = {};
-        const nextPdfMap = {};
-        let changed = 0;
-        snap.forEach(function(doc) {
-          const d = doc.data();
-          if (!d) return;
-          if (d.isPdfMeta || String(doc.id || "").startsWith("pdf_meta_")) {
-            const py = String(d.year || String(doc.id || "").replace("pdf_meta_", "")).trim();
-            if (py) nextPdfMap[py] = Object.assign({ year: Number(py) }, d);
-            return;
-          }
-          if (d.isPdfChunk || String(doc.id || "").startsWith("pdf_chunk_")) return;
-          const yKey = String(doc.id || d.year || "").trim();
-          if (!yKey || !d.payloadJson) return;
-          try {
-            const entry = JSON.parse(d.payloadJson);
-            if (entry && entry.meta && entry.pins) {
-              const prevStr = JSON.stringify(window._customPaambuYearsStore[yKey] || null);
-              const nextStr = JSON.stringify(entry);
-              if (prevStr !== nextStr) {
-                window._customPaambuYearsStore[yKey] = entry;
-                changed++;
-              }
-            }
-          } catch (e) {}
-        });
-
-        const prevPdfStr = JSON.stringify(window._mjCloudPdfMetaMap || {});
-        const nextPdfStr = JSON.stringify(nextPdfMap);
-        window._mjCloudPdfMetaMap = nextPdfMap;
-        try { localStorage.setItem("MJ_CLOUD_PDF_META_CACHE_V1", nextPdfStr); } catch (e) {}
-        if (prevPdfStr !== nextPdfStr) {
-          if (typeof window.refreshAddPanchangamTabView === "function" && typeof currentMainAppTab !== "undefined" && currentMainAppTab === "addpanchangam") {
-            window.refreshAddPanchangamTabView();
-          }
-          if (typeof window.mjRenderFullPanchangamViewerTab === "function" && typeof currentMainAppTab !== "undefined" && currentMainAppTab === "fullpanchangam") {
-            window.mjRenderFullPanchangamViewerTab();
-          }
-        }
-
-        if (typeof snap.docChanges === "function") {
-          snap.docChanges().forEach(function(ch) {
-            if (ch.type === "removed") {
-              const delKey = String(ch.doc.id || "").trim();
-              if (delKey && window._customPaambuYearsStore && window._customPaambuYearsStore[delKey]) {
-                delete window._customPaambuYearsStore[delKey];
-                changed++;
-              }
-            }
-          });
-        }
-        if (changed > 0) {
-          try {
-            localStorage.setItem("MURUGESAN_CUSTOM_PAAMBU_YEARS_V1", JSON.stringify(window._customPaambuYearsStore));
-          } catch (e) {}
-          const bakedScript = document.getElementById("customBakedPaambuDataScript");
-          if (bakedScript) {
-            bakedScript.textContent = "window.CUSTOM_BAKED_PAAMBU_DATA = " + JSON.stringify(window._customPaambuYearsStore) + ";";
-          }
-          window._paambuSankrantiCache = {};
-          window._paambuYearTableCache = {};
-          if (typeof calculateAndFillBook === "function") calculateAndFillBook();
-          if (typeof window.refreshAddPanchangamTabView === "function") window.refreshAddPanchangamTabView();
-          if (typeof showToast === "function") {
-            showToast("☁️ " + changed + " புதிய பஞ்சாங்க வருடங்கள் Firebase Cloud-லிருந்து தானாகப் புதுப்பிக்கப்பட்டன!", "success");
-          }
-        }
+      const col = mjDb.collection("panchangam_years");
+      // Lightweight listeners: NEVER download heavy pdf_chunk_* docs during sync!
+      mjPanchangamUnsub = col.orderBy("payloadJson").onSnapshot(function(snap) {
+        window.mjApplyJsonYearsSnapshot(snap);
       }, function(err) {
-        console.warn("Panchangam cloud sync error:", err);
+        window._mjLastCloudSyncStatus = "❌ Cloud பிழை: " + (err && err.message ? err.message : err);
+        const stEl = document.getElementById("mjCloudSyncLiveBadge");
+        if (stEl) stEl.textContent = window._mjLastCloudSyncStatus;
       });
+
+      mjPanchangamMetaUnsub = col.where("isPdfMeta", "==", true).onSnapshot(function(snap) {
+        window.mjApplyPdfMetaSnapshot(snap);
+      }, function() {});
+
+      setTimeout(function() { if (typeof window.mjForceCloudSyncNow === "function") window.mjForceCloudSyncNow(false); }, 200);
     }
 
     async function mjPushPanchangamYearToCloud(yKey, entry) {
@@ -11360,13 +11326,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           payloadJson: JSON.stringify(entry),
           updatedAt: new Date().toISOString(),
           updatedBy: (typeof IS_FRIEND_APP_MODE !== "undefined" && IS_FRIEND_APP_MODE) ? "FriendApp" : "MasterApp"
-        }, { merge: true }, function(err) {
-        window._mjLastCloudSyncStatus = "❌ Cloud பிழை: " + (err && err.message ? err.message : err);
-        const stEl = document.getElementById("mjCloudSyncLiveBadge");
-        if (stEl) stEl.textContent = window._mjLastCloudSyncStatus;
-      });
-      setTimeout(function() { if (typeof window.mjForceCloudSyncNow === "function") window.mjForceCloudSyncNow(false); }, 300);
-
+        }, { merge: true });
         if (typeof showToast === "function") {
           showToast("☁️ " + yKey + " பஞ்சாங்கம் Firebase Cloud-ல் சேமிக்கப்பட்டது! அனைத்து ஆப்களிலும் தானாக update ஆகும்.", "success");
         }
@@ -12797,6 +12757,213 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         } else { doUpload(); }
       };
 
+
+      // 📚 Multi-PDF Batch Uploader with Individual Live Notification & Status Cards
+      window._mjMultiPdfQueue = window._mjMultiPdfQueue || [];
+
+      function _mjDetectYearFromFilename(fname) {
+        const m = String(fname || "").match(/(19\d{2}|20\d{2})/);
+        if (m) {
+          const y = Number(m[1]);
+          if (y >= 1950 && y <= 2100) return y;
+        }
+        return "";
+      }
+
+      function _mjGetOrCreateMultiPdfInput() {
+        let inp = document.getElementById("mjGlobalMultiPdfInput");
+        if (!inp) {
+          inp = document.createElement("input");
+          inp.id = "mjGlobalMultiPdfInput";
+          inp.type = "file";
+          inp.multiple = true;
+          inp.accept = "application/pdf,.pdf";
+          inp.style.cssText = "position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;";
+          inp.addEventListener("change", window.mjHandleMultiPdfFilesSelected);
+          document.body.appendChild(inp);
+        }
+        return inp;
+      }
+
+      window.mjTriggerMultiPdfUpload = function() {
+        if (typeof IS_FRIEND_APP_MODE !== "undefined" && IS_FRIEND_APP_MODE) return;
+        const inp = _mjGetOrCreateMultiPdfInput();
+        inp.value = "";
+        inp.click();
+      };
+
+      window.mjUpdateMultiPdfQueueYear = function(idx, val) {
+        if (window._mjMultiPdfQueue[idx]) {
+          window._mjMultiPdfQueue[idx].year = Number(val) || "";
+        }
+      };
+
+      window.mjRenderMultiPdfQueue = function() {
+        const box = document.getElementById("mjMultiPdfQueueBox");
+        if (!box) return;
+        const q = window._mjMultiPdfQueue || [];
+        if (!q.length) { box.classList.add("hidden"); box.innerHTML = ""; return; }
+        box.classList.remove("hidden");
+        const rowsHtml = q.map(function(item, idx) {
+          const badgeCls = item.status === "done"
+            ? "bg-emerald-50 border-emerald-400 text-emerald-950"
+            : (item.status === "error"
+              ? "bg-rose-50 border-rose-400 text-rose-950"
+              : (item.status === "uploading" ? "bg-indigo-50 border-indigo-400 text-indigo-950" : "bg-slate-50 border-slate-300 text-slate-800"));
+          return `<div class="p-2.5 rounded-xl border-2 ${badgeCls} flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div class="min-w-0 flex-1">
+              <div class="font-extrabold truncate">📄 ${item.safeName} <span class="text-[10px] font-bold opacity-75">(${(item.file.size/1024/1024).toFixed(2)} MB)</span></div>
+              <div class="text-[11px] font-bold mt-0.5">${item.statusText}</div>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <label class="text-[10px] font-extrabold">ஆண்டு:</label>
+              <input type="number" min="1950" max="2100" value="${item.year || ""}" placeholder="எ.கா 2018"
+                     ${item.status === "uploading" || item.status === "done" ? "disabled" : ""}
+                     onchange="mjUpdateMultiPdfQueueYear(${idx}, this.value)"
+                     class="w-20 px-2 py-1 rounded-lg border border-slate-400 bg-white text-slate-900 font-extrabold text-xs" />
+            </div>
+          </div>`;
+        }).join("");
+        const anyPending = q.some(function(it) { return it.status === "pending"; });
+        box.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-purple-200">
+            <div class="text-xs font-black text-purple-950">📚 தேர்ந்தெடுத்த PDF-கள் (${q.length}) — தனித்தனி நிலை:</div>
+            <div class="flex items-center gap-2">
+              ${anyPending ? `<button type="button" onclick="mjStartMultiPdfBatchUpload()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-extrabold text-xs shadow cursor-pointer">☁️ அனைத்தையும் பதிவேற்று</button>` : ""}
+              <button type="button" onclick="window._mjMultiPdfQueue=[]; mjRenderMultiPdfQueue();" class="px-2.5 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold text-[11px] cursor-pointer">✕ மூடு</button>
+            </div>
+          </div>
+          <div class="space-y-2 max-h-72 overflow-y-auto pr-1">${rowsHtml}</div>
+        `;
+      };
+
+      window.mjHandleMultiPdfFilesSelected = function(ev) {
+        const inp = ev && ev.target;
+        const files = inp && inp.files ? Array.from(inp.files) : [];
+        if (!files.length) return;
+        window._mjMultiPdfQueue = files.map(function(f) {
+          const fLow = String(f.name || "").toLowerCase();
+          const isPdf = (f.type === "application/pdf") || fLow.endsWith(".pdf");
+          const detY = _mjDetectYearFromFilename(f.name);
+          const safeName = fLow.endsWith(".pdf") ? f.name : ((f.name || "panchangam") + ".pdf");
+          let status = "pending";
+          let statusText = detY ? ("⏳ தயார் (" + detY + "–" + (detY + 1) + ")") : "⚠️ ஆண்டு எண்ணை வலதுபுறம் உள்ளிடவும்";
+          if (!isPdf) { status = "error"; statusText = "❌ இது PDF கோப்பு அல்ல"; }
+          else if (f.size > 15 * 1024 * 1024) { status = "error"; statusText = "❌ 15 MB-க்கு மேல் உள்ளது"; }
+          return { file: f, safeName: safeName, year: detY, status: status, statusText: statusText };
+        });
+        window.mjRenderMultiPdfQueue();
+        _mjShowFloatingPdfStatus("📚 " + files.length + " PDF-கள் தேர்வு செய்யப்பட்டுள்ளன — 'அனைத்தையும் பதிவேற்று' அழுத்தவும்!", "info");
+      };
+
+      window.mjStartMultiPdfBatchUpload = function() {
+        const q = window._mjMultiPdfQueue || [];
+        const validItems = q.filter(function(it) { return it.status === "pending"; });
+        if (!validItems.length) return;
+        const missingYear = validItems.find(function(it) { return !it.year || isNaN(Number(it.year)); });
+        if (missingYear) {
+          _mjShowFloatingPdfStatus("⚠️ '" + missingYear.safeName + "' கோப்பிற்கு ஆண்டு (எ.கா: 2018) உள்ளிடவும்!", "error");
+          if (typeof showToast === "function") showToast("⚠️ அனைத்து PDF-களுக்கும் ஆண்டு எண்ணை உள்ளிடவும்!", "error");
+          return;
+        }
+
+        const runBatch = async function() {
+          let wakeLockSentinel = null;
+          let okCount = 0;
+          try {
+            if (navigator.wakeLock && typeof navigator.wakeLock.request === "function") {
+              try { wakeLockSentinel = await navigator.wakeLock.request("screen"); } catch (e) {}
+            }
+            for (let i = 0; i < q.length; i++) {
+              const item = q[i];
+              if (item.status !== "pending") continue;
+              const yKey = String(Number(item.year));
+              item.status = "uploading";
+              item.statusText = "⏳ கோப்பு படிக்கப்படுகிறது...";
+              window.mjRenderMultiPdfQueue();
+              _mjShowFloatingPdfStatus("📚 (" + (i + 1) + "/" + q.length + ") " + yKey + " படிக்கப்படுகிறது...", "info");
+
+              try {
+                const b64Full = await new Promise(function(resolve, reject) {
+                  const rd = new FileReader();
+                  rd.onload = function() {
+                    const res = String(rd.result || "");
+                    const idx = res.indexOf(",");
+                    resolve(idx >= 0 ? res.slice(idx + 1) : res);
+                  };
+                  rd.onerror = reject;
+                  rd.readAsDataURL(item.file);
+                });
+
+                if (typeof mjDb === "undefined" || !mjDb) throw new Error("Cloud இணைப்பு இல்லை");
+                const CHUNK_SIZE = 420000;
+                const totalChunks = Math.ceil(b64Full.length / CHUNK_SIZE);
+                const prevMeta = window._mjCloudPdfMetaMap[yKey];
+                if (prevMeta && prevMeta.totalChunks > totalChunks) {
+                  for (let k = totalChunks; k < prevMeta.totalChunks; k++) {
+                    try { await mjDb.collection("panchangam_years").doc("pdf_chunk_" + yKey + "_" + k).delete(); } catch (e) {}
+                  }
+                }
+                const BATCH_SIZE = 5;
+                let doneChunks = 0;
+                for (let start = 0; start < totalChunks; start += BATCH_SIZE) {
+                  const end = Math.min(totalChunks, start + BATCH_SIZE);
+                  const batchPromises = [];
+                  for (let c = start; c < end; c++) {
+                    batchPromises.push(
+                      mjDb.collection("panchangam_years").doc("pdf_chunk_" + yKey + "_" + c).set({
+                        isPdfChunk: true, year: Number(yKey), idx: c,
+                        data: b64Full.slice(c * CHUNK_SIZE, (c + 1) * CHUNK_SIZE)
+                      }).then(function() {
+                        doneChunks++;
+                        item.statusText = "⚡ Cloud பதிவேற்றம்: " + doneChunks + " / " + totalChunks + " ...";
+                        window.mjRenderMultiPdfQueue();
+                        _mjShowFloatingPdfStatus("⚡ (" + (i + 1) + "/" + q.length + ") " + yKey + ": " + doneChunks + " / " + totalChunks + " ...", "info");
+                      })
+                    );
+                  }
+                  await Promise.all(batchPromises);
+                }
+                await mjDb.collection("panchangam_years").doc("pdf_meta_" + yKey).set({
+                  isPdfMeta: true, year: Number(yKey), fileName: item.safeName,
+                  totalChunks: totalChunks, totalBytes: item.file.size, updatedAt: new Date().toISOString()
+                });
+                window._mjCloudPdfMetaMap[yKey] = { year: Number(yKey), fileName: item.safeName, totalChunks: totalChunks, totalBytes: item.file.size };
+                try { localStorage.setItem("MJ_CLOUD_PDF_META_CACHE_V1", JSON.stringify(window._mjCloudPdfMetaMap)); } catch (e) {}
+
+                item.status = "done";
+                item.statusText = "✅ " + yKey + "–" + (Number(yKey) + 1) + " Cloud-இல் சேமிக்கப்பட்டது!";
+                okCount++;
+                // Individual notification per completed PDF
+                if (typeof showToast === "function") showToast("✅ " + yKey + " (" + item.safeName + ") சேமிக்கப்பட்டது!", "success");
+                _mjShowFloatingPdfStatus("✅ " + yKey + " (" + item.safeName + ") சேமிக்கப்பட்டது! (" + okCount + "/" + validItems.length + ")", "success");
+              } catch (itemErr) {
+                item.status = "error";
+                item.statusText = "❌ பிழை: " + (itemErr && itemErr.message ? itemErr.message : itemErr);
+                if (typeof showToast === "function") showToast("❌ " + yKey + " பிழை!", "error");
+              }
+              window.mjRenderMultiPdfQueue();
+            }
+            if (typeof window.refreshAddPanchangamTabView === "function") window.refreshAddPanchangamTabView();
+            window.mjRenderMultiPdfQueue();
+            _mjShowFloatingPdfStatus("🎉 மொத்தம் " + okCount + " / " + validItems.length + " PDF-கள் Cloud-இல் சேமிக்கப்பட்டன!", okCount > 0 ? "success" : "error");
+          } finally {
+            if (wakeLockSentinel && typeof wakeLockSentinel.release === "function") {
+              try { await wakeLockSentinel.release(); } catch (e) {}
+            }
+          }
+        };
+
+        if (typeof window.mjRequestPanchangamPassword === "function") {
+          window.mjRequestPanchangamPassword(
+            "add",
+            "🔐 பல PDF-கள் பதிவேற்ற கடவுச்சொல்",
+            "தேர்ந்தெடுத்த " + validItems.length + " PDF புத்தகங்களையும் Cloud-இல் சேமிக்க Add கடவுச்சொல்லை உள்ளிடவும்:",
+            runBatch
+          );
+        } else { runBatch(); }
+      };
+
       window.mjDeleteCloudPdfForYear = function(yearNum) {
         if (typeof IS_FRIEND_APP_MODE !== "undefined" && IS_FRIEND_APP_MODE) return;
         const yKey = String(yearNum);
@@ -13288,8 +13455,18 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v24.2</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v24.4</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
+
+              <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
+                <div class="text-[11px] font-bold text-purple-950">
+                  <div class="font-black text-xs">📚 ஒரே நேரத்தில் பல PDF-கள் சேர்க்க (Batch Upload)</div>
+                  <div>கோப்புப் பெயரில் ஆண்டு இருந்தால் (எ.கா: <code>2018-2019.pdf</code>) தானாகப் பிரித்து ஒவ்வொரு PDF-க்கும் தனித்தனி அறிவிப்பு காட்டும்!</div>
+                </div>
+                <button type="button" onclick="mjTriggerMultiPdfUpload()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-indigo-700 to-purple-800 hover:from-indigo-800 hover:to-purple-900 text-white font-extrabold text-xs shadow cursor-pointer shrink-0">📚 பல PDF-கள் தேர்வு செய்</button>
+              </div>
+              <div id="mjMultiPdfQueueBox" class="hidden p-3 rounded-xl bg-white border-2 border-purple-400 space-y-2 shadow-inner"></div>
+
                 </div>
                 <div class="flex items-center gap-1.5 text-[11px] font-extrabold">
                   <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">✅ சேர்த்தவை: ${uploaded87to26.length}</span>
