@@ -12697,7 +12697,16 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         if (activeMode === "pdf") _renderCurrentPdfCanvas(yKey, window._mjFullPanPdfPage || 1);
       };
 
-      // ✨ CLEAN, FOCUSED ADD / REMOVE PANCHANGAM PAGE (NO Graha Padasaram Clutter + ALWAYS-VISIBLE DELETE!)
+      window._mjAddPanFilterMode = window._mjAddPanFilterMode || "pending";
+      window.mjSetAddPanFilterMode = function(m) {
+        window._mjAddPanFilterMode = m || "pending";
+        if (typeof window.refreshAddPanchangamTabView === "function") window.refreshAddPanchangamTabView();
+      };
+
+      // ✨ CLEAN, FOCUSED ADD / REMOVE PANCHANGAM PAGE:
+      //    Section 1: 🆕 New / Future Year Add (2027, 2028, 2029...)
+      //    Section 2: 📤 1987–2026 One-Tap Missing PDF Upload Checklist (Pending / Uploaded / All)
+      //    Section 3: 🗑️ Always-Visible Delete Panchangam (Remove Password)
       window.refreshAddPanchangamTabView = function() {
         const container = document.getElementById("addPanchangamTabContainer");
         if (!container) return;
@@ -12711,24 +12720,58 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         const cloudYears = Array.from(cloudYearsSet).sort(function(a, b) { return b - a; });
 
         const st = window._addPanchangamState || {};
-        const defYear = Number(st.editYear) || 2028;
+        const defYear = Number(st.editYear) >= 2027 ? Number(st.editYear) : 2027;
         const last = window._mjLastPanchangamActionInfo || null;
         let lastHtml = "";
         if (last) {
           lastHtml = last.type === "removed"
             ? `<div class="p-3 rounded-xl bg-rose-50 border-2 border-rose-400 text-xs font-extrabold text-rose-900">🗑️ <strong>${last.year}</strong> ஆண்டு பஞ்சாங்கம் Cloud-லிருந்து நீக்கப்பட்டது (${last.at}) — இப்போது மீண்டும் புதிதாக அதே ஆண்டைச் சேர்க்கலாம்!</div>`
-            : `<div class="p-3 rounded-xl bg-emerald-50 border-2 border-emerald-500 text-xs font-extrabold text-emerald-950">✅ <strong>${last.year} (${last.tamilYear || _getTamilYearName(last.year)})</strong> பஞ்சாங்கம் Cloud-இல் சேமிக்கப்பட்டது (${last.at}) — Main App + கைக்கணக்கு App இரண்டிலும் Sync ஆகிவிட்டது!</div>`;
+            : `<div class="p-3 rounded-xl bg-emerald-50 border-2 border-emerald-500 text-xs font-extrabold text-emerald-950">✅ <strong>${last.year} (${last.tamilYear || _getTamilYearName(last.year)})</strong> பஞ்சாங்கம் Cloud-இல் சேமிக்கப்பட்டது (${last.at}) — <strong>"முழு பஞ்சாங்கம் பார்க்க"</strong> பக்கத்திலும் Main + கைக்கணக்கு 2 ஆப்-களிலும் தானாக இணைந்துவிட்டது!</div>`;
         }
 
+        // Build 1987..2026 (40 years) One-Tap Missing PDF Grid
+        const years87to26 = [];
+        for (let y = 2026; y >= 1987; y--) years87to26.push(y);
+        const uploaded87to26 = years87to26.filter(function(y) { return Boolean(pdfMap[String(y)]); });
+        const pending87to26 = years87to26.filter(function(y) { return !pdfMap[String(y)]; });
+        const fMode = window._mjAddPanFilterMode || "pending";
+        const shown87to26 = (fMode === "uploaded") ? uploaded87to26 : (fMode === "all" ? years87to26 : pending87to26);
+
+        const grid87to26Html = shown87to26.length === 0
+          ? `<div class="p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-xs font-extrabold text-emerald-900 text-center">${fMode === "pending" ? "🎉 1987 முதல் 2026 வரை அனைத்து 40 ஆண்டுகளின் PDF-களும் பதிவேற்றப்பட்டுவிட்டன!" : "இன்னும் எந்த ஆண்டின் PDF-உம் பதிவேற்றப்படவில்லை."}</div>`
+          : `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-[420px] overflow-y-auto pr-1">` + shown87to26.map(function(y) {
+              const hasPdf = Boolean(pdfMap[String(y)]);
+              const taName = _getTamilYearName(y);
+              if (hasPdf) {
+                return `<div class="p-2.5 rounded-xl bg-emerald-50 border-2 border-emerald-400 flex items-center justify-between gap-2">
+                  <div class="min-w-0">
+                    <div class="font-extrabold text-xs text-emerald-950 truncate">✅ ${y}–${y + 1} (${taName})</div>
+                    <div class="text-[10px] font-bold text-emerald-800 truncate">📄 ${pdfMap[String(y)].fileName || (y + ".pdf")}</div>
+                  </div>
+                  <div class="flex items-center gap-1 shrink-0">
+                    <button type="button" onclick="mjTriggerCloudPdfUpload(${y})" class="px-2 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-950 border border-amber-400 font-extrabold text-[10px] cursor-pointer">மாற்று</button>
+                    <button type="button" onclick="mjDeleteCloudPdfForYear(${y})" class="px-2 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-[10px] cursor-pointer">🗑️</button>
+                  </div>
+                </div>`;
+              }
+              return `<div class="p-2.5 rounded-xl bg-amber-50/70 border border-amber-300 flex items-center justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="font-extrabold text-xs text-amber-950 truncate">⏳ ${y}–${y + 1} (${taName})</div>
+                  <div class="text-[10px] font-bold text-slate-600">PDF இன்னும் சேர்க்கப்படவில்லை</div>
+                </div>
+                <button type="button" onclick="mjTriggerCloudPdfUpload(${y})" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white font-extrabold text-[11px] shadow shrink-0 cursor-pointer active:scale-95">📤 PDF சேர்</button>
+              </div>`;
+            }).join("") + `</div>`;
+
         const deleteOptionsHtml = cloudYears.length === 0
-          ? `<option value="">— இன்னும் Cloud-இல் புதிய ஆண்டுகள் சேர்க்கப்படவில்லை —</option>`
+          ? `<option value="">— இன்னும் Cloud-இல் புதிய ஆண்டுகள் / PDF-கள் சேர்க்கப்படவில்லை —</option>`
           : cloudYears.map(function(y) {
               const tags = [customStore[String(y)] ? "தரவு" : "", pdfMap[String(y)] ? "PDF" : ""].filter(Boolean).join(" + ");
               return `<option value="${y}">${y}–${y + 1} (${_getTamilYearName(y)}) [${tags}]</option>`;
             }).join("");
 
         const cardsHtml = cloudYears.length === 0
-          ? `<div class="p-3 rounded-xl bg-slate-50 border border-dashed border-slate-300 text-xs font-bold text-slate-600 text-center">இன்னும் கூடுதல் Cloud பஞ்சாங்க ஆண்டுகள் சேர்க்கப்படவில்லை. மேலே உள்ள படிவத்தில் சேர்த்தவுடன் இங்கு பட்டியலாகத் தெரியும்.</div>`
+          ? `<div class="p-3 rounded-xl bg-slate-50 border border-dashed border-slate-300 text-xs font-bold text-slate-600 text-center">இன்னும் Cloud பஞ்சாங்க ஆண்டுகள் சேர்க்கப்படவில்லை.</div>`
           : `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">` + cloudYears.map(function(y) {
               const hasData = Boolean(customStore[String(y)]);
               const hasPdf = Boolean(pdfMap[String(y)]);
@@ -12748,25 +12791,32 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
 
         container.innerHTML = `
           <div class="space-y-4 pt-2 pb-12">
+            <input id="mjAddTabCloudPdfInput" type="file" accept="application/pdf,.pdf" class="hidden" onchange="mjHandleCloudPdfFileSelected(event)" />
+
             <!-- Header -->
             <div class="p-4 rounded-2xl bg-gradient-to-r from-[#2e050d] via-[#581c87] to-[#2e050d] text-amber-50 border-2 border-amber-400 shadow-lg">
               <h2 class="text-base sm:text-lg font-extrabold flex items-center gap-2"><span>➕</span><span>புதிய பஞ்சாங்கம் சேர்க்க &amp; நீக்க (Main App + கைக்கணக்கு Cloud Sync)</span></h2>
-              <p class="text-xs text-amber-100 font-semibold mt-1">இங்கு சேர்க்கும் / நீக்கும் பஞ்சாங்கம் தானாகவே Main App மற்றும் கைக்கணக்கு App இரண்டிலும் Sync ஆகும். (கிரகபாத சார அட்டவணையை Tab 4-இல் தனியாகப் பார்க்கலாம்.)</p>
+              <p class="text-xs text-amber-100 font-semibold mt-1">இங்கு சேர்க்கும் எந்தப் பஞ்சாங்கமும் தானாகவே <strong>"📖 முழு பஞ்சாங்கம் பார்க்க"</strong> பக்கத்திலும் Main + கைக்கணக்கு 2 ஆப்-களிலும் உடனே இணைந்துவிடும்!</p>
             </div>
 
             ${lastHtml}
             <div id="mjAddTabStatusMsg" class="hidden p-3 rounded-xl bg-indigo-50 border-2 border-indigo-400 text-xs font-extrabold text-indigo-950"></div>
 
-            <!-- 1. ADD / REPLACE PANCHANGAM CARD -->
-            <div class="p-4 rounded-2xl bg-white border-2 border-emerald-400 shadow-md space-y-3">
+            <!-- 1. SEPARATE SECTION: NEW / FUTURE YEAR PANCHANGAM ADD (2027, 2028, 2029...) -->
+            <div id="mjNewYearAddSection" class="p-4 rounded-2xl bg-white border-2 border-emerald-500 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-200 pb-2">
-                <h3 class="font-extrabold text-sm sm:text-base text-emerald-950">1️⃣ புதிய பஞ்சாங்கம் சேர்க்க / மாற்ற (Add / Replace)</h3>
-                <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-extrabold border border-emerald-300">🔐 Add Password தேவை</span>
+                <h3 class="font-extrabold text-sm sm:text-base text-emerald-950">1️⃣ புதிய / எதிர்கால ஆண்டு பஞ்சாங்கம் சேர்க்க (2027, 2028, 2029...)</h3>
+                <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-extrabold border border-emerald-300">🔐 Add Password</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] font-bold text-emerald-950 bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-200">
+                <div><strong>படி 1:</strong> கீழே புதிய ஆண்டை (எ.கா: 2028) உள்ளிடவும்.</div>
+                <div><strong>படி 2:</strong> <strong>"☁️ ஆண்டு சேர்"</strong> அல்லது <strong>"📄 PDF பதிவேற்று"</strong> கிளிக் செய்யவும்.</div>
+                <div><strong>படி 3:</strong> Add கடவுச்சொல் போட்டவுடன் <strong>முழு பஞ்சாங்கம்</strong> பக்கத்தில் தானாக வந்துவிடும்!</div>
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label class="block text-xs font-extrabold text-slate-700 mb-1">ஆங்கில ஆண்டு (Year)</label>
-                  <input id="inpQuickAddYear" type="number" min="1950" max="2100" value="${defYear}" oninput="const el=document.getElementById('inpQuickAddTamilYear'); const d=document.getElementById('inpQuickAddChithirai1'); const y=Number(this.value)||2028; if(el) el.value=['பிரபவ','விபவ','சுக்ல','பிரமோதூத','பிரஜோற்பத்தி','ஆங்கீரச','ஸ்ரீமுக','பவ','யுவ','தாது','ஈஸ்வர','வெகுதான்ய','பிரமாதி','விக்கிரம','விஷு','சித்திரபானு','சுபானு','தாரண','பார்த்திப','விய','சர்வஜித்','சர்வதாரி','விரோதி','விக்ருதி','கர','நந்தன','விஜய','ஜய','மன்மத','துர்முகி','ஹேவிளம்பி','விளம்பி','விகாரி','சார்வரி','பிலவ','சுபகிருது','சோபகிருது','குரோதி','விசுவாவசு','பராபவ','பிலவங்க','கீலக','சௌமிய','சாதாரண','விரோதிகிருது','பரிதாபி','பிரமாதீச','ஆனந்த','ராட்சச','நள','பிங்கள','காளயுக்தி','சித்தார்த்தி','ரௌத்திரி','துன்மதி','துந்துபி','ருத்ரோத்காரி','ரக்தாட்சி','குரோதன','அட்சய'][(((y-1987)%60)+60)%60]||''; if(d) d.value=y+'-04-14';" class="w-full px-3 py-2 rounded-xl border-2 border-emerald-300 text-sm font-extrabold" />
+                  <label class="block text-xs font-extrabold text-slate-700 mb-1">புதிய ஆங்கில ஆண்டு</label>
+                  <input id="inpQuickAddYear" type="number" min="1950" max="2100" value="${defYear}" oninput="const el=document.getElementById('inpQuickAddTamilYear'); const d=document.getElementById('inpQuickAddChithirai1'); const y=Number(this.value)||2027; if(el) el.value=['பிரபவ','விபவ','சுக்ல','பிரமோதூத','பிரஜோற்பத்தி','ஆங்கீரச','ஸ்ரீமுக','பவ','யுவ','தாது','ஈஸ்வர','வெகுதான்ய','பிரமாதி','விக்கிரம','விஷு','சித்திரபானு','சுபானு','தாரண','பார்த்திப','விய','சர்வஜித்','சர்வதாரி','விரோதி','விக்ருதி','கர','நந்தன','விஜய','ஜய','மன்மத','துர்முகி','ஹேவிளம்பி','விளம்பி','விகாரி','சார்வரி','பிலவ','சுபகிருது','சோபகிருது','குரோதி','விசுவாவசு','பராபவ','பிலவங்க','கீலக','சௌமிய','சாதாரண','விரோதிகிருது','பரிதாபி','பிரமாதீச','ஆனந்த','ராட்சச','நள','பிங்கள','காளயுக்தி','சித்தார்த்தி','ரௌத்திரி','துன்மதி','துந்துபி','ருத்ரோத்காரி','ரக்தாட்சி','குரோதன','அட்சய'][(((y-1987)%60)+60)%60]||''; if(d) d.value=y+'-04-14';" class="w-full px-3 py-2 rounded-xl border-2 border-emerald-300 text-sm font-extrabold" />
                 </div>
                 <div>
                   <label class="block text-xs font-extrabold text-slate-700 mb-1">தமிழ் வருடம்</label>
@@ -12778,21 +12828,39 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                 </div>
               </div>
               <div class="flex flex-wrap items-center gap-2.5 pt-1">
-                <input id="mjAddTabCloudPdfInput" type="file" accept="application/pdf,.pdf" class="hidden" onchange="mjHandleCloudPdfFileSelected(event)" />
-                <button type="button" onclick="mjQuickAddPanchangamYear()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs sm:text-sm shadow cursor-pointer">☁️ பஞ்சாங்க ஆண்டை Cloud-இல் சேர் (Add)</button>
-                <button type="button" onclick="mjTriggerCloudPdfUpload(document.getElementById('inpQuickAddYear')?.value || 2028)" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white font-extrabold text-xs sm:text-sm shadow cursor-pointer">📄 அசல் பஞ்சாங்க PDF பதிவேற்று (Upload PDF)</button>
+                <button type="button" onclick="mjQuickAddPanchangamYear()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs sm:text-sm shadow cursor-pointer">☁️ புதிய ஆண்டை Cloud-இல் சேர்</button>
+                <button type="button" onclick="mjTriggerCloudPdfUpload(document.getElementById('inpQuickAddYear')?.value || 2027)" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white font-extrabold text-xs sm:text-sm shadow cursor-pointer">📄 இந்த ஆண்டின் PDF பதிவேற்று</button>
                 <label class="px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 border-2 border-amber-400 font-extrabold text-xs sm:text-sm cursor-pointer">
                   📂 JSON பதிவேற்று
                   <input type="file" accept=".json,application/json" class="hidden" onchange="handlePanchangamFileUpload(event)" />
                 </label>
               </div>
-              <p class="text-[11px] font-bold text-slate-600">💡 ஏற்கனவே உள்ள ஆண்டைத் தேர்வு செய்து மீண்டும் சேர்த்தால் பழைய தரவு நீங்கி புதியதாக Replace ஆகிவிடும்.</p>
             </div>
 
-            <!-- 2. ALWAYS-VISIBLE DELETE PANCHANGAM CARD -->
+            <!-- 2. 1987–2026 ONE-TAP MISSING PDF UPLOAD CHECKLIST -->
+            <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
+                <div>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்)</h3>
+                  <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் அந்த ஆண்டின் PDF உடனே இணைந்துவிடும்!</p>
+                </div>
+                <div class="flex items-center gap-1.5 text-[11px] font-extrabold">
+                  <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">✅ சேர்த்தவை: ${uploaded87to26.length}</span>
+                  <span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-950 border border-amber-400">⏳ மீதம்: ${pending87to26.length}</span>
+                </div>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="mjSetAddPanFilterMode('pending')" class="px-3 py-1.5 rounded-xl font-extrabold text-xs border-2 cursor-pointer ${fMode === 'pending' ? 'bg-purple-700 text-white border-purple-900' : 'bg-purple-50 text-purple-950 border-purple-300'}">⏳ பதிவேற்றாதவை மட்டும் (${pending87to26.length})</button>
+                <button type="button" onclick="mjSetAddPanFilterMode('uploaded')" class="px-3 py-1.5 rounded-xl font-extrabold text-xs border-2 cursor-pointer ${fMode === 'uploaded' ? 'bg-emerald-700 text-white border-emerald-900' : 'bg-emerald-50 text-emerald-950 border-emerald-300'}">✅ பதிவேற்றியவை (${uploaded87to26.length})</button>
+                <button type="button" onclick="mjSetAddPanFilterMode('all')" class="px-3 py-1.5 rounded-xl font-extrabold text-xs border-2 cursor-pointer ${fMode === 'all' ? 'bg-[#6b0f22] text-white border-[#6b0f22]' : 'bg-amber-50 text-amber-950 border-amber-300'}">📋 அனைத்தும் 1987–2026 (40)</button>
+              </div>
+              ${grid87to26Html}
+            </div>
+
+            <!-- 3. ALWAYS-VISIBLE DELETE PANCHANGAM CARD -->
             <div id="mjAlwaysVisibleDeleteCard" class="p-4 rounded-2xl bg-rose-50/80 border-2 border-rose-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-rose-200 pb-2">
-                <h3 class="font-extrabold text-sm sm:text-base text-rose-950">2️⃣ பஞ்சாங்கம் நீக்கு (Delete Panchangam)</h3>
+                <h3 class="font-extrabold text-sm sm:text-base text-rose-950">3️⃣ பஞ்சாங்கம் நீக்கு (Delete Panchangam)</h3>
                 <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-rose-600 text-white font-extrabold">🔐 Remove Password தேவை</span>
               </div>
               <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
@@ -12807,7 +12875,6 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           </div>
         `;
       };
-
       // Wire 'fullpanchangam' behind 81229102@Openpanjagam password
       if (typeof switchMainAppTab === "function") {
         const _prevSw = switchMainAppTab;
