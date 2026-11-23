@@ -10913,10 +10913,17 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
 
       mjPanchangamUnsub = mjDb.collection("panchangam_years").onSnapshot(function(snap) {
         if (!window._customPaambuYearsStore) window._customPaambuYearsStore = {};
+        const nextPdfMap = {};
         let changed = 0;
         snap.forEach(function(doc) {
           const d = doc.data();
-          if (d.isPdfMeta || d.isPdfChunk) return;
+          if (!d) return;
+          if (d.isPdfMeta || String(doc.id || "").startsWith("pdf_meta_")) {
+            const py = String(d.year || String(doc.id || "").replace("pdf_meta_", "")).trim();
+            if (py) nextPdfMap[py] = Object.assign({ year: Number(py) }, d);
+            return;
+          }
+          if (d.isPdfChunk || String(doc.id || "").startsWith("pdf_chunk_")) return;
           const yKey = String(doc.id || d.year || "").trim();
           if (!yKey || !d.payloadJson) return;
           try {
@@ -10931,6 +10938,19 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             }
           } catch (e) {}
         });
+
+        const prevPdfStr = JSON.stringify(window._mjCloudPdfMetaMap || {});
+        const nextPdfStr = JSON.stringify(nextPdfMap);
+        window._mjCloudPdfMetaMap = nextPdfMap;
+        try { localStorage.setItem("MJ_CLOUD_PDF_META_CACHE_V1", nextPdfStr); } catch (e) {}
+        if (prevPdfStr !== nextPdfStr) {
+          if (typeof window.refreshAddPanchangamTabView === "function" && typeof currentMainAppTab !== "undefined" && currentMainAppTab === "addpanchangam") {
+            window.refreshAddPanchangamTabView();
+          }
+          if (typeof window.mjRenderFullPanchangamViewerTab === "function" && typeof currentMainAppTab !== "undefined" && currentMainAppTab === "fullpanchangam") {
+            window.mjRenderFullPanchangamViewerTab();
+          }
+        }
 
         if (typeof snap.docChanges === "function") {
           snap.docChanges().forEach(function(ch) {
@@ -12074,7 +12094,9 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       window._mjFullPanPdfPage = 1;
       window._mjFullPanViewMode = "auto"; // "auto" | "daily" | "pdf"
       window._mjFullPanUserChoseDaily = false;
-      window._mjCloudPdfMetaMap = window._mjCloudPdfMetaMap || {};
+      window._mjCloudPdfMetaMap = window._mjCloudPdfMetaMap || (function() {
+        try { const s = localStorage.getItem("MJ_CLOUD_PDF_META_CACHE_V1"); return s ? JSON.parse(s) : {}; } catch (e) { return {}; }
+      })();
       window._mjLoadedPdfDocs = window._mjLoadedPdfDocs || {};
       window._mjPdfZoom = 1.0;
 
@@ -12302,6 +12324,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                 totalChunks: totalChunks, totalBytes: file.size, updatedAt: new Date().toISOString()
               });
               window._mjCloudPdfMetaMap[yKey] = { year: Number(yKey), fileName: file.name, totalChunks: totalChunks, totalBytes: file.size };
+              try { localStorage.setItem("MJ_CLOUD_PDF_META_CACHE_V1", JSON.stringify(window._mjCloudPdfMetaMap)); } catch (e) {}
             }
 
             setProg("✅ " + yKey + " அசல் PDF (" + file.name + ") Cloud-இல் சேமிக்கப்பட்டது! 2 ஆப்-களிலும் பக்கம் திருப்பிப் பார்க்கலாம்.");
@@ -12340,6 +12363,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               }
             }
             delete window._mjCloudPdfMetaMap[yKey];
+            try { localStorage.setItem("MJ_CLOUD_PDF_META_CACHE_V1", JSON.stringify(window._mjCloudPdfMetaMap)); } catch (e) {}
             delete window._mjLoadedPdfDocs[yKey];
             if (typeof showToast === "function") showToast("🗑️ " + yKey + " அசல் PDF Cloud-லிருந்து நீக்கப்பட்டது!", "success");
             if (typeof window.refreshAddPanchangamTabView === "function") window.refreshAddPanchangamTabView();
@@ -12385,6 +12409,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               }
             }
             delete window._mjCloudPdfMetaMap[yKey];
+            try { localStorage.setItem("MJ_CLOUD_PDF_META_CACHE_V1", JSON.stringify(window._mjCloudPdfMetaMap)); } catch (e) {}
             delete window._mjLoadedPdfDocs[yKey];
             window._paambuSankrantiCache = {};
             window._paambuYearTableCache = {};
@@ -12896,30 +12921,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         window.switchMainAppTab = switchMainAppTab;
       }
 
-      // Auto-sync pdf_meta_* docs from Firestore panchangam_years
-      if (typeof window.mjStartPanchangamCloudSync === "function") {
-        const _origSync = window.mjStartPanchangamCloudSync;
-        window.mjStartPanchangamCloudSync = function() {
-          _origSync();
-          if (typeof mjDb !== "undefined" && mjDb) {
-            mjDb.collection("panchangam_years").where("isPdfMeta", "==", true).onSnapshot(function(snap) {
-              const nextMap = {};
-              snap.forEach(function(doc) {
-                const d = doc.data();
-                if (d && d.year) nextMap[String(d.year)] = d;
-              });
-              window._mjCloudPdfMetaMap = nextMap;
-              if (typeof window.refreshAddPanchangamTabView === "function" && typeof currentMainAppTab !== "undefined" && currentMainAppTab === "addpanchangam") {
-                window.refreshAddPanchangamTabView();
-              }
-              if (typeof currentMainAppTab !== "undefined" && currentMainAppTab === "fullpanchangam") {
-                window.mjRenderFullPanchangamViewerTab();
-              }
-            }, function() {});
-          }
-        };
-      }
-    })();
+      })();
   </script>
 
 
