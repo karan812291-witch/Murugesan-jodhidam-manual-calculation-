@@ -12698,7 +12698,11 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             const progEl = document.getElementById("mjAddTabStatusMsg");
             if (progEl) { progEl.textContent = msg; progEl.classList.remove("hidden"); }
           };
+          let wakeLockSentinel = null;
           try {
+            if (navigator.wakeLock && typeof navigator.wakeLock.request === "function") {
+              try { wakeLockSentinel = await navigator.wakeLock.request("screen"); } catch (wlErr) {}
+            }
             setProg("⏳ " + yKey + " PDF படிக்கப்படுகிறது (" + (file.size / 1024 / 1024).toFixed(2) + " MB)...");
             const b64Full = await new Promise(function(resolve, reject) {
               const rd = new FileReader();
@@ -12720,12 +12724,24 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                   try { await mjDb.collection("panchangam_years").doc("pdf_chunk_" + yKey + "_" + k).delete(); } catch (e) {}
                 }
               }
-              for (let c = 0; c < totalChunks; c++) {
-                setProg("☁️ " + yKey + " Cloud-இல் பதிவேற்றம்: பகுதி " + (c + 1) + " / " + totalChunks + " ...");
-                await mjDb.collection("panchangam_years").doc("pdf_chunk_" + yKey + "_" + c).set({
-                  isPdfChunk: true, year: Number(yKey), idx: c,
-                  data: b64Full.slice(c * CHUNK_SIZE, (c + 1) * CHUNK_SIZE)
-                });
+              const BATCH_SIZE = 5;
+              let doneChunks = 0;
+              for (let start = 0; start < totalChunks; start += BATCH_SIZE) {
+                const end = Math.min(totalChunks, start + BATCH_SIZE);
+                setProg("⚡ " + yKey + " விரைவு Cloud பதிவேற்றம்: " + start + " → " + end + " / " + totalChunks + " ...");
+                const batchPromises = [];
+                for (let c = start; c < end; c++) {
+                  batchPromises.push(
+                    mjDb.collection("panchangam_years").doc("pdf_chunk_" + yKey + "_" + c).set({
+                      isPdfChunk: true, year: Number(yKey), idx: c,
+                      data: b64Full.slice(c * CHUNK_SIZE, (c + 1) * CHUNK_SIZE)
+                    }).then(function() {
+                      doneChunks++;
+                      setProg("⚡ " + yKey + " விரைவு Cloud பதிவேற்றம்: " + doneChunks + " / " + totalChunks + " ...");
+                    })
+                  );
+                }
+                await Promise.all(batchPromises);
               }
               await mjDb.collection("panchangam_years").doc("pdf_meta_" + yKey).set({
                 isPdfMeta: true, year: Number(yKey), fileName: safeFileName,
@@ -12764,6 +12780,10 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             const errMsg = "❌ PDF பதிவேற்றப் பிழை: " + (err && err.message ? err.message : err);
             setProg(errMsg, "error");
             if (typeof showToast === "function") showToast(errMsg, "error");
+          } finally {
+            if (wakeLockSentinel && typeof wakeLockSentinel.release === "function") {
+              try { await wakeLockSentinel.release(); } catch (e) {}
+            }
           }
         };
 
@@ -13268,7 +13288,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v24.1</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v24.2</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
                 </div>
                 <div class="flex items-center gap-1.5 text-[11px] font-extrabold">
