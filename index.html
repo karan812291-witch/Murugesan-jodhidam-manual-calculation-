@@ -12523,10 +12523,47 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       }
 
       // ☁️ Upload Scanned Panchangam PDF to Firebase Firestore (chunked inside existing panchangam_years collection)
+      function _mjGetOrCreatePdfInput() {
+        let inp = document.getElementById("mjGlobalCloudPdfInput");
+        if (!inp) {
+          inp = document.createElement("input");
+          inp.id = "mjGlobalCloudPdfInput";
+          inp.type = "file";
+          inp.accept = "application/pdf,.pdf";
+          inp.style.cssText = "position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;";
+          inp.addEventListener("change", window.mjHandleCloudPdfFileSelected);
+          document.body.appendChild(inp);
+        }
+        return inp;
+      }
+
+      function _mjShowFloatingPdfStatus(msg, tone) {
+        let box = document.getElementById("mjFloatingPdfProgress");
+        if (!box) {
+          box = document.createElement("div");
+          box.id = "mjFloatingPdfProgress";
+          box.style.cssText = "position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:99999;max-width:92vw;width:440px;";
+          document.body.appendChild(box);
+        }
+        const cls = tone === "error"
+          ? "bg-rose-900 text-white border-rose-400"
+          : (tone === "success" ? "bg-emerald-900 text-white border-emerald-400" : "bg-indigo-950 text-white border-amber-400");
+        box.innerHTML = `<div class="px-4 py-3 rounded-2xl border-2 shadow-2xl flex items-center justify-between gap-3 text-xs sm:text-sm font-extrabold ${cls}">
+          <span>${msg}</span>
+          <button type="button" onclick="this.closest('#mjFloatingPdfProgress').remove()" class="px-2 py-0.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-xs cursor-pointer">✕</button>
+        </div>`;
+        if (tone === "success") {
+          clearTimeout(window._mjFloatPdfTimer);
+          window._mjFloatPdfTimer = setTimeout(function() {
+            const b = document.getElementById("mjFloatingPdfProgress");
+            if (b) b.remove();
+          }, 7000);
+        }
+      }
+
       window.mjTriggerCloudPdfUpload = function(yearNum) {
         if (typeof IS_FRIEND_APP_MODE !== "undefined" && IS_FRIEND_APP_MODE) return;
-        const inp = document.getElementById("mjHiddenCloudPdfInput") || document.getElementById("mjAddTabCloudPdfInput");
-        if (!inp) return;
+        const inp = _mjGetOrCreatePdfInput();
         inp.dataset.targetYear = String(yearNum);
         inp.value = "";
         inp.click();
@@ -12537,21 +12574,29 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         const file = inp && inp.files && inp.files[0];
         if (!file) return;
         const yKey = String((inp && inp.dataset && inp.dataset.targetYear) || window._mjFullPanViewerYear || 2026);
-        if (!file.name.toLowerCase().endsWith(".pdf")) {
+        const fNameLower = String(file.name || "").toLowerCase();
+        const isPdfType = (file.type === "application/pdf") || fNameLower.endsWith(".pdf");
+        if (!isPdfType) {
+          _mjShowFloatingPdfStatus("❌ தயவுசெய்து .pdf கோப்பை மட்டும் தேர்வு செய்யவும்!", "error");
           if (typeof showToast === "function") showToast("❌ தயவுசெய்து .pdf கோப்பை மட்டும் தேர்வு செய்யவும்!", "error");
           return;
         }
         if (file.size > 15 * 1024 * 1024) {
+          _mjShowFloatingPdfStatus("❌ PDF அளவு 15 MB-க்குள் இருக்க வேண்டும்! (தற்போது: " + (file.size / 1024 / 1024).toFixed(1) + " MB)", "error");
           if (typeof showToast === "function") showToast("❌ PDF அளவு 15 MB-க்குள் இருக்க வேண்டும்!", "error");
           return;
         }
+        const safeFileName = fNameLower.endsWith(".pdf") ? file.name : ((file.name || yKey) + ".pdf");
+        _mjShowFloatingPdfStatus("📄 " + yKey + " கோப்பு தேர்வானது (" + safeFileName + ") — கடவுச்சொல் உள்ளிடவும்...", "info");
+
         const doUpload = async function() {
-          const progEl = document.getElementById("mjPdfUploadProgressBox") || document.getElementById("mjAddTabStatusMsg");
-          const setProg = function(msg) {
+          const setProg = function(msg, tone) {
+            _mjShowFloatingPdfStatus(msg, tone || "info");
+            const progEl = document.getElementById("mjAddTabStatusMsg");
             if (progEl) { progEl.textContent = msg; progEl.classList.remove("hidden"); }
           };
           try {
-            setProg("⏳ PDF கோப்பு படிக்கப்படுகிறது (" + (file.size / 1024 / 1024).toFixed(2) + " MB)...");
+            setProg("⏳ " + yKey + " PDF படிக்கப்படுகிறது (" + (file.size / 1024 / 1024).toFixed(2) + " MB)...");
             const b64Full = await new Promise(function(resolve, reject) {
               const rd = new FileReader();
               rd.onload = function() {
@@ -12563,15 +12608,6 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               rd.readAsDataURL(file);
             });
 
-            const binStr = atob(b64Full);
-            const bytes = new Uint8Array(binStr.length);
-            for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
-            if (typeof pdfjsLib !== "undefined") {
-              pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-              const pdfDoc = await pdfjsLib.getDocument({ data: bytes }).promise;
-              window._mjLoadedPdfDocs[yKey] = { pdfDoc: pdfDoc, numPages: pdfDoc.numPages, fileName: file.name };
-            }
-
             if (typeof mjDb !== "undefined" && mjDb) {
               const CHUNK_SIZE = 420000;
               const totalChunks = Math.ceil(b64Full.length / CHUNK_SIZE);
@@ -12582,29 +12618,49 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                 }
               }
               for (let c = 0; c < totalChunks; c++) {
-                setProg("☁️ Cloud-இல் பதிவேற்றம்: பகுதி " + (c + 1) + " / " + totalChunks + " ...");
+                setProg("☁️ " + yKey + " Cloud-இல் பதிவேற்றம்: பகுதி " + (c + 1) + " / " + totalChunks + " ...");
                 await mjDb.collection("panchangam_years").doc("pdf_chunk_" + yKey + "_" + c).set({
                   isPdfChunk: true, year: Number(yKey), idx: c,
                   data: b64Full.slice(c * CHUNK_SIZE, (c + 1) * CHUNK_SIZE)
                 });
               }
               await mjDb.collection("panchangam_years").doc("pdf_meta_" + yKey).set({
-                isPdfMeta: true, year: Number(yKey), fileName: file.name,
+                isPdfMeta: true, year: Number(yKey), fileName: safeFileName,
                 totalChunks: totalChunks, totalBytes: file.size, updatedAt: new Date().toISOString()
               });
-              window._mjCloudPdfMetaMap[yKey] = { year: Number(yKey), fileName: file.name, totalChunks: totalChunks, totalBytes: file.size };
+              window._mjCloudPdfMetaMap[yKey] = { year: Number(yKey), fileName: safeFileName, totalChunks: totalChunks, totalBytes: file.size };
               try { localStorage.setItem("MJ_CLOUD_PDF_META_CACHE_V1", JSON.stringify(window._mjCloudPdfMetaMap)); } catch (e) {}
+            } else {
+              throw new Error("Firebase Cloud இணைப்பு தயாராக இல்லை. 🔄 புதுப்பி அழுத்தி மீண்டும் முயற்சிக்கவும்.");
             }
 
-            setProg("✅ " + yKey + " அசல் PDF (" + file.name + ") Cloud-இல் சேமிக்கப்பட்டது! 2 ஆப்-களிலும் பக்கம் திருப்பிப் பார்க்கலாம்.");
+            // Pre-cache PDF.js document non-blockingly with disableWorker fallback
+            try {
+              if (typeof pdfjsLib !== "undefined") {
+                const binStr = atob(b64Full);
+                const bytes = new Uint8Array(binStr.length);
+                for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+                pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+                const pdfDoc = await pdfjsLib.getDocument({ data: bytes, disableWorker: true }).promise;
+                window._mjLoadedPdfDocs[yKey] = { pdfDoc: pdfDoc, numPages: pdfDoc.numPages, fileName: safeFileName };
+              }
+            } catch (pdfErr) {
+              console.warn("PDF.js pre-cache skipped:", pdfErr);
+            }
+
+            const okMsg = "✅ " + yKey + "–" + (Number(yKey) + 1) + " அசல் PDF (" + safeFileName + ") Cloud-இல் சேமிக்கப்பட்டது!";
             if (typeof window.refreshAddPanchangamTabView === "function") window.refreshAddPanchangamTabView();
+            setProg(okMsg, "success");
+            if (typeof showToast === "function") showToast(okMsg, "success");
             if (typeof currentMainAppTab !== "undefined" && currentMainAppTab === "fullpanchangam") {
               window._mjFullPanViewMode = "pdf";
               window._mjFullPanPdfPage = 1;
               window.mjRenderFullPanchangamViewerTab();
             }
           } catch (err) {
-            setProg("❌ PDF பதிவேற்றப் பிழை: " + (err && err.message ? err.message : err));
+            const errMsg = "❌ PDF பதிவேற்றப் பிழை: " + (err && err.message ? err.message : err);
+            setProg(errMsg, "error");
+            if (typeof showToast === "function") showToast(errMsg, "error");
           }
         };
 
@@ -12612,7 +12668,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           window.mjRequestPanchangamPassword(
             "add",
             "🔐 பஞ்சாங்க PDF பதிவேற்ற கடவுச்சொல்",
-            yKey + " ஆண்டின் '" + file.name + "' PDF புத்தகத்தை Cloud-இல் பதிவேற்ற Add கடவுச்சொல்லை உள்ளிடவும்:",
+            yKey + " ஆண்டின் '" + safeFileName + "' PDF புத்தகத்தை Cloud-இல் பதிவேற்ற Add கடவுச்சொல்லை உள்ளிடவும்:",
             doUpload
           );
         } else { doUpload(); }
@@ -12734,7 +12790,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         const bytes = new Uint8Array(binStr.length);
         for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
         pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-        const pdfDoc = await pdfjsLib.getDocument({ data: bytes }).promise;
+        const pdfDoc = await pdfjsLib.getDocument({ data: bytes, disableWorker: true }).promise;
         window._mjLoadedPdfDocs[yKey] = { pdfDoc: pdfDoc, numPages: pdfDoc.numPages, fileName: meta.fileName || (yKey + ".pdf") };
         return window._mjLoadedPdfDocs[yKey];
       }
@@ -13055,7 +13111,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
 
         container.innerHTML = `
           <div class="space-y-4 pt-2 pb-12">
-            <input id="mjAddTabCloudPdfInput" type="file" accept="application/pdf,.pdf" class="hidden" onchange="mjHandleCloudPdfFileSelected(event)" />
+            
 
             <!-- Header -->
             <div class="p-4 rounded-2xl bg-gradient-to-r from-[#2e050d] via-[#581c87] to-[#2e050d] text-amber-50 border-2 border-amber-400 shadow-lg">
@@ -13105,7 +13161,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்)</h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v24.1</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
                 </div>
                 <div class="flex items-center gap-1.5 text-[11px] font-extrabold">
