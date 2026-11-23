@@ -499,6 +499,7 @@
     }
 
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body class="min-h-screen flex flex-col">
 
@@ -9776,15 +9777,12 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                   <span>➕ புதிய பாம்பு பஞ்சாங்கம் சேர்க்கும் & நிர்வகிக்கும் மையம் (Future & Past Panchangam Manager)</span>
                 </h2>
                 <p class="text-xs text-amber-100 mt-0.5">
-                  எதிர்கால வருடங்கள் (2027, 2028, 2029...) அல்லது விடுபட்ட எந்த வருடப் பஞ்சாங்கத்தையும் (PDF / JSON / நேரடி அட்டவணை) ஆப்பிற்குள்ளேயே சேர்த்து, புதிய ஆப்பாக (.html) பதிவிறக்கம் செய்துகொள்ளலாம்!
+                  எதிர்கால வருடங்கள் (2027, 2028, 2029...) அல்லது விடுபட்ட எந்த வருடப் பஞ்சாங்கத்தையும் (PDF / JSON / நேரடி அட்டவணை) ஆப்பிற்குள்ளேயே சேர்த்து, Firebase Cloud-இல் சேமித்து அனைத்து ஆப்களிலும் நேரடியாகப் பயன்படுத்தலாம்!
                 </p>
               </div>
               <div class="flex flex-wrap items-center gap-2">
                 <button type="button" onclick="saveCurrentYearInAddPanchangamTab()" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-extrabold text-xs shadow cursor-pointer">
                   💾 ${st.editYear}–${st.editYear + 1} பஞ்சாங்கத்தை ஆப்பில் சேமி
-                </button>
-                <button type="button" onclick="downloadThisAppHtml()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow cursor-pointer">
-                  📥 சேர்த்த பஞ்சாங்கங்களுடன் முழு ஆப் (.html) பதிவிறக்கம்
                 </button>
               </div>
             </div>
@@ -10953,6 +10951,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         let changed = 0;
         snap.forEach(function(doc) {
           const d = doc.data();
+          if (d.isPdfMeta || d.isPdfChunk) return;
           const yKey = String(doc.id || d.year || "").trim();
           if (!yKey || !d.payloadJson) return;
           try {
@@ -12099,22 +12098,28 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
     })();
   </script>
 
-
   <script id="mjFullPanchangamViewerScript">
+    // 🚫 Permanently disable any HTML App Download function everywhere
+    window.downloadThisAppHtml = function() { return false; };
+
     (function() {
       window._mjFullPanViewerYear = null;
-      window._mjFullPanViewerPlanet = "ALL";
+      window._mjFullPanBookPage = 1;
+      window._mjFullPanViewMode = "auto"; // "auto" | "pdf" | "book"
+      window._mjCloudPdfMetaMap = window._mjCloudPdfMetaMap || {};
+      window._mjLoadedPdfDocs = window._mjLoadedPdfDocs || {}; // year -> { pdfDoc, numPages, fileName }
+      window._mjPdfZoom = 1.0;
 
       const TAMIL_MONTH_NAMES = ["சித்திரை","வைகாசி","ஆனி","ஆடி","ஆவணி","புரட்டாசி","ஐப்பசி","கார்த்திகை","மார்கழி","தை","மாசி","பங்குனி"];
       const TAMIL_60_NAMES = ["பிரபவ","விபவ","சுக்ல","பிரமோதூத","பிரஜோற்பத்தி","ஆங்கீரச","ஸ்ரீமுக","பவ","யுவ","தாது","ஈஸ்வர","வெகுதான்ய","பிரமாதி","விக்கிரம","விஷு","சித்திரபானு","சுபானு","தாரண","பார்த்திப","விய","சர்வஜித்","சர்வதாரி","விரோதி","விக்ருதி","கர","நந்தன","விஜய","ஜய","மன்மத","துர்முகி","ஹேவிளம்பி","விளம்பி","விகாரி","சார்வரி","பிலவ","சுபகிருது","சோபகிருது","குரோதி","விசுவாவசு","பராபவ","பிலவங்க","கீலக","சௌமிய","சாதாரண","விரோதிகிருது","பரிதாபி","பிரமாதீச","ஆனந்த","ராட்சச","நள","பிங்கள","காளயுக்தி","சித்தார்த்தி","ரௌத்திரி","துன்மதி","துந்துபி","ருத்ரோத்காரி","ரக்தாட்சி","குரோதன","அட்சய"];
       const PLANET_LIST = [
-        { key: "Sun",     ta: "சூரியன் (ஞாயிறு)", short: "சூரி" },
-        { key: "Mars",    ta: "செவ்வாய்",         short: "செவ்" },
-        { key: "Mercury", ta: "புதன்",            short: "புத"  },
-        { key: "Jupiter", ta: "குரு (வியாழன்)",   short: "குரு" },
-        { key: "Venus",   ta: "சுக்கிரன் (வெள்ளி)",short: "சுக்" },
-        { key: "Saturn",  ta: "சனி",              short: "சனி"  },
-        { key: "Rahu",    ta: "ராகு / கேது",      short: "ராகு" }
+        { key: "Sun",     ta: "ரவி (சூரியன்) சாரம்", short: "சூரியன்" },
+        { key: "Mars",    ta: "செவ்வாய் சாரம்",       short: "செவ்வாய்" },
+        { key: "Mercury", ta: "புதன் சாரம்",          short: "புதன்" },
+        { key: "Jupiter", ta: "குரு (வியாழன்) சாரம்", short: "குரு" },
+        { key: "Venus",   ta: "சுக்கிரன் சாரம்",      short: "சுக்கிரன்" },
+        { key: "Saturn",  ta: "சனி சாரம்",            short: "சனி" },
+        { key: "Rahu",    ta: "ராகு / கேது சாரம்",    short: "ராகு/கேது" }
       ];
 
       function _getTamilYearName(y) {
@@ -12122,161 +12127,473 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         return TAMIL_60_NAMES[idx] || "";
       }
 
-      function _fmtRowHtml(r, idx) {
-        const mIdx = Number(r[0]) || 0;
-        const tDate = Number(r[1]) || 1;
-        const naz = Number(r[2]) || 0;
-        const vin = Number(r[3]) || 0;
-        const starIdx = ((Number(r[4]) || 0) % 27 + 27) % 27;
-        const pada = Number(r[5]) || 1;
-        const isRetro = Boolean(r[6]);
-        const nakName = (typeof NAKSHATRAS !== "undefined" && NAKSHATRAS[starIdx]) ? NAKSHATRAS[starIdx].ta : ("நட்சத்திரம்-" + (starIdx + 1));
-        const gPada = starIdx * 4 + (pada - 1);
-        const rasiIdx = Math.floor(gPada / 9) % 12;
-        const navIdx = gPada % 12;
-        const rasiName = (typeof RASIS !== "undefined" && RASIS[rasiIdx]) ? RASIS[rasiIdx].ta : "";
-        const navName = (typeof RASIS !== "undefined" && RASIS[navIdx]) ? RASIS[navIdx].ta : "";
-        const retroTag = isRetro ? '<span class="ml-1 px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 text-[10px] font-extrabold">வக்ரம்</span>' : "";
-        return `<tr class="${idx % 2 === 0 ? "bg-white" : "bg-amber-50/40"} border-b border-amber-200/70">
-          <td class="px-2.5 py-1.5 font-extrabold text-amber-950 whitespace-nowrap">${TAMIL_MONTH_NAMES[mIdx % 12] || ""} ${tDate}</td>
-          <td class="px-2.5 py-1.5 font-bold text-slate-700 whitespace-nowrap">${String(naz).padStart(2,"0")}.${String(vin).padStart(2,"0")}</td>
-          <td class="px-2.5 py-1.5 font-extrabold text-[#6b0f22] whitespace-nowrap">${nakName} - ${pada}ம் பாதம்${retroTag}</td>
-          <td class="px-2.5 py-1.5 font-bold text-indigo-900 whitespace-nowrap">${rasiName}</td>
-          <td class="px-2.5 py-1.5 font-bold text-teal-900 whitespace-nowrap">${navName}</td>
-        </tr>`;
+      // ☁️ Upload Scanned Panchangam PDF to Firebase Firestore (chunked inside existing panchangam_years collection)
+      window.mjTriggerCloudPdfUpload = function(yearNum) {
+        if (typeof IS_FRIEND_APP_MODE !== "undefined" && IS_FRIEND_APP_MODE) return;
+        const inp = document.getElementById("mjHiddenCloudPdfInput");
+        if (!inp) return;
+        inp.dataset.targetYear = String(yearNum);
+        inp.value = "";
+        inp.click();
+      };
+
+      window.mjHandleCloudPdfFileSelected = function(ev) {
+        const inp = ev && ev.target;
+        const file = inp && inp.files && inp.files[0];
+        if (!file) return;
+        const yKey = String((inp && inp.dataset && inp.dataset.targetYear) || window._mjFullPanViewerYear || 2026);
+        if (!file.name.toLowerCase().endsWith(".pdf")) {
+          if (typeof showToast === "function") showToast("❌ தயவுசெய்து .pdf கோப்பை மட்டும் தேர்வு செய்யவும்!", "error");
+          return;
+        }
+        if (file.size > 15 * 1024 * 1024) {
+          if (typeof showToast === "function") showToast("❌ PDF அளவு 15 MB-க்குள் இருக்க வேண்டும்!", "error");
+          return;
+        }
+        const doUpload = async function() {
+          const progEl = document.getElementById("mjPdfUploadProgressBox");
+          const setProg = function(msg) {
+            if (progEl) { progEl.textContent = msg; progEl.classList.remove("hidden"); }
+          };
+          try {
+            setProg("⏳ PDF கோப்பு படிக்கப்படுகிறது (" + (file.size / 1024 / 1024).toFixed(2) + " MB)...");
+            const b64Full = await new Promise(function(resolve, reject) {
+              const rd = new FileReader();
+              rd.onload = function() {
+                const res = String(rd.result || "");
+                const idx = res.indexOf(",");
+                resolve(idx >= 0 ? res.slice(idx + 1) : res);
+              };
+              rd.onerror = reject;
+              rd.readAsDataURL(file);
+            });
+
+            // Cache immediately in memory so flipbook opens right away
+            const binStr = atob(b64Full);
+            const bytes = new Uint8Array(binStr.length);
+            for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+            if (typeof pdfjsLib !== "undefined") {
+              pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+              const pdfDoc = await pdfjsLib.getDocument({ data: bytes }).promise;
+              window._mjLoadedPdfDocs[yKey] = { pdfDoc: pdfDoc, numPages: pdfDoc.numPages, fileName: file.name };
+            }
+
+            // Upload chunked to Firestore panchangam_years so BOTH Main App & Kai-Kanakku App (Master+Friend) get it live!
+            if (typeof mjDb !== "undefined" && mjDb) {
+              const CHUNK_SIZE = 420000;
+              const totalChunks = Math.ceil(b64Full.length / CHUNK_SIZE);
+              // Delete any leftover old chunks first if fewer chunks now
+              const prevMeta = window._mjCloudPdfMetaMap[yKey];
+              if (prevMeta && prevMeta.totalChunks > totalChunks) {
+                for (let k = totalChunks; k < prevMeta.totalChunks; k++) {
+                  try { await mjDb.collection("panchangam_years").doc("pdf_chunk_" + yKey + "_" + k).delete(); } catch (e) {}
+                }
+              }
+              for (let c = 0; c < totalChunks; c++) {
+                setProg("☁️ Cloud-இல் பதிவேற்றம்: பகுதி " + (c + 1) + " / " + totalChunks + " ...");
+                await mjDb.collection("panchangam_years").doc("pdf_chunk_" + yKey + "_" + c).set({
+                  isPdfChunk: true,
+                  year: Number(yKey),
+                  idx: c,
+                  data: b64Full.slice(c * CHUNK_SIZE, (c + 1) * CHUNK_SIZE)
+                });
+              }
+              await mjDb.collection("panchangam_years").doc("pdf_meta_" + yKey).set({
+                isPdfMeta: true,
+                year: Number(yKey),
+                fileName: file.name,
+                totalChunks: totalChunks,
+                totalBytes: file.size,
+                updatedAt: new Date().toISOString()
+              });
+              window._mjCloudPdfMetaMap[yKey] = { year: Number(yKey), fileName: file.name, totalChunks: totalChunks, totalBytes: file.size };
+            }
+
+            setProg("✅ " + yKey + " அசல் PDF (" + file.name + ") Cloud-இல் சேமிக்கப்பட்டது! அனைத்து ஆப்களிலும் பக்கம் திருப்பிப் பார்க்கலாம்.");
+            window._mjFullPanViewMode = "pdf";
+            window._mjFullPanBookPage = 1;
+            window.mjRenderFullPanchangamViewerTab();
+          } catch (err) {
+            console.error("Cloud PDF upload error:", err);
+            setProg("❌ PDF பதிவேற்றப் பிழை: " + (err && err.message ? err.message : err));
+          }
+        };
+
+        if (typeof window.mjRequestPanchangamPassword === "function") {
+          window.mjRequestPanchangamPassword(
+            "add",
+            "🔐 பஞ்சாங்க PDF பதிவேற்ற கடவுச்சொல்",
+            yKey + " ஆண்டின் '" + file.name + "' PDF புத்தகத்தை Cloud-இல் பதிவேற்ற Add கடவுச்சொல்லை உள்ளிடவும்:",
+            doUpload
+          );
+        } else {
+          doUpload();
+        }
+      };
+
+      window.mjDeleteCloudPdfForYear = function(yearNum) {
+        if (typeof IS_FRIEND_APP_MODE !== "undefined" && IS_FRIEND_APP_MODE) return;
+        const yKey = String(yearNum);
+        const doRemove = async function() {
+          try {
+            const meta = window._mjCloudPdfMetaMap[yKey];
+            const totalChunks = (meta && meta.totalChunks) ? meta.totalChunks : 0;
+            if (typeof mjDb !== "undefined" && mjDb) {
+              await mjDb.collection("panchangam_years").doc("pdf_meta_" + yKey).delete();
+              for (let c = 0; c < totalChunks; c++) {
+                try { await mjDb.collection("panchangam_years").doc("pdf_chunk_" + yKey + "_" + c).delete(); } catch (e) {}
+              }
+            }
+            delete window._mjCloudPdfMetaMap[yKey];
+            delete window._mjLoadedPdfDocs[yKey];
+            window._mjFullPanViewMode = "book";
+            window._mjFullPanBookPage = 1;
+            if (typeof showToast === "function") showToast("🗑️ " + yKey + " அசல் PDF Cloud-லிருந்து நீக்கப்பட்டது!", "success");
+            window.mjRenderFullPanchangamViewerTab();
+          } catch (err) {
+            if (typeof showToast === "function") showToast("❌ நீக்க முடியவில்லை: " + err.message, "error");
+          }
+        };
+        if (typeof window.mjRequestPanchangamPassword === "function") {
+          window.mjRequestPanchangamPassword(
+            "remove",
+            "🗑️ பஞ்சாங்க PDF நீக்க கடவுச்சொல்",
+            yKey + " ஆண்டின் அசல் PDF புத்தகத்தை Cloud-லிருந்து நீக்க Remove கடவுச்சொல்லை உள்ளிடவும்:",
+            doRemove
+          );
+        }
+      };
+
+      async function _ensureCloudPdfLoaded(yKey) {
+        if (window._mjLoadedPdfDocs[yKey]) return window._mjLoadedPdfDocs[yKey];
+        const meta = window._mjCloudPdfMetaMap[yKey];
+        if (!meta || !meta.totalChunks || typeof mjDb === "undefined" || !mjDb) return null;
+        if (typeof pdfjsLib === "undefined") return null;
+
+        const statusEl = document.getElementById("mjPdfCanvasStatus");
+        if (statusEl) statusEl.textContent = "⏳ Cloud-லிருந்து அசல் PDF பதிவிறக்கப்படுகிறது...";
+
+        let b64 = "";
+        for (let c = 0; c < meta.totalChunks; c++) {
+          if (statusEl) statusEl.textContent = "⏳ PDF பகுதி " + (c + 1) + " / " + meta.totalChunks + " ஏற்றப்படுகிறது...";
+          const docSnap = await mjDb.collection("panchangam_years").doc("pdf_chunk_" + yKey + "_" + c).get();
+          if (docSnap.exists && docSnap.data() && docSnap.data().data) {
+            b64 += docSnap.data().data;
+          }
+        }
+        const binStr = atob(b64);
+        const bytes = new Uint8Array(binStr.length);
+        for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+        const pdfDoc = await pdfjsLib.getDocument({ data: bytes }).promise;
+        window._mjLoadedPdfDocs[yKey] = { pdfDoc: pdfDoc, numPages: pdfDoc.numPages, fileName: meta.fileName || (yKey + ".pdf") };
+        return window._mjLoadedPdfDocs[yKey];
+      }
+
+      async function _renderCurrentPdfCanvas(yKey, pageNum) {
+        const canvas = document.getElementById("mjPanchangamPdfCanvas");
+        const statusEl = document.getElementById("mjPdfCanvasStatus");
+        const pageBadge = document.getElementById("mjFlipPageBadge");
+        if (!canvas) return;
+        try {
+          const loaded = await _ensureCloudPdfLoaded(yKey);
+          if (!loaded || !loaded.pdfDoc) {
+            if (statusEl) statusEl.textContent = "PDF ஏற்ற முடியவில்லை.";
+            return;
+          }
+          const total = loaded.numPages;
+          const p = Math.max(1, Math.min(total, Number(pageNum) || 1));
+          window._mjFullPanBookPage = p;
+          if (pageBadge) pageBadge.textContent = "பக்கம் " + p + " / " + total;
+          const sel = document.getElementById("mjFlipPageSelect");
+          if (sel && sel.options.length !== total) {
+            sel.innerHTML = Array.from({ length: total }, function(_, i) {
+              return `<option value="${i + 1}" ${i + 1 === p ? "selected" : ""}>பக்கம் ${i + 1} / ${total}</option>`;
+            }).join("");
+          } else if (sel) {
+            sel.value = String(p);
+          }
+
+          if (statusEl) statusEl.textContent = "📖 பக்கம் " + p + " / " + total + " ஏற்றப்படுகிறது...";
+          const page = await loaded.pdfDoc.getPage(p);
+          const containerW = Math.min(920, (canvas.parentElement ? canvas.parentElement.clientWidth - 16 : 360));
+          const unscaled = page.getViewport({ scale: 1.0 });
+          const fitScale = Math.max(0.5, (containerW / unscaled.width) * (window._mjPdfZoom || 1.0));
+          const dpr = Math.min(2, window.devicePixelRatio || 1);
+          const viewport = page.getViewport({ scale: fitScale * dpr });
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          canvas.style.width = Math.round(viewport.width / dpr) + "px";
+          canvas.style.height = Math.round(viewport.height / dpr) + "px";
+          const ctx = canvas.getContext("2d");
+          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+          if (statusEl) statusEl.textContent = "📄 " + loaded.fileName + " — பக்கம் " + p + " / " + total + " (இடது / வலது தள்ளி பக்கம் திருப்பலாம்)";
+        } catch (err) {
+          if (statusEl) statusEl.textContent = "❌ PDF பக்கம் காட்ட முடியவில்லை: " + (err && err.message ? err.message : err);
+        }
       }
 
       window.mjSelectFullPanchangamYear = function(y) {
         window._mjFullPanViewerYear = Number(y);
+        window._mjFullPanBookPage = 1;
+        window._mjFullPanViewMode = "auto";
         window.mjRenderFullPanchangamViewerTab();
       };
 
-      window.mjSelectFullPanchangamPlanet = function(pKey) {
-        window._mjFullPanViewerPlanet = pKey || "ALL";
+      window.mjSwitchFullPanViewMode = function(mode) {
+        window._mjFullPanViewMode = mode;
+        window._mjFullPanBookPage = 1;
         window.mjRenderFullPanchangamViewerTab();
       };
+
+      window.mjFlipPanPage = function(deltaOrExact, isExact) {
+        const yKey = String(window._mjFullPanViewerYear || 2026);
+        const hasPdf = Boolean(window._mjCloudPdfMetaMap[yKey] || window._mjLoadedPdfDocs[yKey]);
+        const activeMode = (window._mjFullPanViewMode === "auto") ? (hasPdf ? "pdf" : "book") : window._mjFullPanViewMode;
+        const maxP = (activeMode === "pdf" && window._mjLoadedPdfDocs[yKey]) ? window._mjLoadedPdfDocs[yKey].numPages : 9;
+        const nextP = isExact ? Number(deltaOrExact) : (Number(window._mjFullPanBookPage || 1) + Number(deltaOrExact));
+        window._mjFullPanBookPage = Math.max(1, Math.min(maxP, nextP));
+        if (activeMode === "pdf") {
+          _renderCurrentPdfCanvas(yKey, window._mjFullPanBookPage);
+        } else {
+          window.mjRenderFullPanchangamViewerTab();
+        }
+      };
+
+      window.mjZoomPdfBook = function(delta) {
+        window._mjPdfZoom = Math.max(0.75, Math.min(2.2, Number((window._mjPdfZoom || 1.0) + delta)));
+        const yKey = String(window._mjFullPanViewerYear || 2026);
+        _renderCurrentPdfCanvas(yKey, window._mjFullPanBookPage || 1);
+      };
+
+      function _buildBookletPageHtml(Y, tamilYearName, chithirai1, mLens, yearTbl, isCloud, pageNum) {
+        const headerBar = `<div class="flex items-center justify-between border-b-2 border-[#6b0f22] pb-2 mb-3 text-xs font-extrabold text-[#6b0f22]">
+          <span>அசல் 28-நெ. ${tamilYearName} வருஷ சுத்த வாக்கிய பஞ்சாங்கம் (${Y}–${Y + 1})</span>
+          <span class="px-2 py-0.5 rounded bg-amber-100 border border-amber-400">பக்கம் ${pageNum} / 9</span>
+        </div>`;
+
+        if (pageNum === 1) {
+          const mGrid = mLens ? `<div class="grid grid-cols-3 sm:grid-cols-4 gap-2 pt-3">${TAMIL_MONTH_NAMES.map(function(mn, i) {
+            return `<div class="p-2 rounded-lg bg-amber-50 border border-amber-300 text-center text-xs font-bold"><div class="text-amber-950">${mn}</div><div class="text-sm font-extrabold text-[#6b0f22]">${mLens[i]} நாட்கள்</div></div>`;
+          }).join("")}</div>` : "";
+          return `<div class="p-4 sm:p-6 rounded-2xl bg-[#fffef7] border-4 border-double border-[#6b0f22] shadow-inner space-y-4">
+            ${headerBar}
+            <div class="text-center space-y-2 py-4 border-2 border-amber-400 rounded-xl bg-gradient-to-b from-amber-50 via-white to-amber-50 px-3">
+              <div class="text-xs font-extrabold text-amber-900">உ • கடவுள் துணை • அசல் 28-வது நெ. மனோன்மணி விலாசம்</div>
+              <div class="text-xl sm:text-2xl font-black text-[#6b0f22]">${tamilYearName} வருஷ சுத்த வாக்கிய பஞ்சாங்கம்</div>
+              <div class="text-sm font-extrabold text-slate-800">ஆங்கில ஆண்டு: ${Y} – ${Y + 1} • சித்திரை 1: ${chithirai1}</div>
+              <div class="inline-block px-3 py-1 rounded-full text-xs font-extrabold ${isCloud ? "bg-emerald-100 text-emerald-900 border border-emerald-400" : "bg-amber-200 text-amber-950 border border-amber-500"}">${isCloud ? "☁️ Cloud-இல் சேர்க்கப்பட்ட பஞ்சாங்கம்" : "📚 உள்ளமைந்த பாம்பு பஞ்சாங்கப் புத்தகம்"}</div>
+            </div>
+            <div>
+              <div class="text-xs font-extrabold text-[#6b0f22] mb-1">📅 12 தமிழ் மாத நாட்கள் விபரம்:</div>
+              ${mGrid || '<div class="text-xs font-bold text-slate-600">பக்கம் 2 முதல் 8 வரை 9 கிரகங்களின் முழு பாதசாரம், பக்கம் 9-இல் தஞ்சை சூரியோதயம் & ராசி பிரமாணம் உள்ளது.</div>'}
+            </div>
+            <div class="text-center text-[11px] font-extrabold text-slate-500 pt-2">👉 அடுத்த பக்கம் திருப்ப <strong>"அடுத்த பக்கம் ▶"</strong> கிளிக் செய்யவும் அல்லது இடதுபுறம் தள்ளவும்!</div>
+          </div>`;
+        }
+
+        if (pageNum >= 2 && pageNum <= 8) {
+          const pl = PLANET_LIST[pageNum - 2];
+          const rows = Array.isArray(yearTbl[pl.key]) ? yearTbl[pl.key] : [];
+          const trs = rows.length === 0
+            ? `<tr><td colspan="5" class="px-3 py-4 text-center text-xs font-bold text-slate-500">இந்த கிரகத்திற்குப் பதிவுகள் இல்லை</td></tr>`
+            : rows.map(function(r, idx) {
+                const mIdx = Number(r[0]) || 0, tDate = Number(r[1]) || 1;
+                const naz = Number(r[2]) || 0, vin = Number(r[3]) || 0;
+                const starIdx = ((Number(r[4]) || 0) % 27 + 27) % 27, pada = Number(r[5]) || 1;
+                const isRetro = Boolean(r[6]);
+                const nakName = (typeof NAKSHATRAS !== "undefined" && NAKSHATRAS[starIdx]) ? NAKSHATRAS[starIdx].ta : ("நட்சத்திரம்-" + (starIdx + 1));
+                const gPada = starIdx * 4 + (pada - 1);
+                const rasiName = (typeof RASIS !== "undefined" && RASIS[Math.floor(gPada / 9) % 12]) ? RASIS[Math.floor(gPada / 9) % 12].ta : "";
+                const navName = (typeof RASIS !== "undefined" && RASIS[gPada % 12]) ? RASIS[gPada % 12].ta : "";
+                return `<tr class="${idx % 2 === 0 ? "bg-white" : "bg-amber-50/50"} border-b border-amber-200/80">
+                  <td class="px-2 py-1.5 font-extrabold text-amber-950 whitespace-nowrap">${TAMIL_MONTH_NAMES[mIdx % 12] || ""} ${tDate}</td>
+                  <td class="px-2 py-1.5 font-bold text-slate-700 whitespace-nowrap">${String(naz).padStart(2,"0")}.${String(vin).padStart(2,"0")}</td>
+                  <td class="px-2 py-1.5 font-extrabold text-[#6b0f22] whitespace-nowrap">${nakName} - ${pada}${isRetro ? ' <span class="text-rose-700">(வ)</span>' : ""}</td>
+                  <td class="px-2 py-1.5 font-bold text-indigo-900 whitespace-nowrap">${rasiName}</td>
+                  <td class="px-2 py-1.5 font-bold text-teal-900 whitespace-nowrap">${navName}</td>
+                </tr>`;
+              }).join("");
+          return `<div class="p-3 sm:p-5 rounded-2xl bg-[#fffef7] border-4 border-double border-[#6b0f22] shadow-inner">
+            ${headerBar}
+            <div class="mb-2.5 flex items-center justify-between">
+              <div class="text-sm sm:text-base font-black text-[#6b0f22]">🪐 ${pl.ta}</div>
+              <span class="text-[11px] font-extrabold px-2 py-0.5 rounded bg-amber-100 text-amber-950 border border-amber-300">${rows.length} பதிவுகள்</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border border-amber-300">
+                <thead class="bg-amber-100 text-amber-950 font-extrabold border-b-2 border-[#6b0f22]">
+                  <tr><th class="px-2 py-2">தமிழ் தேதி</th><th class="px-2 py-2">நாழிகை</th><th class="px-2 py-2">நட்சத்திரம் - பாதம்</th><th class="px-2 py-2">ராசி</th><th class="px-2 py-2">அம்சம்</th></tr>
+                </thead>
+                <tbody>${trs}</tbody>
+              </table>
+            </div>
+          </div>`;
+        }
+
+        // Page 9: Thanjavur Sunrise & Rasi Pramanam Reference Page
+        const srTbl = window.THANJAVUR_PAAMBU_SUNRISE_TABLE || [
+          ["06:07","06:04","06:01","05:59","05:57","05:56"],["05:54","05:53","05:53","05:52","05:53","05:53"],
+          ["05:54","05:55","05:56","05:57","05:58","06:00"],["06:01","06:02","06:04","06:05","06:05","06:06"],
+          ["06:06","06:07","06:07","06:06","06:06","06:06"],["06:06","06:05","06:05","06:05","06:05","06:05"],
+          ["06:06","06:06","06:07","06:08","06:09","06:11"],["06:12","06:14","06:16","06:19","06:21","06:24"],
+          ["06:27","06:30","06:32","06:34","06:36","06:38"],["06:39","06:40","06:40","06:40","06:40","06:39"],
+          ["06:38","06:36","06:35","06:32","06:30","06:27"],["06:24","06:21","06:18","06:15","06:12","06:09"]
+        ];
+        const srRows = srTbl.map(function(row, i) {
+          return `<tr class="${i % 2 === 0 ? "bg-white" : "bg-amber-50/50"} border-b border-amber-200"><td class="px-2 py-1 font-extrabold text-[#6b0f22]">${TAMIL_MONTH_NAMES[i]}</td>${row.map(function(t){ return `<td class="px-1.5 py-1 font-bold text-center">${t}</td>`; }).join("")}</tr>`;
+        }).join("");
+        return `<div class="p-3 sm:p-5 rounded-2xl bg-[#fffef7] border-4 border-double border-[#6b0f22] shadow-inner space-y-3">
+          ${headerBar}
+          <div class="text-sm font-black text-[#6b0f22]">🌅 தஞ்சை சூரியோதய அட்டவணை (இந்தியன் ஸ்டாண்டர்ட் மணி நிமிஷம்)</div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs border border-amber-300">
+              <thead class="bg-amber-100 text-amber-950 font-extrabold border-b-2 border-[#6b0f22]">
+                <tr><th class="px-2 py-1.5 text-left">மாதம்</th><th class="px-1.5 py-1.5">1–5</th><th class="px-1.5 py-1.5">6–10</th><th class="px-1.5 py-1.5">11–15</th><th class="px-1.5 py-1.5">16–20</th><th class="px-1.5 py-1.5">21–25</th><th class="px-1.5 py-1.5">26+</th></tr>
+              </thead>
+              <tbody>${srRows}</tbody>
+            </table>
+          </div>
+        </div>`;
+      }
 
       window.mjRenderFullPanchangamViewerTab = function() {
         const container = document.getElementById("fullPanchangamTabContainer");
         if (!container) return;
 
+        const isFriend = (typeof IS_FRIEND_APP_MODE !== "undefined" && IS_FRIEND_APP_MODE);
         const customStore = window._customPaambuYearsStore || {};
-        const cloudYears = Object.keys(customStore).map(Number).filter(function(n) { return !isNaN(n); }).sort(function(a, b) { return b - a; });
-        const allYearsSet = new Set(cloudYears);
+        const cloudPdfYears = Object.keys(window._mjCloudPdfMetaMap || {}).map(Number).filter(function(n){ return !isNaN(n); });
+        const cloudJsonYears = Object.keys(customStore).map(Number).filter(function(n){ return !isNaN(n); });
+        const allYearsSet = new Set([...cloudPdfYears, ...cloudJsonYears]);
         for (let y = 2027; y >= 1987; y--) allYearsSet.add(y);
         const allYears = Array.from(allYearsSet).sort(function(a, b) { return b - a; });
 
         if (!window._mjFullPanViewerYear || !allYearsSet.has(window._mjFullPanViewerYear)) {
-          window._mjFullPanViewerYear = cloudYears.length > 0 ? cloudYears[0] : 2026;
+          window._mjFullPanViewerYear = cloudPdfYears.length > 0 ? cloudPdfYears[0] : (cloudJsonYears.length > 0 ? cloudJsonYears[0] : 2011);
         }
         const Y = window._mjFullPanViewerYear;
-        const pFilter = window._mjFullPanViewerPlanet || "ALL";
-        const isCloud = Boolean(customStore[String(Y)]);
+        const yKey = String(Y);
+        const hasPdf = Boolean(window._mjCloudPdfMetaMap[yKey] || window._mjLoadedPdfDocs[yKey]);
+        const activeMode = (window._mjFullPanViewMode === "auto") ? (hasPdf ? "pdf" : "book") : window._mjFullPanViewMode;
+
+        const isCloud = Boolean(customStore[yKey]);
         const meta = (typeof window.getMergedPaambuYearMeta === "function" ? window.getMergedPaambuYearMeta(Y) : null) || {};
         const tamilYearName = meta.tamilYearName || _getTamilYearName(Y);
         const chithirai1 = meta.chithirai1Date || (Y + "-04-14");
         const mLens = Array.isArray(meta.monthLengths) && meta.monthLengths.length === 12 ? meta.monthLengths : null;
-
-        // Fetch planet tables for year Y
         let yearTbl = {};
         try {
-          if (isCloud && customStore[String(Y)].pins) {
-            yearTbl = customStore[String(Y)].pins;
-          } else if (typeof window.getPaambu1989To2027YearTable === "function") {
-            yearTbl = window.getPaambu1989To2027YearTable(Y) || {};
-          }
+          if (isCloud && customStore[yKey].pins) yearTbl = customStore[yKey].pins;
+          else if (typeof window.getPaambu1989To2027YearTable === "function") yearTbl = window.getPaambu1989To2027YearTable(Y) || {};
         } catch (e) { yearTbl = {}; }
 
-        const cloudChipsHtml = cloudYears.length === 0
-          ? `<div class="text-xs font-bold text-slate-500">இன்னும் கூடுதல் Cloud பஞ்சாங்க ஆண்டுகள் பதிவேற்றப்படவில்லை (கீழே 1987–2027 உள்ளமைந்த பஞ்சாங்கங்களைப் பார்க்கலாம்).</div>`
-          : cloudYears.map(function(cy) {
-              const active = cy === Y;
-              const nm = (customStore[String(cy)] && customStore[String(cy)].meta && customStore[String(cy)].meta.tamilYearName) || _getTamilYearName(cy);
-              return `<button type="button" onclick="mjSelectFullPanchangamYear(${cy})" class="px-3 py-1.5 rounded-xl font-extrabold text-xs border-2 cursor-pointer transition ${active ? "bg-emerald-700 text-white border-emerald-900 shadow" : "bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border-emerald-400"}">☁️ ${cy} (${nm})</button>`;
+        const yearOptionsHtml = allYears.map(function(yr) {
+          const pdfTag = window._mjCloudPdfMetaMap[String(yr)] ? " 📄[PDF]" : "";
+          const cTag = customStore[String(yr)] ? " ☁️[Cloud]" : "";
+          return `<option value="${yr}" ${yr === Y ? "selected" : ""}>${yr}–${yr + 1} (${_getTamilYearName(yr)})${pdfTag}${cTag}</option>`;
+        }).join("");
+
+        const pdfChipsHtml = cloudPdfYears.length === 0
+          ? `<span class="text-xs font-bold text-slate-500">அசல் PDF புத்தகம் இன்னும் பதிவேற்றப்படவில்லை — கீழே "📤 அசல் PDF பதிவேற்று" மூலம் எந்த ஆண்டின் PDF-ஐயும் இணைக்கலாம்.</span>`
+          : cloudPdfYears.sort(function(a,b){return b-a;}).map(function(py) {
+              const act = py === Y && activeMode === "pdf";
+              return `<button type="button" onclick="window._mjFullPanViewerYear=${py};window._mjFullPanViewMode='pdf';window._mjFullPanBookPage=1;mjRenderFullPanchangamViewerTab();" class="px-3 py-1 rounded-xl font-extrabold text-xs border-2 cursor-pointer ${act ? "bg-rose-700 text-white border-rose-900 shadow" : "bg-rose-50 hover:bg-rose-100 text-rose-900 border-rose-300"}">📄 ${py}–${py + 1} (${_getTamilYearName(py)})</button>`;
             }).join("");
 
-        const yearOptionsHtml = allYears.map(function(yr) {
-          const tag = customStore[String(yr)] ? "☁️ [Cloud Uploaded]" : "📚 [Built-in]";
-          return `<option value="${yr}" ${yr === Y ? "selected" : ""}>${yr} — ${_getTamilYearName(yr)} ${tag}</option>`;
+        const masterUploadControls = isFriend ? "" : `
+          <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-amber-200">
+            <input id="mjHiddenCloudPdfInput" type="file" accept="application/pdf,.pdf" class="hidden" onchange="mjHandleCloudPdfFileSelected(event)" />
+            <button type="button" onclick="mjTriggerCloudPdfUpload(${Y})" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white font-extrabold text-xs shadow cursor-pointer">📤 ${Y}–${Y + 1} அசல் பஞ்சாங்க PDF பதிவேற்று (Cloud Sync)</button>
+            ${hasPdf ? `<button type="button" onclick="mjDeleteCloudPdfForYear(${Y})" class="px-3 py-2 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-900 border border-rose-400 font-extrabold text-xs cursor-pointer">🗑️ PDF நீக்கு</button>` : ""}
+          </div>
+          <div id="mjPdfUploadProgressBox" class="hidden mt-2 p-2.5 rounded-xl bg-indigo-50 border border-indigo-300 text-xs font-extrabold text-indigo-950"></div>
+        `;
+
+        const modeToggleHtml = hasPdf ? `
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="mjSwitchFullPanViewMode('pdf')" class="px-3 py-1.5 rounded-xl font-extrabold text-xs border-2 cursor-pointer ${activeMode === "pdf" ? "bg-[#6b0f22] text-white border-[#6b0f22]" : "bg-white text-slate-700 border-slate-300"}">📄 அசல் PDF புத்தகம்</button>
+            <button type="button" onclick="mjSwitchFullPanViewMode('book')" class="px-3 py-1.5 rounded-xl font-extrabold text-xs border-2 cursor-pointer ${activeMode === "book" ? "bg-[#6b0f22] text-white border-[#6b0f22]" : "bg-white text-slate-700 border-slate-300"}">📚 கிரகபாத சாரப் புத்தகம் (9 பக்கம்)</button>
+          </div>` : "";
+
+        const curPage = Math.max(1, Number(window._mjFullPanBookPage || 1));
+        const totalBookPages = (activeMode === "pdf" && window._mjLoadedPdfDocs[yKey]) ? window._mjLoadedPdfDocs[yKey].numPages : 9;
+        const pageSelectOpts = Array.from({ length: totalBookPages }, function(_, i) {
+          return `<option value="${i + 1}" ${i + 1 === curPage ? "selected" : ""}>பக்கம் ${i + 1} / ${totalBookPages}</option>`;
         }).join("");
 
-        const planetFilterHtml = [
-          { key: "ALL", label: "🌟 அனைத்து கிரகங்கள்" },
-          ...PLANET_LIST.map(function(pl) { return { key: pl.key, label: pl.short }; })
-        ].map(function(it) {
-          const act = pFilter === it.key;
-          return `<button type="button" onclick="mjSelectFullPanchangamPlanet('${it.key}')" class="px-3 py-1.5 rounded-xl font-extrabold text-xs border cursor-pointer transition ${act ? "bg-[#6b0f22] text-white border-[#6b0f22] shadow" : "bg-amber-50 hover:bg-amber-100 text-amber-950 border-amber-300"}">${it.label}</button>`;
-        }).join("");
-
-        const monthLenGridHtml = mLens ? `<div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5 pt-2">${TAMIL_MONTH_NAMES.map(function(mn, i) {
-          return `<div class="px-2 py-1 rounded-lg bg-amber-50 border border-amber-200 text-center text-[11px] font-bold"><span class="text-amber-950">${mn}:</span> <strong class="text-[#6b0f22]">${mLens[i]} நா</strong></div>`;
-        }).join("")}</div>` : "";
-
-        const visiblePlanets = pFilter === "ALL" ? PLANET_LIST : PLANET_LIST.filter(function(pl) { return pl.key === pFilter; });
-        const tablesHtml = visiblePlanets.map(function(pl) {
-          const rows = Array.isArray(yearTbl[pl.key]) ? yearTbl[pl.key] : [];
-          const bodyHtml = rows.length === 0
-            ? `<tr><td colspan="5" class="px-3 py-3 text-center text-xs font-bold text-slate-500">இந்த கிரகத்திற்குப் பதிவுகள் இல்லை</td></tr>`
-            : rows.map(_fmtRowHtml).join("");
-          return `
-            <div class="rounded-2xl bg-white border-2 border-amber-300 shadow-sm overflow-hidden">
-              <div class="px-4 py-2.5 bg-gradient-to-r from-[#2e050d] via-[#6b0f22] to-[#2e050d] text-amber-50 flex items-center justify-between gap-2">
-                <div class="font-extrabold text-xs sm:text-sm">🪐 ${pl.ta} பாதசாரம் — ${Y} (${tamilYearName})</div>
-                <span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-400 text-[#2e050d] font-extrabold">${rows.length} மாற்றங்கள்</span>
-              </div>
-              <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
-                  <thead class="bg-amber-100 text-amber-950 font-extrabold border-b-2 border-amber-300">
-                    <tr>
-                      <th class="px-2.5 py-2">தமிழ் தேதி</th>
-                      <th class="px-2.5 py-2">நாழிகை</th>
-                      <th class="px-2.5 py-2">நட்சத்திரம் &amp; பாதம்</th>
-                      <th class="px-2.5 py-2">ராசி</th>
-                      <th class="px-2.5 py-2">நவாம்சம்</th>
-                    </tr>
-                  </thead>
-                  <tbody>${bodyHtml}</tbody>
-                </table>
-              </div>
+        const flipControlsBar = `
+          <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-amber-100/90 border-2 border-amber-400 shadow-2xs">
+            <button type="button" onclick="mjFlipPanPage(-1, false)" class="px-3.5 py-2 rounded-xl bg-[#6b0f22] hover:bg-[#8b1c1c] text-white font-extrabold text-xs sm:text-sm shadow cursor-pointer active:scale-95">◀ முந்தைய பக்கம்</button>
+            <div class="flex items-center gap-2">
+              <span id="mjFlipPageBadge" class="hidden sm:inline font-extrabold text-xs text-amber-950">பக்கம் ${curPage} / ${totalBookPages}</span>
+              <select id="mjFlipPageSelect" onchange="mjFlipPanPage(this.value, true)" class="px-2.5 py-1.5 rounded-xl border border-amber-500 bg-white text-xs font-extrabold text-slate-900">${pageSelectOpts}</select>
+              ${activeMode === "pdf" ? `<button type="button" onclick="mjZoomPdfBook(-0.2)" class="px-2.5 py-1.5 rounded-lg bg-white border border-amber-400 font-extrabold text-xs cursor-pointer">➖</button><button type="button" onclick="mjZoomPdfBook(0.2)" class="px-2.5 py-1.5 rounded-lg bg-white border border-amber-400 font-extrabold text-xs cursor-pointer">➕</button>` : ""}
             </div>
-          `;
-        }).join("");
+            <button type="button" onclick="mjFlipPanPage(1, false)" class="px-3.5 py-2 rounded-xl bg-[#6b0f22] hover:bg-[#8b1c1c] text-white font-extrabold text-xs sm:text-sm shadow cursor-pointer active:scale-95">அடுத்த பக்கம் ▶</button>
+          </div>
+        `;
+
+        const stageHtml = (activeMode === "pdf")
+          ? `<div id="mjFlipBookStage" class="rounded-2xl bg-slate-900/95 p-2 sm:p-4 border-2 border-amber-400 shadow-lg text-center space-y-2">
+               <div id="mjPdfCanvasStatus" class="text-xs font-extrabold text-amber-200">⏳ PDF ஏற்றப்படுகிறது...</div>
+               <div class="overflow-x-auto flex justify-center">
+                 <canvas id="mjPanchangamPdfCanvas" class="bg-white rounded-lg shadow-xl max-w-full"></canvas>
+               </div>
+             </div>`
+          : `<div id="mjFlipBookStage">${_buildBookletPageHtml(Y, tamilYearName, chithirai1, mLens, yearTbl, isCloud, Math.min(9, curPage))}</div>`;
 
         container.innerHTML = `
-          <div class="space-y-4 pt-2 pb-12">
+          <div class="space-y-3 pt-2 pb-12">
             <div class="p-4 rounded-2xl bg-gradient-to-r from-[#0f3d3e] via-[#115e59] to-[#0f3d3e] text-white border-2 border-amber-400 shadow-lg space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <h2 class="text-base sm:text-lg font-extrabold flex items-center gap-2"><span>📖</span><span>முழு பஞ்சாங்கம் பார்க்க (அனைத்து ஆண்டுகள் &amp; Cloud Uploads)</span></h2>
-                  <p class="text-xs text-teal-100 font-semibold">இப்போது upload செய்த மற்றும் முன்பு சேர்த்த அனைத்து பஞ்சாங்க ஆண்டுகளின் முழு கிரகபாத சாரத்தையும் ஒரே இடத்தில் பார்க்கலாம்.</p>
+                  <h2 class="text-base sm:text-lg font-extrabold">📖 பஞ்சாங்கப் புத்தகம் (பக்கம் திருப்பிப் பார்க்கும் PDF Viewer)</h2>
+                  <p class="text-xs text-teal-100 font-semibold">எந்த ஆண்டின் பஞ்சாங்கத்தையும் புத்தகம் போலப் பக்கம் திருப்பிப் பார்க்கலாம் — புதிதாகப் பதிவேற்றும் PDF-களும் இதேபோல் திறக்கும்!</p>
                 </div>
-                <span class="px-3 py-1 rounded-full bg-amber-400 text-[#2e050d] font-extrabold text-xs">மொத்தம் ${allYears.length} ஆண்டுகள் (${cloudYears.length} Cloud)</span>
+                <span class="px-3 py-1 rounded-full bg-amber-400 text-[#2e050d] font-extrabold text-xs">மொத்தம் ${allYears.length} ஆண்டுகள்</span>
               </div>
-
               <div class="p-3 rounded-xl bg-white/95 text-slate-900 space-y-2.5">
-                <div class="space-y-1.5">
-                  <div class="text-xs font-extrabold text-emerald-950">☁️ Cloud-இல் பதிவேற்றிய / புதிய பஞ்சாங்க ஆண்டுகள் (${cloudYears.length}):</div>
-                  <div class="flex flex-wrap gap-1.5">${cloudChipsHtml}</div>
-                </div>
-                <div class="pt-2 border-t border-amber-200 flex flex-wrap items-center justify-between gap-2">
-                  <div class="flex items-center gap-2 flex-1 min-w-[220px]">
-                    <label class="text-xs font-extrabold text-amber-950 shrink-0">ஆண்டு தேர்வு:</label>
-                    <select onchange="mjSelectFullPanchangamYear(this.value)" class="flex-1 px-3 py-2 rounded-xl border-2 border-teal-500 text-xs sm:text-sm font-extrabold bg-white text-slate-900">${yearOptionsHtml}</select>
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div class="flex items-center gap-2 flex-1 min-w-[210px]">
+                    <label class="text-xs font-extrabold text-amber-950 shrink-0">ஆண்டு:</label>
+                    <select onchange="mjSelectFullPanchangamYear(this.value)" class="flex-1 px-3 py-2 rounded-xl border-2 border-teal-600 text-xs sm:text-sm font-extrabold bg-white text-slate-900">${yearOptionsHtml}</select>
                   </div>
-                  <span class="px-3 py-1.5 rounded-xl font-extrabold text-xs ${isCloud ? "bg-emerald-100 text-emerald-900 border border-emerald-400" : "bg-amber-100 text-amber-950 border border-amber-400"}">${isCloud ? "☁️ Cloud Uploaded பஞ்சாங்கம்" : "📚 உள்ளமைந்த 28-நம்பர் பாம்பு"} • சித்திரை 1: ${chithirai1}</span>
+                  ${modeToggleHtml}
                 </div>
-                ${monthLenGridHtml}
-                <div class="pt-2 border-t border-amber-200 flex flex-wrap items-center gap-1.5">
-                  ${planetFilterHtml}
-                </div>
+                <div class="flex flex-wrap items-center gap-1.5">${pdfChipsHtml}</div>
+                ${masterUploadControls}
               </div>
             </div>
-            <div class="space-y-4">${tablesHtml}</div>
+            ${flipControlsBar}
+            ${stageHtml}
+            ${flipControlsBar}
           </div>
         `;
+
+        // Attach mobile touch swipe left/right on flipbook stage
+        const stageEl = document.getElementById("mjFlipBookStage");
+        if (stageEl) {
+          let sx = 0, sy = 0;
+          stageEl.addEventListener("touchstart", function(e) {
+            if (e.touches && e.touches.length === 1) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }
+          }, { passive: true });
+          stageEl.addEventListener("touchend", function(e) {
+            if (!e.changedTouches || e.changedTouches.length !== 1) return;
+            const dx = e.changedTouches[0].clientX - sx;
+            const dy = e.changedTouches[0].clientY - sy;
+            if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+              window.mjFlipPanPage(dx < 0 ? 1 : -1, false);
+            }
+          }, { passive: true });
+        }
+
+        if (activeMode === "pdf") {
+          _renderCurrentPdfCanvas(yKey, curPage);
+        }
       };
 
-      // Wire 'fullpanchangam' cleanly into switchMainAppTab
+      // Wire 'fullpanchangam' behind 81229102@Openpanjagam password
       if (typeof switchMainAppTab === "function") {
         const _prevSw = switchMainAppTab;
         switchMainAppTab = function(tabKey, bypassOpenPwd) {
@@ -12287,7 +12604,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               window.mjRequestPanchangamPassword(
                 "open",
                 "🔐 முழு பஞ்சாங்கம் பார்க்க கடவுச்சொல்",
-                "அனைத்து உள்ளமைந்த & Cloud பஞ்சாங்க ஆண்டுகளையும் திறந்து பார்க்க Open கடவுச்சொல்லை உள்ளிடவும்:",
+                "அனைத்து பஞ்சாங்கப் புத்தகங்களையும் (PDF & Cloud) பக்கம் திருப்பிப் பார்க்க Open கடவுச்சொல்லை உள்ளிடவும்:",
                 function() {
                   switchMainAppTab("fullpanchangam", "81229102@Openpanjagam");
                 }
@@ -12316,7 +12633,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             if (fullEl) fullEl.classList.remove("hidden");
             if (btnBook) btnBook.className = inactiveAmberCls;
             if (btnFull) btnFull.className = activeCls;
-            if (ind) ind.textContent = "📖 முழு பஞ்சாங்கம் பார்க்க (அனைத்து ஆண்டுகள் & Cloud)";
+            if (ind) ind.textContent = "📖 🔐 முழு பஞ்சாங்கம் பார்க்க (PDF Flipbook)";
             window.mjRenderFullPanchangamViewerTab();
             if (typeof window.mjCloseSideMenu === "function") window.mjCloseSideMenu();
           } else {
@@ -12327,18 +12644,29 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         window.switchMainAppTab = switchMainAppTab;
       }
 
-      // Auto-refresh Full Panchangam Viewer whenever Cloud sync updates _customPaambuYearsStore
-      if (typeof window.refreshAddPanchangamTabView === "function") {
-        const _prevRef = window.refreshAddPanchangamTabView;
-        window.refreshAddPanchangamTabView = function() {
-          _prevRef();
-          if (typeof currentMainAppTab !== "undefined" && currentMainAppTab === "fullpanchangam") {
-            window.mjRenderFullPanchangamViewerTab();
+      // Auto-sync pdf_meta_* docs from Firestore panchangam_years
+      if (typeof window.mjStartPanchangamCloudSync === "function") {
+        const _origSync = window.mjStartPanchangamCloudSync;
+        window.mjStartPanchangamCloudSync = function() {
+          _origSync();
+          if (typeof mjDb !== "undefined" && mjDb) {
+            mjDb.collection("panchangam_years").where("isPdfMeta", "==", true).onSnapshot(function(snap) {
+              const nextMap = {};
+              snap.forEach(function(doc) {
+                const d = doc.data();
+                if (d && d.year) nextMap[String(d.year)] = d;
+              });
+              window._mjCloudPdfMetaMap = nextMap;
+              if (typeof currentMainAppTab !== "undefined" && currentMainAppTab === "fullpanchangam") {
+                window.mjRenderFullPanchangamViewerTab();
+              }
+            }, function() {});
           }
         };
       }
     })();
   </script>
+
 
 
   <script id="mjSessionAutoPersistScript">
