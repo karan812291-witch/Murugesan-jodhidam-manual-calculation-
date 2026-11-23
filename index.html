@@ -485,6 +485,19 @@
       animation: mjBlinkAlert 1.3s ease-in-out infinite;
     }
 
+
+    /* ☰ Slide-Out Side Menu Drawer */
+    #mjSideMenuDrawer select, #mjSideMenuDrawer input[type="text"], #mjSideMenuDrawer button {
+      max-width: 100%;
+    }
+    #mjSideMenuDrawer #inpPage0Deity {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    #mjSideMenuDrawer.mj-drawer-open {
+      transform: translateX(0) !important;
+    }
+
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -576,6 +589,10 @@
   <!-- Top Branding Header (Friend App) -->
   <header class="no-print bg-gradient-to-r from-[#3b0711] via-[#5c0b1b] to-[#3b0711] text-amber-50 border-b-4 border-amber-500 shadow-lg static sm:sticky sm:top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <button id="btnHeaderSideMenu" type="button" onclick="mjOpenSideMenu()" class="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-[#2e050d] font-extrabold text-xs sm:text-sm shadow flex items-center gap-1.5 cursor-pointer shrink-0">
+        <span class="text-base leading-none">☰</span>
+        <span>மெனு</span>
+      </button>
       <div class="flex items-center gap-3">
         <div class="w-12 h-12 rounded-full bg-amber-500/20 border-2 border-amber-400 p-0.5 flex items-center justify-center shadow-md overflow-hidden shrink-0">
           <img src="data:image/jpeg;base64,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" alt="முருகேசன் ஜோதிடம் நண்பர் ஆப் சின்னம்" class="w-full h-full object-cover rounded-full" />
@@ -844,145 +861,16 @@
       </div>
 
       <!-- Page 0 Deity Rotation & New File Bar -->
-      <div class="mt-3 p-3 rounded-xl bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-2 border-amber-300 flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-2">
-          <span class="text-xl">🙏</span>
-          <div>
-            <div class="text-xs sm:text-sm font-extrabold text-amber-950">பக்கம் 0 தமிழ் கடவுள் திருவுருவப் படம்</div>
-            <div class="text-[11px] font-semibold text-stone-600">புதிய ஜாதகம் உருவாக்கும் போதெல்லாம் முருகன், விநாயகர், பார்வதி, மகாலட்சுமி, கலைவாணி திருவுருவப் படம் தானாக மாறும்!</div>
-          </div>
+      <!-- ☰ Compact Side-Menu Trigger Bar (keeps Main Page ultra-clean) -->
+      <div id="mjCompactMenuBar" class="no-print mt-3 p-2.5 sm:p-3 rounded-2xl bg-gradient-to-r from-[#2e050d] via-[#6b0f22] to-[#2e050d] text-amber-50 border-2 border-amber-400 shadow-md flex flex-wrap items-center justify-between gap-2">
+        <button id="btnOpenSideMenuMain" type="button" onclick="mjOpenSideMenu()" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-[#2e050d] font-extrabold text-xs sm:text-sm shadow flex items-center gap-2 cursor-pointer transition active:scale-95">
+          <span class="text-base leading-none">☰</span>
+          <span>மெனு (Tabs &amp; Settings)</span>
+        </button>
+        <div id="mjActiveTabIndicator" class="text-xs sm:text-sm font-extrabold text-amber-200 flex items-center gap-1.5">
+          <span>📚</span>
+          <span>1. ஜாதகப் புத்தகம் (26 பக்கங்கள்)</span>
         </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <select id="inpPage0Deity" onchange="calculateAndFillBook()" class="px-3 py-1.5 rounded-xl border border-amber-400 text-xs font-extrabold text-amber-950 bg-white shadow-2xs">
-            <option value="auto" selected>🔄 தானியங்கி (புதிய ஜாதகம் உருவாக்கும்போது மாறும்)</option>
-            <option value="murugan">🦚 முருகப்பெருமான்</option>
-            <option value="vinayagar">🐘 விநாயகப் பெருமான்</option>
-            <option value="parvathi">🔱 பார்வதி தேவி / அம்மன்</option>
-            <option value="lakshmi">🪷 மகாலட்சுமி தாயார்</option>
-            <option value="saraswathi">🪕 கலைவாணி / சரஸ்வதி</option>
-          </select>
-          <button id="btnRotateDeity" type="button" onclick="rotatePage0Deity(false)" class="px-3 py-1.5 rounded-xl bg-rose-800 hover:bg-rose-700 text-white font-extrabold text-xs shadow transition cursor-pointer">
-            🔄 அடுத்த தெய்வப் படம் மாற்று
-          </button>
-          <button id="btnCreateNewFile" type="button" onclick="createNewJathagamFile()" class="px-3 py-1.5 rounded-xl bg-emerald-800 hover:bg-emerald-700 text-white font-extrabold text-xs shadow transition cursor-pointer">
-            ✨ புதிய ஜாதகம் உருவாக்கு
-          </button>
-        </div>
-      </div>
-
-      <!-- Optional Accordion: Manual Star/Pada & Rasi/Navamsam Box Override -->
-      <details id="manualOverrideAccordion" class="mt-2 bg-amber-50/70 rounded-xl border-2 border-[#8b1c1c]/40 p-3">
-        <summary class="text-xs sm:text-sm font-extrabold text-amber-950 cursor-pointer select-none flex items-center justify-between">
-          <span>🛠️ கைக்கணக்கு / நட்சத்திர நாழிகை & கிரக பாதசாரம் + ராசி/நவாம்ச கட்டம் நேரடி மாற்றம்</span>
-          <span class="text-xs font-semibold text-amber-800 underline">திறக்க / மூட சொடுக்கவும்</span>
-        </summary>
-        <div class="mt-3 pt-3 border-t border-amber-200 space-y-3">
-          <div id="paambu28QuickPresetBar" style="display:none !important;" class="hidden p-3 rounded-xl bg-gradient-to-r from-amber-100 via-orange-50 to-amber-100 border-2 border-[#8b1c1c] flex-wrap items-center justify-between gap-2 mb-2">
-            <div class="text-xs font-extrabold text-[#7f1d1d]">
-              🐍 அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (சென்னை மனோன்மணி விலாச அச்சகம் • 1989–2027 [சுக்ல ௵ முதல் பராபவ ௵ வரை 38 வருட] கிரகபாத சாரங்கள் இணைக்கப்பட்டுள்ளது)
-            </div>
-            <div class="flex flex-wrap gap-2">
-              <button id="btnOpenPaambu1989To2027Table" type="button" onclick="openPaambu1989To2027Modal()" class="px-3 py-1.5 rounded-lg bg-indigo-900 hover:bg-indigo-800 text-amber-200 border border-amber-400 font-extrabold text-xs shadow cursor-pointer">
-                📜 1989–2027 கிரகபாத சார அட்டவணை (38 வருடங்கள்)
-              </button>
-              <button id="btnApplyKrodhiAbhinayaPreset" type="button" onclick="applyKrodhiAbhinaya2024Preset(false)" class="px-3 py-1.5 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-extrabold text-xs shadow cursor-pointer">
-                📕 D. அபிநயா (08-10-2024 07:28 PM • குரோதி புரட்டாசி 22 - அசல் 28 நம்பர் பஞ்சாங்கம்)
-              </button>
-              <button id="btnApplyKrodhiAuditPreset" type="button" onclick="applyKrodhiAbhinaya2024Preset(true)" class="px-3 py-1.5 rounded-lg bg-amber-800 hover:bg-amber-700 text-white font-extrabold text-xs shadow cursor-pointer">
-                📋 08-10-2024 07:28 PM (செவ்வாய்: மேஷம் - பரணி 4 / விருச்சிக அம்சம் ஆடிட் கட்டம்)
-              </button>
-              <button id="btnApplyDharshiniPreset" type="button" onclick="applyDharshiniManualNotePreset()" class="px-3 py-1.5 rounded-lg bg-[#8b1c1c] hover:bg-red-800 text-white font-extrabold text-xs shadow cursor-pointer">
-                📖 19-12-2015 10:29 AM (உத்திரட்டாதி 3) கைக்கணக்கு ஏற்று
-              </button>
-            </div>
-          </div>
-          <div class="flex flex-wrap items-center gap-3">
-            <label class="inline-flex items-center gap-2 text-xs font-extrabold text-rose-900 bg-rose-100 px-3 py-1.5 rounded-lg border border-rose-300 cursor-pointer">
-              <input id="chkUseManualOverride" type="checkbox" onchange="calculateAndFillBook()" class="w-4 h-4 accent-rose-700" />
-              <span>கைக்கணக்கு நட்சத்திர பாதசார மாற்றத்தைப் பயன்படுத்து</span>
-            </label>
-            <span class="text-xs text-slate-600">இதைத் தேர்வு செய்தால் கீழே நீங்கள் மாற்றும் நட்சத்திரம் & பாதம் அப்படியே புத்தகத்தில் ஏறும்.</span>
-          </div>
-          <div id="manualPadasaramGrid" class="grid grid-cols-2 sm:grid-cols-5 gap-2.5"></div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-amber-200">
-            <div class="bg-white p-2.5 rounded-lg border border-amber-200">
-              <label class="block text-xs font-extrabold text-amber-950 mb-1">நட்சத்திர ஆதி நாழிகை (எ.கா: 65.23)</label>
-              <input id="manStarAathiDot" type="text" placeholder="தானியங்கி (எ.கா: 65.23)" oninput="if(_byId('chkUseManualOverride').checked) calculateAndFillBook()" class="w-full px-2.5 py-1.5 rounded border border-amber-300 text-xs font-bold text-slate-900" />
-            </div>
-            <div class="bg-white p-2.5 rounded-lg border border-amber-200">
-              <label class="block text-xs font-extrabold text-amber-950 mb-1">நட்சத்திர செல் நாழிகை (எ.கா: 50.12)</label>
-              <input id="manStarSelDot" type="text" placeholder="தானியங்கி (எ.கா: 50.12)" oninput="if(_byId('chkUseManualOverride').checked) calculateAndFillBook()" class="w-full px-2.5 py-1.5 rounded border border-amber-300 text-xs font-bold text-slate-900" />
-            </div>
-            <div class="bg-white p-2.5 rounded-lg border border-amber-200">
-              <label class="block text-xs font-extrabold text-amber-950 mb-1">திசை இருப்பு நேரடி மாற்றம் (வ - மா - நா)</label>
-              <div class="grid grid-cols-3 gap-1.5">
-                <input id="manDasaBalY" type="number" min="0" max="20" placeholder="வருடம்" oninput="if(_byId('chkUseManualOverride').checked) calculateAndFillBook()" class="px-2 py-1.5 rounded border border-amber-300 text-xs font-bold text-slate-900" />
-                <input id="manDasaBalM" type="number" min="0" max="11" placeholder="மாதம்" oninput="if(_byId('chkUseManualOverride').checked) calculateAndFillBook()" class="px-2 py-1.5 rounded border border-amber-300 text-xs font-bold text-slate-900" />
-                <input id="manDasaBalD" type="number" min="0" max="30" placeholder="நாள்" oninput="if(_byId('chkUseManualOverride').checked) calculateAndFillBook()" class="px-2 py-1.5 rounded border border-amber-300 text-xs font-bold text-slate-900" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </details>
-
-      <!-- Display Options & Page Filter Bar -->
-      <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-amber-200">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="text-xs font-extrabold text-amber-950">📄 பக்கங்கள் காட்சி:</span>
-          <button id="btnFilterAll20" type="button" onclick="setPageFilter('all20')" class="px-3 py-1.5 rounded-lg bg-amber-900 text-white font-extrabold text-xs shadow cursor-pointer">
-            📚 முழு 26 பக்கப் புத்தகம்
-          </button>
-          <button id="btnFilterDataOnly" type="button" onclick="setPageFilter('dataOnly')" class="px-3 py-1.5 rounded-lg bg-amber-100 text-amber-950 hover:bg-amber-200 font-bold text-xs border border-amber-300 cursor-pointer">
-            📝 கணிப்பு நிரப்பிய பக்கங்கள் மட்டும்
-          </button>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-3">
-          <label class="inline-flex items-center gap-1.5 text-xs font-bold text-amber-950 cursor-pointer bg-amber-100/80 px-2.5 py-1.5 rounded-lg border border-amber-300">
-            <input id="chkShowKattamDegrees" type="checkbox" checked onchange="calculateAndFillBook()" class="w-4 h-4 accent-amber-800" />
-            <span>👁️ கட்டத்திற்குள் கிரகப் பாகை & பார்வை அளவுகளைக் காட்டு</span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Main Navigation Tabs: 1. Jathaga Puthagam | 2. Full Dasa-Bhukti (Birth to 100+ Years) -->
-      <div class="pt-3 border-t-2 border-amber-200 flex flex-wrap items-center justify-between gap-2">
-        <div class="flex flex-wrap items-center gap-2">
-          <button id="btnTabBookView" type="button" onclick="switchMainAppTab('book')" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#8b1c1c] via-[#a31b1b] to-[#8b1c1c] text-white font-extrabold text-xs sm:text-sm shadow-md flex items-center gap-2 cursor-pointer transition">
-            <span>📚</span>
-            <span>1. ஜாதகப் புத்தகம் (26 பக்கங்கள்)</span>
-          </button>
-          <button id="btnTabDasa100View" type="button" onclick="switchMainAppTab('dasa100')" class="px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 border-2 border-amber-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
-            <span>📅</span>
-            <span>2. தசா புத்தி விபரம் (பிறந்தது முதல் 100 வயது வரை)</span>
-          </button>
-          <button id="btnTabUserManualView" type="button" onclick="switchMainAppTab('manual')" class="px-4 py-2.5 rounded-xl bg-sky-100 hover:bg-sky-200 text-sky-950 border-2 border-sky-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
-            <span>📘</span>
-            <span>3. கிரக பாகை, கட்ட விளக்கம் & பயனர் கையேடு (User Manual PDF)</span>
-          </button>
-          <button id="btnTabPadasaramView" type="button" onclick="switchMainAppTab('padasaram')" class="px-4 py-2.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-950 border-2 border-emerald-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
-            <span>🐍</span>
-            <span>4. 1987–2027 கிரகபாத சார அட்டவணை (பாம்பு பஞ்சாங்கம்)</span>
-          </button>
-          <button id="btnTabKaiKanakkuView" type="button" onclick="switchMainAppTab('kaikanakku')" class="px-4 py-2.5 rounded-xl bg-violet-100 hover:bg-violet-200 text-violet-950 border-2 border-violet-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
-            <span>🧮</span>
-            <span>5. கைக்கணக்கு விளக்கம் (Step 1–6 &amp; A4 PDF)</span>
-            <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-700 text-white font-bold">AUTO</span>
-          </button>
-          <button id="btnTabAddPanchangamView" type="button" onclick="switchMainAppTab('addpanchangam')" class="hidden px-4 py-2.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-950 border-2 border-purple-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
-            <span>➕</span>
-            <span>6. புதிய பஞ்சாங்கம் சேர்க்க / பதிவேற்றம் (Cloud Sync)</span>
-          </button>
-        </div>
-        <div class="text-xs font-extrabold text-[#7f1d1d] bg-rose-50 px-3 py-1.5 rounded-lg border border-rose-200">
-          ✨ பிறந்தது முதல் 100+ வயது வரை தேதி & நிறைவடையும் வயதுடன் முழு தசா புத்தி!
-        </div>
-      </div>
-
-      <!-- Quick Page Jump Strip -->
-      <div id="pageJumpStripWrapper" class="flex items-center gap-1 overflow-x-auto py-1 text-xs">
-        <span class="font-bold text-slate-500 shrink-0 mr-1">பக்கம் செல்க:</span>
-        <div id="pageJumpButtons" class="flex items-center gap-1"></div>
       </div>
     </div>
   </section>
@@ -4763,7 +4651,7 @@
     }
 
     function buildBookKattamHTML(planetsMap, chartType, centerLabelTa, isNavy) {
-      const showDeg = _byId("chkShowKattamDegrees") ? _byId("chkShowKattamDegrees").checked : true;
+      const showDeg = _byId("chkShowKattamDegrees") ? _byId("chkShowKattamDegrees").checked : false;
       const byRasi = Array.from({ length: 12 }, () => []);
       const incomingByRasi = Array.from({ length: 12 }, () => []);
 
@@ -11738,6 +11626,206 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       }
       window.mjUpdateLiveTamilDatePopup();
     });
+  </script>
+
+
+  <!-- ☰ Slide-Out Side Menu Drawer & Backdrop -->
+  <div id="mjSideMenuBackdrop" onclick="mjCloseSideMenu()" class="no-print hidden fixed inset-0 z-50 bg-black/55 backdrop-blur-[1px] transition-opacity"></div>
+  <aside id="mjSideMenuDrawer" aria-label="App Side Menu" class="no-print fixed inset-y-0 left-0 z-50 w-[90vw] max-w-[390px] bg-[#fffdf9] border-r-4 border-amber-400 shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="sticky top-0 z-10 bg-gradient-to-r from-[#2e050d] via-[#6b0f22] to-[#2e050d] text-amber-50 px-4 py-3 border-b-2 border-amber-400 flex items-center justify-between gap-2 shrink-0">
+      <div class="font-extrabold text-sm flex items-center gap-2">
+        <span>☰</span>
+        <span>மெனு &amp; தாவல்கள் (Menu)</span>
+      </div>
+      <button type="button" onclick="mjCloseSideMenu()" class="px-3 py-1 rounded-lg bg-amber-400 hover:bg-amber-300 text-[#2e050d] font-extrabold text-xs cursor-pointer">✕ மூடு</button>
+    </div>
+    <div class="flex-1 overflow-y-auto p-3.5 space-y-3">
+      <div class="mt-3 p-3 rounded-xl bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-2 border-amber-300 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🙏</span>
+          <div>
+            <div class="text-xs sm:text-sm font-extrabold text-amber-950">பக்கம் 0 தமிழ் கடவுள் திருவுருவப் படம்</div>
+            <div class="text-[11px] font-semibold text-stone-600">புதிய ஜாதகம் உருவாக்கும் போதெல்லாம் முருகன், விநாயகர், பார்வதி, மகாலட்சுமி, கலைவாணி திருவுருவப் படம் தானாக மாறும்!</div>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="inpPage0Deity" onchange="calculateAndFillBook()" class="px-3 py-1.5 rounded-xl border border-amber-400 text-xs font-extrabold text-amber-950 bg-white shadow-2xs">
+            <option value="auto" selected>🔄 தானியங்கி (புதிய ஜாதகம் உருவாக்கும்போது மாறும்)</option>
+            <option value="murugan">🦚 முருகப்பெருமான்</option>
+            <option value="vinayagar">🐘 விநாயகப் பெருமான்</option>
+            <option value="parvathi">🔱 பார்வதி தேவி / அம்மன்</option>
+            <option value="lakshmi">🪷 மகாலட்சுமி தாயார்</option>
+            <option value="saraswathi">🪕 கலைவாணி / சரஸ்வதி</option>
+          </select>
+          <button id="btnRotateDeity" type="button" onclick="rotatePage0Deity(false)" class="px-3 py-1.5 rounded-xl bg-rose-800 hover:bg-rose-700 text-white font-extrabold text-xs shadow transition cursor-pointer">
+            🔄 அடுத்த தெய்வப் படம் மாற்று
+          </button>
+          <button id="btnCreateNewFile" type="button" onclick="createNewJathagamFile()" class="px-3 py-1.5 rounded-xl bg-emerald-800 hover:bg-emerald-700 text-white font-extrabold text-xs shadow transition cursor-pointer">
+            ✨ புதிய ஜாதகம் உருவாக்கு
+          </button>
+        </div>
+      </div>
+
+      <!-- Optional Accordion: Manual Star/Pada & Rasi/Navamsam Box Override -->
+      <details id="manualOverrideAccordion" class="mt-2 bg-amber-50/70 rounded-xl border-2 border-[#8b1c1c]/40 p-3">
+        <summary class="text-xs sm:text-sm font-extrabold text-amber-950 cursor-pointer select-none flex items-center justify-between">
+          <span>🛠️ கைக்கணக்கு / நட்சத்திர நாழிகை & கிரக பாதசாரம் + ராசி/நவாம்ச கட்டம் நேரடி மாற்றம்</span>
+          <span class="text-xs font-semibold text-amber-800 underline">திறக்க / மூட சொடுக்கவும்</span>
+        </summary>
+        <div class="mt-3 pt-3 border-t border-amber-200 space-y-3">
+          <div id="paambu28QuickPresetBar" style="display:none !important;" class="hidden p-3 rounded-xl bg-gradient-to-r from-amber-100 via-orange-50 to-amber-100 border-2 border-[#8b1c1c] flex-wrap items-center justify-between gap-2 mb-2">
+            <div class="text-xs font-extrabold text-[#7f1d1d]">
+              🐍 அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (சென்னை மனோன்மணி விலாச அச்சகம் • 1989–2027 [சுக்ல ௵ முதல் பராபவ ௵ வரை 38 வருட] கிரகபாத சாரங்கள் இணைக்கப்பட்டுள்ளது)
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button id="btnOpenPaambu1989To2027Table" type="button" onclick="openPaambu1989To2027Modal()" class="px-3 py-1.5 rounded-lg bg-indigo-900 hover:bg-indigo-800 text-amber-200 border border-amber-400 font-extrabold text-xs shadow cursor-pointer">
+                📜 1989–2027 கிரகபாத சார அட்டவணை (38 வருடங்கள்)
+              </button>
+              <button id="btnApplyKrodhiAbhinayaPreset" type="button" onclick="applyKrodhiAbhinaya2024Preset(false)" class="px-3 py-1.5 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-extrabold text-xs shadow cursor-pointer">
+                📕 D. அபிநயா (08-10-2024 07:28 PM • குரோதி புரட்டாசி 22 - அசல் 28 நம்பர் பஞ்சாங்கம்)
+              </button>
+              <button id="btnApplyKrodhiAuditPreset" type="button" onclick="applyKrodhiAbhinaya2024Preset(true)" class="px-3 py-1.5 rounded-lg bg-amber-800 hover:bg-amber-700 text-white font-extrabold text-xs shadow cursor-pointer">
+                📋 08-10-2024 07:28 PM (செவ்வாய்: மேஷம் - பரணி 4 / விருச்சிக அம்சம் ஆடிட் கட்டம்)
+              </button>
+              <button id="btnApplyDharshiniPreset" type="button" onclick="applyDharshiniManualNotePreset()" class="px-3 py-1.5 rounded-lg bg-[#8b1c1c] hover:bg-red-800 text-white font-extrabold text-xs shadow cursor-pointer">
+                📖 19-12-2015 10:29 AM (உத்திரட்டாதி 3) கைக்கணக்கு ஏற்று
+              </button>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <label class="inline-flex items-center gap-2 text-xs font-extrabold text-rose-900 bg-rose-100 px-3 py-1.5 rounded-lg border border-rose-300 cursor-pointer">
+              <input id="chkUseManualOverride" type="checkbox" onchange="calculateAndFillBook()" class="w-4 h-4 accent-rose-700" />
+              <span>கைக்கணக்கு நட்சத்திர பாதசார மாற்றத்தைப் பயன்படுத்து</span>
+            </label>
+            <span class="text-xs text-slate-600">இதைத் தேர்வு செய்தால் கீழே நீங்கள் மாற்றும் நட்சத்திரம் & பாதம் அப்படியே புத்தகத்தில் ஏறும்.</span>
+          </div>
+          <div id="manualPadasaramGrid" class="grid grid-cols-2 sm:grid-cols-5 gap-2.5"></div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-amber-200">
+            <div class="bg-white p-2.5 rounded-lg border border-amber-200">
+              <label class="block text-xs font-extrabold text-amber-950 mb-1">நட்சத்திர ஆதி நாழிகை (எ.கா: 65.23)</label>
+              <input id="manStarAathiDot" type="text" placeholder="தானியங்கி (எ.கா: 65.23)" oninput="if(_byId('chkUseManualOverride').checked) calculateAndFillBook()" class="w-full px-2.5 py-1.5 rounded border border-amber-300 text-xs font-bold text-slate-900" />
+            </div>
+            <div class="bg-white p-2.5 rounded-lg border border-amber-200">
+              <label class="block text-xs font-extrabold text-amber-950 mb-1">நட்சத்திர செல் நாழிகை (எ.கா: 50.12)</label>
+              <input id="manStarSelDot" type="text" placeholder="தானியங்கி (எ.கா: 50.12)" oninput="if(_byId('chkUseManualOverride').checked) calculateAndFillBook()" class="w-full px-2.5 py-1.5 rounded border border-amber-300 text-xs font-bold text-slate-900" />
+            </div>
+            <div class="bg-white p-2.5 rounded-lg border border-amber-200">
+              <label class="block text-xs font-extrabold text-amber-950 mb-1">திசை இருப்பு நேரடி மாற்றம் (வ - மா - நா)</label>
+              <div class="grid grid-cols-3 gap-1.5">
+                <input id="manDasaBalY" type="number" min="0" max="20" placeholder="வருடம்" oninput="if(_byId('chkUseManualOverride').checked) calculateAndFillBook()" class="px-2 py-1.5 rounded border border-amber-300 text-xs font-bold text-slate-900" />
+                <input id="manDasaBalM" type="number" min="0" max="11" placeholder="மாதம்" oninput="if(_byId('chkUseManualOverride').checked) calculateAndFillBook()" class="px-2 py-1.5 rounded border border-amber-300 text-xs font-bold text-slate-900" />
+                <input id="manDasaBalD" type="number" min="0" max="30" placeholder="நாள்" oninput="if(_byId('chkUseManualOverride').checked) calculateAndFillBook()" class="px-2 py-1.5 rounded border border-amber-300 text-xs font-bold text-slate-900" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Display Options & Page Filter Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-amber-200">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-xs font-extrabold text-amber-950">📄 பக்கங்கள் காட்சி:</span>
+          <button id="btnFilterAll20" type="button" onclick="setPageFilter('all20')" class="px-3 py-1.5 rounded-lg bg-amber-900 text-white font-extrabold text-xs shadow cursor-pointer">
+            📚 முழு 26 பக்கப் புத்தகம்
+          </button>
+          <button id="btnFilterDataOnly" type="button" onclick="setPageFilter('dataOnly')" class="px-3 py-1.5 rounded-lg bg-amber-100 text-amber-950 hover:bg-amber-200 font-bold text-xs border border-amber-300 cursor-pointer">
+            📝 கணிப்பு நிரப்பிய பக்கங்கள் மட்டும்
+          </button>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="inline-flex items-center gap-1.5 text-xs font-bold text-amber-950 cursor-pointer bg-amber-100/80 px-2.5 py-1.5 rounded-lg border border-amber-300">
+            <input id="chkShowKattamDegrees" type="checkbox" onchange="calculateAndFillBook()" class="w-4 h-4 accent-amber-800" />
+            <span>👁️ கட்டத்திற்குள் கிரகப் பாகை & பார்வை அளவுகளைக் காட்டு</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs: 1. Jathaga Puthagam | 2. Full Dasa-Bhukti (Birth to 100+ Years) -->
+      <div class="pt-3 border-t-2 border-amber-200 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btnTabBookView" type="button" onclick="switchMainAppTab('book')" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#8b1c1c] via-[#a31b1b] to-[#8b1c1c] text-white font-extrabold text-xs sm:text-sm shadow-md flex items-center gap-2 cursor-pointer transition">
+            <span>📚</span>
+            <span>1. ஜாதகப் புத்தகம் (26 பக்கங்கள்)</span>
+          </button>
+          <button id="btnTabDasa100View" type="button" onclick="switchMainAppTab('dasa100')" class="px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 border-2 border-amber-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
+            <span>📅</span>
+            <span>2. தசா புத்தி விபரம் (பிறந்தது முதல் 100 வயது வரை)</span>
+          </button>
+          <button id="btnTabUserManualView" type="button" onclick="switchMainAppTab('manual')" class="px-4 py-2.5 rounded-xl bg-sky-100 hover:bg-sky-200 text-sky-950 border-2 border-sky-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
+            <span>📘</span>
+            <span>3. கிரக பாகை, கட்ட விளக்கம் & பயனர் கையேடு (User Manual PDF)</span>
+          </button>
+          <button id="btnTabPadasaramView" type="button" onclick="switchMainAppTab('padasaram')" class="px-4 py-2.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-950 border-2 border-emerald-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
+            <span>🐍</span>
+            <span>4. 1987–2027 கிரகபாத சார அட்டவணை (பாம்பு பஞ்சாங்கம்)</span>
+          </button>
+          <button id="btnTabKaiKanakkuView" type="button" onclick="switchMainAppTab('kaikanakku')" class="px-4 py-2.5 rounded-xl bg-violet-100 hover:bg-violet-200 text-violet-950 border-2 border-violet-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
+            <span>🧮</span>
+            <span>5. கைக்கணக்கு விளக்கம் (Step 1–6 &amp; A4 PDF)</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-700 text-white font-bold">AUTO</span>
+          </button>
+          <button id="btnTabAddPanchangamView" type="button" onclick="switchMainAppTab('addpanchangam')" class="hidden px-4 py-2.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-950 border-2 border-purple-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
+            <span>➕</span>
+            <span>6. புதிய பஞ்சாங்கம் சேர்க்க / பதிவேற்றம் (Cloud Sync)</span>
+          </button>
+        </div>
+        <div class="text-xs font-extrabold text-[#7f1d1d] bg-rose-50 px-3 py-1.5 rounded-lg border border-rose-200">
+          ✨ பிறந்தது முதல் 100+ வயது வரை தேதி & நிறைவடையும் வயதுடன் முழு தசா புத்தி!
+        </div>
+      </div>
+
+      <!-- Quick Page Jump Strip -->
+      <div id="pageJumpStripWrapper" class="flex items-center gap-1 overflow-x-auto py-1 text-xs">
+        <span class="font-bold text-slate-500 shrink-0 mr-1">பக்கம் செல்க:</span>
+        <div id="pageJumpButtons" class="flex items-center gap-1"></div>
+      </div>
+    </div>
+  </aside>
+
+  <script id="mjSideMenuDrawerScript">
+    window.mjOpenSideMenu = function() {
+      const dr = document.getElementById("mjSideMenuDrawer");
+      const bd = document.getElementById("mjSideMenuBackdrop");
+      if (dr) dr.classList.add("mj-drawer-open");
+      if (bd) bd.classList.remove("hidden");
+    };
+    window.mjCloseSideMenu = function() {
+      const dr = document.getElementById("mjSideMenuDrawer");
+      const bd = document.getElementById("mjSideMenuBackdrop");
+      if (dr) dr.classList.remove("mj-drawer-open");
+      if (bd) bd.classList.add("hidden");
+    };
+
+    (function() {
+      const TAB_LABELS = {
+        book: "📚 1. ஜாதகப் புத்தகம் (26 பக்கங்கள்)",
+        dasa100: "📅 2. தசா புத்தி விபரம் (100 வயது வரை)",
+        manual: "📘 3. பயனர் கையேடு (User Manual PDF)",
+        padasaram: "🐍 4. 1987–2027 கிரகபாத சார அட்டவணை",
+        kaikanakku: "🧮 5. கைக்கணக்கு விளக்கம் (Step 1–6 & PDF)",
+        addpanchangam: "➕ புதிய பஞ்சாங்கம் சேர்க்க (Cloud Sync)",
+        calcsteps: "🧮 6. கணக்கீட்டு விளக்கம் (1–12 படிகள் & PDF)"
+      };
+      if (typeof switchMainAppTab === "function") {
+        const _origSwitchForDrawer = switchMainAppTab;
+        switchMainAppTab = function(tabKey) {
+          _origSwitchForDrawer(tabKey);
+          const ind = document.getElementById("mjActiveTabIndicator");
+          if (ind) {
+            const label = TAB_LABELS[tabKey] || TAB_LABELS.book;
+            ind.textContent = label;
+          }
+          window.mjCloseSideMenu();
+        };
+        window.switchMainAppTab = switchMainAppTab;
+      }
+      // Ensure chkShowKattamDegrees is unchecked on fresh load
+      document.addEventListener("DOMContentLoaded", function() {
+        const chk = document.getElementById("chkShowKattamDegrees");
+        if (chk) chk.checked = false;
+      });
+    })();
   </script>
 
 </body>
