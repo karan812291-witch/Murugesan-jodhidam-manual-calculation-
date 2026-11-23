@@ -7817,9 +7817,7 @@
                 <button type="button" onclick="syncPadasaramTabToBirthYear()" class="px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-extrabold text-xs shadow cursor-pointer shrink-0">
                   🎯 ஜாதக வருடத்திற்குச் செல் (${birthEffYear}–${birthEffYear + 1} ${tNameBirth} ௵)
                 </button>
-                <button type="button" onclick="downloadPadasaramYearCsv(${selYear})" class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow cursor-pointer shrink-0">
-                  📥 ${selYear}–${selYear + 1} அட்டவணை CSV டவுன்லோட்
-                </button>
+                
               </div>
             </div>
           </div>
@@ -12068,12 +12066,14 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
   <script id="mjFullPanchangamViewerScript">
     // 🚫 Permanently disable any HTML App Download function everywhere
     window.downloadThisAppHtml = function() { return false; };
+    window.downloadPadasaramYearCsv = function() { return false; };
 
     (function() {
       window._mjFullPanViewerYear = null;
       window._mjFullPanMonthIdx = 0; // 0 = சித்திரை ... 11 = பங்குனி
       window._mjFullPanPdfPage = 1;
-      window._mjFullPanViewMode = "daily"; // "daily" | "pdf"
+      window._mjFullPanViewMode = "auto"; // "auto" | "daily" | "pdf"
+      window._mjFullPanUserChoseDaily = false;
       window._mjCloudPdfMetaMap = window._mjCloudPdfMetaMap || {};
       window._mjLoadedPdfDocs = window._mjLoadedPdfDocs || {};
       window._mjPdfZoom = 1.0;
@@ -12485,11 +12485,16 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         window._mjFullPanViewerYear = Number(y);
         window._mjFullPanMonthIdx = 0;
         window._mjFullPanPdfPage = 1;
+        window._mjFullPanUserChoseDaily = false;
+        const _yKey = String(Number(y));
+        const _hasPdfY = Boolean((window._mjCloudPdfMetaMap && window._mjCloudPdfMetaMap[_yKey]) || (window._mjLoadedPdfDocs && window._mjLoadedPdfDocs[_yKey]));
+        window._mjFullPanViewMode = _hasPdfY ? "pdf" : "daily";
         window.mjRenderFullPanchangamViewerTab();
       };
 
       window.mjSwitchFullPanViewMode = function(mode) {
         window._mjFullPanViewMode = mode;
+        window._mjFullPanUserChoseDaily = (mode === "daily");
         window._mjFullPanPdfPage = 1;
         window.mjRenderFullPanchangamViewerTab();
       };
@@ -12533,6 +12538,11 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         const yKey = String(Y);
         const mIdx = Math.max(0, Math.min(11, Number(window._mjFullPanMonthIdx || 0)));
         const hasPdf = Boolean(window._mjCloudPdfMetaMap[yKey] || window._mjLoadedPdfDocs[yKey]);
+        if (hasPdf && !window._mjFullPanUserChoseDaily) {
+          window._mjFullPanViewMode = "pdf";
+        } else if (!hasPdf) {
+          window._mjFullPanViewMode = "daily";
+        }
         const activeMode = (window._mjFullPanViewMode === "pdf" && hasPdf) ? "pdf" : "daily";
         const tamilYearName = _getTamilYearName(Y);
         const sakaY = Y - 78, kaliY = Y + 3101;
@@ -12545,18 +12555,11 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
 
         const modeToggleHtml = hasPdf ? `
           <div class="flex flex-wrap items-center gap-2">
-            <button type="button" onclick="mjSwitchFullPanViewMode('daily')" class="px-3 py-1.5 rounded-xl font-extrabold text-xs border-2 cursor-pointer ${activeMode === "daily" ? "bg-[#6b0f22] text-white border-[#6b0f22]" : "bg-white text-slate-800 border-slate-300"}">📅 தினசரி பஞ்சாங்கம் (12 மாதங்கள்)</button>
             <button type="button" onclick="mjSwitchFullPanViewMode('pdf')" class="px-3 py-1.5 rounded-xl font-extrabold text-xs border-2 cursor-pointer ${activeMode === "pdf" ? "bg-[#6b0f22] text-white border-[#6b0f22]" : "bg-white text-slate-800 border-slate-300"}">📄 அசல் PDF புத்தகம்</button>
+            <button type="button" onclick="mjSwitchFullPanViewMode('daily')" class="px-3 py-1.5 rounded-xl font-extrabold text-xs border-2 cursor-pointer ${activeMode === "daily" ? "bg-[#6b0f22] text-white border-[#6b0f22]" : "bg-white text-slate-800 border-slate-300"}">📅 தினசரி பஞ்சாங்கம் (12 மாதங்கள்)</button>
           </div>` : "";
 
-        const masterQuickPdfBtn = isFriend ? "" : `
-          <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-amber-200">
-            <input id="mjHiddenCloudPdfInput" type="file" accept="application/pdf,.pdf" class="hidden" onchange="mjHandleCloudPdfFileSelected(event)" />
-            <button type="button" onclick="mjTriggerCloudPdfUpload(${Y})" class="px-3 py-1.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-extrabold text-xs shadow cursor-pointer">📤 ${Y}–${Y + 1} அசல் PDF இணைக்க (Cloud)</button>
-            ${hasPdf ? `<button type="button" onclick="mjDeleteCloudPdfForYear(${Y})" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs shadow cursor-pointer">🗑️ PDF நீக்கு</button>` : ""}
-          </div>
-          <div id="mjPdfUploadProgressBox" class="hidden mt-1.5 p-2 rounded-xl bg-indigo-50 border border-indigo-300 text-xs font-extrabold text-indigo-950"></div>
-        `;
+        const masterQuickPdfBtn = "";
 
         let bodyStageHtml = "";
         if (activeMode === "pdf") {
@@ -12724,7 +12727,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               return `<div class="p-2.5 rounded-xl bg-amber-50/70 border border-amber-300 flex items-center justify-between gap-2">
                 <div class="min-w-0">
                   <div class="font-extrabold text-xs text-amber-950 truncate">⏳ ${y}–${y + 1} (${taName})</div>
-                  <div class="text-[10px] font-bold text-slate-600">PDF இன்னும் சேர்க்கப்படவில்லை</div>
+                  <div class="text-[10px] font-bold text-slate-600">${customStore[String(y)] ? "✅ கணக்கு தரவு உள்ளது • ⏳ அசல் PDF இன்னும் சேர்க்கப்படவில்லை" : "⏳ அசல் PDF இன்னும் சேர்க்கப்படவில்லை"}</div>
                 </div>
                 <button type="button" onclick="mjTriggerCloudPdfUpload(${y})" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white font-extrabold text-[11px] shadow shrink-0 cursor-pointer active:scale-95">📤 PDF சேர்</button>
               </div>`;
@@ -12809,7 +12812,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
                   <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்)</h3>
-                  <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் அந்த ஆண்டின் PDF உடனே இணைந்துவிடும்!</p>
+                  <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
                 </div>
                 <div class="flex items-center gap-1.5 text-[11px] font-extrabold">
                   <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">✅ சேர்த்தவை: ${uploaded87to26.length}</span>
