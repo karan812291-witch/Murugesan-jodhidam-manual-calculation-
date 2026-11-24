@@ -960,6 +960,7 @@
     <div id="fullPanchangamTabContainer" class="hidden max-w-6xl mx-auto"></div>
     <div id="kaiKanakkuTabContainer" class="hidden max-w-[210mm] mx-auto"></div>
     <div id="addPanchangamTabContainer" class="hidden max-w-6xl mx-auto"></div>
+    <div id="jsonUploadTabContainer" class="hidden max-w-4xl mx-auto"></div>
   </main>
   <script id="customBakedPaambuDataScript">window.CUSTOM_BAKED_PAAMBU_DATA = window.CUSTOM_BAKED_PAAMBU_DATA || {};</script>
 
@@ -3746,8 +3747,8 @@
       const srCalc = computeAccurateSunriseHHMM(profile.dob, profile.lat, profile.lon, profile.tz, profile.panchangamMode || "vakya_paambu_28");
       let sunriseHH = srCalc.hh;
       let sunriseMM = srCalc.mm;
-      if (profile.customSunrise && /^\d{2}:\d{2}/.test(profile.customSunrise)) {
-        const sp = profile.customSunrise.split(":").map(Number);
+      if (activeProfile.customSunrise && /^\d{2}:\d{2}/.test(activeProfile.customSunrise)) {
+        const sp = activeProfile.customSunrise.split(":").map(Number);
         sunriseHH = sp[0];
         sunriseMM = sp[1];
       }
@@ -3954,8 +3955,8 @@
       // Compute Paambu Panchangam Sunrise & Udayathi Vinazhigai first so Vakya Lagnam uses exact Rasi Pramanam
       const srForLagna = computeAccurateSunriseHHMM(profile.dob, profile.lat, profile.lon, profile.tz, mode);
       let srHH = srForLagna.hh, srMM = srForLagna.mm;
-      if (profile.customSunrise && /^\d{2}:\d{2}/.test(profile.customSunrise)) {
-        const sp = profile.customSunrise.split(":").map(Number);
+      if (activeProfile.customSunrise && /^\d{2}:\d{2}/.test(activeProfile.customSunrise)) {
+        const sp = activeProfile.customSunrise.split(":").map(Number);
         srHH = sp[0]; srMM = sp[1];
       }
       const sr24ForLagna = `${String(srHH).padStart(2, "0")}:${String(srMM).padStart(2, "0")}`;
@@ -4140,6 +4141,10 @@
         "2019-09-24": 3412, // 56.52 (பூசம்)
         "2022-05-02": 3905, // 65.05 (கார்த்திகை)
         "2024-10-08": 3716, // 61.56 (கேட்டை)
+        "2014-12-19": 3687, // 61.27 (விசாகம் - சுவாதி 37.05 + விசாகம் 38.32)
+        "2015-06-15": 3552, // 59.12 (ரோகிணி - கார்த்திகை 02.07 + ரோகிணி 01.19)
+        "2017-06-07": 3950, // 65.50 (விசாகம் - சுவாதி 41.16 + விசாகம் 47.06)
+        "2024-04-19": 3955, // 65.55 (மகம் - ஆயில்யம் 12.12 + மகம் 18.07)
         "2026-10-20": 3842  // 64.02 (அவிட்டம்)
       };
       const aathiVinTotal = (exactAathiMap[profile.dob] !== undefined)
@@ -4602,16 +4607,16 @@
       const dMStr    = (_byId("manDasaBalM")?.value || "").trim();
       const dDStr    = (_byId("manDasaBalD")?.value || "").trim();
 
-      let aathiVinTotal = aathiStr ? parseNazhigaiToVin(aathiStr) : calc.paambuExtras.aathiVinTotal;
+      let aathiVinTotal = aathiStr ? parseNazhigaiToVin(aathiStr) : activeCalc.paambuExtras.aathiVinTotal;
       let selVinTotal   = selStr   ? parseNazhigaiToVin(selStr)   : Math.round(((moonP.longitude % (360.0 / 27.0)) / (360.0 / 27.0)) * aathiVinTotal);
       let iruppuVinTotal = Math.max(0, aathiVinTotal - selVinTotal);
 
-      calc.paambuExtras.aathiVinTotal = aathiVinTotal;
-      calc.paambuExtras.selVinTotal = selVinTotal;
-      calc.paambuExtras.iruppuVinTotal = iruppuVinTotal;
-      calc.paambuExtras.aathiStarDot = formatVinToNazhigaiDot(aathiVinTotal);
-      calc.paambuExtras.selStarDot = formatVinToNazhigaiDot(selVinTotal);
-      calc.paambuExtras.iruppuStarDot = formatVinToNazhigaiDot(iruppuVinTotal);
+      activeCalc.paambuExtras.aathiVinTotal = aathiVinTotal;
+      activeCalc.paambuExtras.selVinTotal = selVinTotal;
+      activeCalc.paambuExtras.iruppuVinTotal = iruppuVinTotal;
+      activeCalc.paambuExtras.aathiStarDot = formatVinToNazhigaiDot(aathiVinTotal);
+      activeCalc.paambuExtras.selStarDot = formatVinToNazhigaiDot(selVinTotal);
+      activeCalc.paambuExtras.iruppuStarDot = formatVinToNazhigaiDot(iruppuVinTotal);
       calc.panchangam.remStarNazhigaiText = `இருப்பு: ${Math.floor(iruppuVinTotal / 60)} நாழிகை ${iruppuVinTotal % 60} விநாழிகை`;
 
       let balY, balM, balD, elapsedY, elapsedM, elapsedD;
@@ -4649,7 +4654,7 @@
 
       const activeDasaObj = dasaList.find(d => d.isCurrent) || dasaList[0];
       const activeBhuktiObj = (activeDasaObj && activeDasaObj.bhuktis.find(b => b.isCurrent)) || (activeDasaObj ? activeDasaObj.bhuktis[0] : null);
-      calc.dasa = {
+      activeCalc.dasa = {
         firstLord,
         elapsedText: `${firstLord.ta} தசா செல்: ${elapsedY} வருடம், ${elapsedM} மாதம், ${elapsedD} நாள்`,
         balanceText: `${firstLord.ta} தசா இருப்பு: ${balY} வருடம், ${balM} மாதம், ${balD} நாள்`,
@@ -4874,7 +4879,7 @@
 
     function renderAll20Pages(calc, meta) {
       const p = calc.planets;
-      const pe = calc.paambuExtras;
+      const pe = activeCalc.paambuExtras;
       const pan = calc.panchangam;
       const [yyyy, mm, dd] = (meta.dob || "2007-07-30").split("-").map(Number);
       const dobFormatted = `${String(dd).padStart(2, "0")}-${String(mm).padStart(2, "0")}-${yyyy}`;
@@ -4900,11 +4905,11 @@
       const drekkanaRasiIdx = (p.Lagnam.rasiIdx + Math.floor(((p.Lagnam.longitude % 30) / 10)) * 4) % 12;
       const drekkanaTa = RASIS[drekkanaRasiIdx].ta;
 
-      // Parse Dasa balance & elapsed from calc.dasa
-      const birthDasaLord = calc.dasa.firstLord || p.Moon.starLord;
+      // Parse Dasa balance & elapsed from activeCalc.dasa
+      const birthDasaLord = activeCalc.dasa.firstLord || p.Moon.starLord;
       const fullDasaYears = birthDasaLord.years;
-      const balMatch = (calc.dasa.balanceText || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/);
-      const elapMatch = (calc.dasa.elapsedText || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/);
+      const balMatch = (activeCalc.dasa.balanceText || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/);
+      const elapMatch = (activeCalc.dasa.elapsedText || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/);
       const remY = balMatch ? parseInt(balMatch[1], 10) : 5;
       const remM = balMatch ? parseInt(balMatch[2], 10) : 4;
       const remD = balMatch ? parseInt(balMatch[3], 10) : 8;
@@ -4931,7 +4936,7 @@
       }).join("");
 
       // Page 13 Mahadasha Sequence rows (1..8)
-      const mList = calc.dasa.dasaList || [];
+      const mList = activeCalc.dasa.dasaList || [];
       const p13RowsHtml = mList.slice(0, 8).map((md, idx) => {
         if (idx === 0) {
           return `
@@ -6164,7 +6169,7 @@
         {
           num: 25, isData: true, isRed: false,
           html: (() => {
-            const first5 = (calc.dasa.dasaList || []).slice(0, 5);
+            const first5 = (activeCalc.dasa.dasaList || []).slice(0, 5);
             const blocksHtml = first5.map((d, dIdx) => `
               <div class="border border-slate-800 rounded-lg overflow-hidden bg-white">
                 <div class="bg-slate-800 text-amber-100 px-2 py-0.5 text-[10px] font-extrabold flex items-center justify-between">
@@ -6217,7 +6222,7 @@
         {
           num: 26, isData: true, isRed: true,
           html: (() => {
-            const next4 = (calc.dasa.dasaList || []).slice(5, 9);
+            const next4 = (activeCalc.dasa.dasaList || []).slice(5, 9);
             const blocksHtml = next4.map((d, dIdx) => `
               <div class="border border-[#8b1c1c] rounded-lg overflow-hidden bg-white">
                 <div class="bg-[#8b1c1c] text-amber-50 px-2 py-0.5 text-[10.5px] font-extrabold flex items-center justify-between">
@@ -6295,7 +6300,7 @@
       // Render Dedicated Tab 2: Full Dasa-Bhukti from Birth to 100+ Years
       const dasaTabEl = _byId("dasa100TabContainer");
       if (dasaTabEl) {
-        const allDasas = calc.dasa.dasaList || [];
+        const allDasas = activeCalc.dasa.dasaList || [];
         const lastDasa = allDasas[allDasas.length - 1];
         const maxAgeText = lastDasa ? lastDasa.endAgeTextTa : "100+ வருடம்";
         const dasaCardsHtml = allDasas.map((d, dIdx) => `
@@ -7907,9 +7912,9 @@
           let panchMatchText = "";
           let actionBtnHtml = "";
           if (item.key === "Moon") {
-            const aathiDot = (calc.paambuExtras && calc.paambuExtras.aathiStarDot) ? calc.paambuExtras.aathiStarDot : "";
-            const selDot = (calc.paambuExtras && calc.paambuExtras.selStarDot) ? calc.paambuExtras.selStarDot : "";
-            const iruppuDot = (calc.paambuExtras && calc.paambuExtras.iruppuStarDot) ? calc.paambuExtras.iruppuStarDot : "";
+            const aathiDot = (activeCalc.paambuExtras && activeCalc.paambuExtras.aathiStarDot) ? activeCalc.paambuExtras.aathiStarDot : "";
+            const selDot = (activeCalc.paambuExtras && activeCalc.paambuExtras.selStarDot) ? activeCalc.paambuExtras.selStarDot : "";
+            const iruppuDot = (activeCalc.paambuExtras && activeCalc.paambuExtras.iruppuStarDot) ? activeCalc.paambuExtras.iruppuStarDot : "";
             panchMatchText = `<span class="font-extrabold text-[#7f1d1d]">${birthMonthTa} ${String(sInfo.tamilDateNum).padStart(2, "0")}</span> • <span class="text-blue-900 font-bold">ஆதி: ${aathiDot} | செல்: ${selDot} | இருப்பு: ${iruppuDot} நா</span>`;
             actionBtnHtml = `<button type="button" onclick="jumpToPlanetPadasaramInTab('Moon', ${birthClampedYear})" class="px-2.5 py-1 rounded-lg bg-sky-100 hover:bg-sky-200 text-sky-950 border border-sky-400 font-extrabold text-[11px] cursor-pointer transition">🌙 சந்திர சாரம் பார்</button>`;
           } else if (item.isPadasaramTable && matchedEntryByPlanet[item.key] && matchedEntryByPlanet[item.key].row) {
@@ -7919,7 +7924,7 @@
             panchMatchText = `<span class="font-extrabold text-[#7f1d1d]">${mTa} ${String(mr[1]).padStart(2, "0")}</span> <span class="text-slate-500">(${engDateStr})</span> • <span class="text-blue-900 font-bold">${String(mr[2]).padStart(2, "0")} நா ${String(mr[3]).padStart(2, "0")} வி</span>`;
             actionBtnHtml = `<button type="button" onclick="jumpToPlanetPadasaramInTab('${item.key}', ${birthClampedYear})" class="px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-[#7f1d1d] border border-amber-400 font-extrabold text-[11px] cursor-pointer transition">🔍 அட்டவணையில் பார்</button>`;
           } else if (item.key === "Lagnam") {
-            const lagIruppu = (calc.paambuExtras && (calc.paambuExtras.lagnaIruppuDot || calc.paambuExtras.lagnaRemDot)) || "";
+            const lagIruppu = (activeCalc.paambuExtras && (activeCalc.paambuExtras.lagnaIruppuDot || activeCalc.paambuExtras.lagnaRemDot)) || "";
             panchMatchText = `<span class="text-slate-700 font-bold">${birthMonthTa} ${sInfo.tamilDateNum} • உதயாதி ${uInfo.formattedDot} நாழிகை (லக்ன இருப்பு: ${lagIruppu} நா)</span>`;
             actionBtnHtml = `<span class="text-[11px] font-bold text-slate-600">ராசி இருப்பு விதி</span>`;
           }
@@ -8336,7 +8341,7 @@
       const manEl = _byId("userManualTabContainer");
       if (!manEl) return;
       const p = calc.planets;
-      const pe = calc.paambuExtras;
+      const pe = activeCalc.paambuExtras;
       const order = ["Lagnam", "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
 
       const planetExplainRowsHtml = order.map((pk, idx) => {
@@ -8953,7 +8958,7 @@
     function updateEnterpriseKpiStrip(calc, meta, ctx) {
       try {
         const p = calc.planets;
-        const pe = calc.paambuExtras || {};
+        const pe = activeCalc.paambuExtras || {};
         const el = (id) => document.getElementById(id);
         const setT = (id, v) => { const n = el(id); if (n) n.textContent = v; };
 
@@ -8990,7 +8995,7 @@
       updateEnterpriseKpiStrip(calc, meta, ctx);
 
       const p = calc.planets;
-      const pe = calc.paambuExtras || {};
+      const pe = activeCalc.paambuExtras || {};
       const uday = computeUdayathiNazhigai(meta.dob, meta.tob, meta.sunrise);
       const udayNaz = pe.nazhigai ?? uday.nazhigai;
       const udayVin = pe.vinazhigai ?? uday.vinazhigai;
@@ -10318,9 +10323,9 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             ? CLASSIC_NOTEBOOK_VIN
             : RASI_PRAMANAM_NAZHIGAI.map(function(r) { return r.vinazhigai; });
 
-          const srStr = (profile.customSunrise && /^\d{2}:\d{2}/.test(profile.customSunrise))
-            ? profile.customSunrise
-            : ((calc.paambuExtras && calc.paambuExtras.sunrise24) || "06:00");
+          const srStr = (activeProfile.customSunrise && /^\d{2}:\d{2}/.test(activeProfile.customSunrise))
+            ? activeProfile.customSunrise
+            : ((activeCalc.paambuExtras && activeCalc.paambuExtras.sunrise24) || "06:00");
           const uday = computeUdayathiNazhigai(profile.dob, profile.tob, srStr);
           const manUdayVin = _parseDotToVin(profile.manUdayathiDot ?? document.getElementById("inpManUdayathiDot")?.value);
           const udayVin = (manUdayVin !== null) ? manUdayVin : uday.totalVinazhigai;
@@ -10439,7 +10444,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             usedExactNotebookOverride = true;
           }
 
-          const firstLord = (calc.dasa && calc.dasa.firstLord) || DASA_LORDS[NAKSHATRAS[moonPl.nakIdx].lordIdx];
+          const firstLord = (activeCalc.dasa && activeCalc.dasa.firstLord) || DASA_LORDS[NAKSHATRAS[moonPl.nakIdx].lordIdx];
           const fullYears = firstLord.years || 10;
           const numY = manualIruppuVin * fullYears;
           const balY = Math.floor(numY / manualAathiVin);
@@ -10455,35 +10460,35 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           const elapM = Math.floor((totalElapDays % 360) / 30);
           const elapD = totalElapDays % 30;
 
-          if (calc.dasa) {
-            calc.dasa.firstLord = firstLord;
-            calc.dasa.balanceText = firstLord.ta + " தசா இருப்பு: " + balY + " வருடம், " + balM + " மாதம், " + balD + " நாள்";
-            calc.dasa.elapsedText = firstLord.ta + " தசா செல்: " + elapY + " வருடம், " + elapM + " மாதம், " + elapD + " நாள்";
-            calc.dasa.balanceTextEn = firstLord.en + " Dasa Balance: " + balY + "y " + balM + "m " + balD + "d";
+          if (activeCalc.dasa) {
+            activeCalc.dasa.firstLord = firstLord;
+            activeCalc.dasa.balanceText = firstLord.ta + " தசா இருப்பு: " + balY + " வருடம், " + balM + " மாதம், " + balD + " நாள்";
+            activeCalc.dasa.elapsedText = firstLord.ta + " தசா செல்: " + elapY + " வருடம், " + elapM + " மாதம், " + elapD + " நாள்";
+            activeCalc.dasa.balanceTextEn = firstLord.en + " Dasa Balance: " + balY + "y " + balM + "m " + balD + "d";
           }
 
-          if (calc.paambuExtras) {
-            calc.paambuExtras.nazhigai = uday.nazhigai;
-            calc.paambuExtras.vinazhigai = uday.vinazhigai;
-            calc.paambuExtras.sunRemVinAtSunrise = sunRemVin;
-            calc.paambuExtras.sunRemDot = _fmtDot(sunRemVin);
-            calc.paambuExtras.starAathiVin = manualAathiVin;
-            calc.paambuExtras.starAathiDot = _fmtDot(manualAathiVin);
-            calc.paambuExtras.starSelVin = manualSelVin;
-            calc.paambuExtras.starSelDot = _fmtDot(manualSelVin);
-            calc.paambuExtras.starIruppuVin = manualIruppuVin;
-            calc.paambuExtras.starIruppuDot = _fmtDot(manualIruppuVin);
-            calc.paambuExtras.aathiVinTotal = manualAathiVin;
-            calc.paambuExtras.aathiStarDot = _fmtDot(manualAathiVin);
-            calc.paambuExtras.selVinTotal = manualSelVin;
-            calc.paambuExtras.selStarDot = _fmtDot(manualSelVin);
-            calc.paambuExtras.iruppuVinTotal = manualIruppuVin;
-            calc.paambuExtras.iruppuStarDot = _fmtDot(manualIruppuVin);
-            calc.paambuExtras.lagnaFullVin = lagnaFullVin;
-            calc.paambuExtras.lagnaSelVin = lagnaSelVin;
-            calc.paambuExtras.lagnaIruppuVin = lagnaIruppuVin;
-            calc.paambuExtras.isFullManualMode = true;
-            calc.paambuExtras.usedExactNotebookOverride = usedExactNotebookOverride;
+          if (activeCalc.paambuExtras) {
+            activeCalc.paambuExtras.nazhigai = uday.nazhigai;
+            activeCalc.paambuExtras.vinazhigai = uday.vinazhigai;
+            activeCalc.paambuExtras.sunRemVinAtSunrise = sunRemVin;
+            activeCalc.paambuExtras.sunRemDot = _fmtDot(sunRemVin);
+            activeCalc.paambuExtras.starAathiVin = manualAathiVin;
+            activeCalc.paambuExtras.starAathiDot = _fmtDot(manualAathiVin);
+            activeCalc.paambuExtras.starSelVin = manualSelVin;
+            activeCalc.paambuExtras.starSelDot = _fmtDot(manualSelVin);
+            activeCalc.paambuExtras.starIruppuVin = manualIruppuVin;
+            activeCalc.paambuExtras.starIruppuDot = _fmtDot(manualIruppuVin);
+            activeCalc.paambuExtras.aathiVinTotal = manualAathiVin;
+            activeCalc.paambuExtras.aathiStarDot = _fmtDot(manualAathiVin);
+            activeCalc.paambuExtras.selVinTotal = manualSelVin;
+            activeCalc.paambuExtras.selStarDot = _fmtDot(manualSelVin);
+            activeCalc.paambuExtras.iruppuVinTotal = manualIruppuVin;
+            activeCalc.paambuExtras.iruppuStarDot = _fmtDot(manualIruppuVin);
+            activeCalc.paambuExtras.lagnaFullVin = lagnaFullVin;
+            activeCalc.paambuExtras.lagnaSelVin = lagnaSelVin;
+            activeCalc.paambuExtras.lagnaIruppuVin = lagnaIruppuVin;
+            activeCalc.paambuExtras.isFullManualMode = true;
+            activeCalc.paambuExtras.usedExactNotebookOverride = usedExactNotebookOverride;
           }
           if (calc.panchangam) {
             calc.panchangam.remStarNazhigaiText = "இருப்பு: " + Math.floor(manualIruppuVin / 60) + " நாழிகை " + (manualIruppuVin % 60) + " விநாழிகை (" + _fmtDot(manualAathiVin) + " கைக்கணக்கு)";
@@ -11700,7 +11705,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             const meta = (typeof PANCHANGAM_META !== "undefined" && PANCHANGAM_META[mode])
               ? PANCHANGAM_META[mode]
               : { name: "அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம்", shortTa: "28 நம்பர் பாம்பு வாக்கியம்", color: "#8b1c1c" };
-            const pe = calc.paambuExtras || {};
+            const pe = activeCalc.paambuExtras || {};
             const ctx = {
               dobFormatted: (typeof formatIsoToDMY === "function") ? formatIsoToDMY(dob) : dob,
               tob12Str: (typeof format24To12Hour === "function") ? format24To12Hour(tobRaw) : tobRaw,
@@ -11709,14 +11714,14 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               tamilMonthTa: pe.tamilMonthTa || "ஆவணி",
               tamilDateNum: pe.tamilDateNum || 25,
               sunRemDot: pe.sunRemDot || "15.00",
-                            birthDasaLord: (calc.dasa && calc.dasa.firstLord) || (calc.planets && calc.planets.Moon && calc.planets.Moon.starLord) || { ta: "சந்திரன்", years: 10 },
-              fullDasaYears: ((calc.dasa && calc.dasa.firstLord) ? calc.dasa.firstLord.years : 10),
-              remY: (function(){ const m = ((calc.dasa && calc.dasa.balanceText) || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/); return m ? parseInt(m[1], 10) : 0; })(),
-              remM: (function(){ const m = ((calc.dasa && calc.dasa.balanceText) || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/); return m ? parseInt(m[2], 10) : 0; })(),
-              remD: (function(){ const m = ((calc.dasa && calc.dasa.balanceText) || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/); return m ? parseInt(m[3], 10) : 0; })(),
-              elapY: (function(){ const m = ((calc.dasa && calc.dasa.elapsedText) || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/); return m ? parseInt(m[1], 10) : 0; })(),
-              elapM: (function(){ const m = ((calc.dasa && calc.dasa.elapsedText) || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/); return m ? parseInt(m[2], 10) : 0; })(),
-              elapD: (function(){ const m = ((calc.dasa && calc.dasa.elapsedText) || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/); return m ? parseInt(m[3], 10) : 0; })()
+                            birthDasaLord: (activeCalc.dasa && activeCalc.dasa.firstLord) || (calc.planets && calc.planets.Moon && calc.planets.Moon.starLord) || { ta: "சந்திரன்", years: 10 },
+              fullDasaYears: ((activeCalc.dasa && activeCalc.dasa.firstLord) ? activeCalc.dasa.firstLord.years : 10),
+              remY: (function(){ const m = ((activeCalc.dasa && activeCalc.dasa.balanceText) || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/); return m ? parseInt(m[1], 10) : 0; })(),
+              remM: (function(){ const m = ((activeCalc.dasa && activeCalc.dasa.balanceText) || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/); return m ? parseInt(m[2], 10) : 0; })(),
+              remD: (function(){ const m = ((activeCalc.dasa && activeCalc.dasa.balanceText) || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/); return m ? parseInt(m[3], 10) : 0; })(),
+              elapY: (function(){ const m = ((activeCalc.dasa && activeCalc.dasa.elapsedText) || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/); return m ? parseInt(m[1], 10) : 0; })(),
+              elapM: (function(){ const m = ((activeCalc.dasa && activeCalc.dasa.elapsedText) || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/); return m ? parseInt(m[2], 10) : 0; })(),
+              elapD: (function(){ const m = ((activeCalc.dasa && activeCalc.dasa.elapsedText) || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/); return m ? parseInt(m[3], 10) : 0; })()
             };
             renderUserManualAndDegreeTab(calc, meta, ctx);
           }
@@ -11787,13 +11792,13 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             const h12 = hh % 12 || 12;
             const tob12Str = String(h12).padStart(2,"0") + ":" + String(mm).padStart(2,"0") + " " + ampm;
             const tc = calc.tamilCalendar || {};
-            const pe = calc.paambuExtras || {};
+            const pe = activeCalc.paambuExtras || {};
             const sunRemVin = pe.sunRemVinAtSunrise || 0;
             const sunRemDot = Math.floor(sunRemVin / 60) + "." + String(sunRemVin % 60).padStart(2, "0");
-            const birthDasaLord = (calc.dasa && calc.dasa.firstLord) || (calc.planets && calc.planets.Moon && calc.planets.Moon.starLord) || { ta: "சந்திரன்", years: 10 };
+            const birthDasaLord = (activeCalc.dasa && activeCalc.dasa.firstLord) || (calc.planets && calc.planets.Moon && calc.planets.Moon.starLord) || { ta: "சந்திரன்", years: 10 };
             const fullDasaYears = birthDasaLord.years || 10;
-            const balMatch = ((calc.dasa && calc.dasa.balanceText) || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/);
-            const elapMatch = ((calc.dasa && calc.dasa.elapsedText) || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/);
+            const balMatch = ((activeCalc.dasa && activeCalc.dasa.balanceText) || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/);
+            const elapMatch = ((activeCalc.dasa && activeCalc.dasa.elapsedText) || "").match(/(\d+)\s*வருடம்,\s*(\d+)\s*மாதம்,\s*(\d+)\s*நாள்/);
             const remY = balMatch ? parseInt(balMatch[1], 10) : 0;
             const remM = balMatch ? parseInt(balMatch[2], 10) : 0;
             const remD = balMatch ? parseInt(balMatch[3], 10) : 0;
@@ -12125,6 +12130,10 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           <button id="btnTabAddPanchangamView" type="button" onclick="switchMainAppTab('addpanchangam')" class="px-4 py-2.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-950 border-2 border-purple-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
             <span>➕</span>
             <span>6. புதிய பஞ்சாங்கம் சேர்க்க / பதிவேற்றம் (Cloud Sync)</span>
+          </button>
+          <button id="btnTabJsonUploadView" type="button" onclick="switchMainAppTab('jsonupload')" class="px-4 py-2.5 rounded-xl bg-teal-100 hover:bg-teal-200 text-teal-950 border-2 border-teal-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
+            <span>📦</span>
+            <span>JSON தரவு சேர்க்க (தசா இருப்பு)</span>
           </button>
         </div>
         <div class="text-xs font-extrabold text-[#7f1d1d] bg-rose-50 px-3 py-1.5 rounded-lg border border-rose-200">
@@ -13480,7 +13489,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v25.0</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v25.3</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -14009,9 +14018,9 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       function _computeClassicNotebookLagnaGPada(calc, profile) {
         try {
           if (!calc || !calc.planets || !calc.planets.Sun || typeof computeUdayathiNazhigai !== "function") return null;
-          const srStr = (profile && profile.customSunrise && /^\d{2}:\d{2}/.test(profile.customSunrise))
-            ? profile.customSunrise
-            : ((calc.paambuExtras && calc.paambuExtras.sunrise24) || "06:00");
+          const srStr = (profile && activeProfile.customSunrise && /^\d{2}:\d{2}/.test(activeProfile.customSunrise))
+            ? activeProfile.customSunrise
+            : ((activeCalc.paambuExtras && activeCalc.paambuExtras.sunrise24) || "06:00");
           const uday = computeUdayathiNazhigai(profile.dob, profile.tob, srStr);
           const udayVin = uday.totalVinazhigai;
           const sunRasiIdx = calc.planets.Sun.rasiIdx;
@@ -14197,7 +14206,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                     reasonTa = "பாரம்பரிய நோட்புக் ராசி பிரமாணம் (4.15 / 4.45 / 5.15 / 5.30) படி லக்னம் " + (diff > 0 ? "+" + diff : diff) + " பாதம் மாறி " + altInfoL.nakTa + "-" + altInfoL.pada + " (" + altInfoL.navTa + " அம்சம்) ஆக வருகிறது.";
                   }
                 }
-                const effY = (calc && calc.paambuExtras && calc.paambuExtras.effectiveGregYear) ? Number(calc.paambuExtras.effectiveGregYear) : (profile && profile.dob ? Number(String(profile.dob).slice(0,4)) : 0);
+                const effY = (calc && activeCalc.paambuExtras && activeCalc.paambuExtras.effectiveGregYear) ? Number(activeCalc.paambuExtras.effectiveGregYear) : (profile && profile.dob ? Number(String(profile.dob).slice(0,4)) : 0);
                 const isAlreadyPinnedSlow = (b.key === "Jupiter" || b.key === "Saturn" || b.key === "Rahu" || b.key === "Ketu") && effY >= 1989 && effY <= 2026;
                 if (suggestedDelta === 0 && !isAlreadyPinnedSlow && (distNext <= BORDER_DEG || distPrev <= BORDER_DEG)) {
                   suggestedDelta = (distNext <= distPrev) ? 1 : -1;
@@ -14366,17 +14375,20 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       window.mjShowPlanetProofModal = function(planetKey) {
         const calc = window._mjLastFullCalc;
         const profile = window._mjLastFullProfile || {};
-        if (!calc || !calc.planets || !calc.planets[planetKey]) return;
+        if ((!calc || !calc.planets) && typeof calculateAndFillBook === "function") { calculateAndFillBook(); }
+        const activeCalc = window._mjLastFullCalc;
+        const activeProfile = window._mjLastFullProfile || {};
+        if (!activeCalc || !activeCalc.planets || !activeCalc.planets[planetKey]) return;
 
         const existing = document.getElementById("mjPlanetProofModal");
         if (existing) existing.remove();
 
-        const pl = calc.planets[planetKey];
-        const dobStr = profile.dob || document.getElementById("inpDob")?.value || "";
-        const tobStr = profile.tob || document.getElementById("inpTob")?.value || "12:00";
-        const srStr = (profile.customSunrise && /^\d{2}:\d{2}/.test(profile.customSunrise))
-          ? profile.customSunrise
-          : (document.getElementById("inpSunrise")?.value || (calc.paambuExtras && calc.paambuExtras.sunrise24) || "06:00");
+        const pl = activeCalc.planets[planetKey];
+        const dobStr = activeProfile.dob || document.getElementById("inpDob")?.value || "";
+        const tobStr = activeProfile.tob || document.getElementById("inpTob")?.value || "12:00";
+        const srStr = (activeProfile.customSunrise && /^\d{2}:\d{2}/.test(activeProfile.customSunrise))
+          ? activeProfile.customSunrise
+          : (document.getElementById("inpSunrise")?.value || (activeCalc.paambuExtras && activeCalc.paambuExtras.sunrise24) || "06:00");
         const srMin = _parseSrMin(srStr);
         const birthMs = _parseBirthIstMs(dobStr, tobStr);
         const uday = (typeof computeUdayathiNazhigai === "function") ? computeUdayathiNazhigai(dobStr, tobStr, srStr) : { nazhigai: 0, vinazhigai: 0, totalVinazhigai: 0 };
@@ -14412,8 +14424,8 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           nextBoxText = nextInfo.navTa + " அம்சம் (" + nextInfo.nakTa + "-" + nextInfo.pada + ")";
           extraNoteHtml = `<div class="text-[11px] font-bold text-indigo-900 bg-indigo-50 p-2 rounded-lg border border-indigo-200">🔄 அடுத்த இராசி லக்னம் (<strong>${nextRasiTa}</strong>) தொடங்கும் நேரம்: <strong>${_fmtClockFromMs(nextRasiMs)}</strong></div>`;
         } else if (planetKey === "Moon") {
-          const paramVin = (calc.dasa && calc.dasa.paramVin) ? calc.dasa.paramVin : 3600;
-          const selVin = (calc.dasa && typeof calc.dasa.selVin === "number") ? calc.dasa.selVin : ((pl.longitude % (360/27)) / (360/27)) * paramVin;
+          const paramVin = (activeCalc.dasa && activeCalc.dasa.paramVin) ? activeCalc.dasa.paramVin : 3600;
+          const selVin = (activeCalc.dasa && typeof activeCalc.dasa.selVin === "number") ? activeCalc.dasa.selVin : ((pl.longitude % (360/27)) / (360/27)) * paramVin;
           const padaVin = paramVin / 4.0;
           const p0 = Math.max(0, Math.min(3, (pl.pada || 1) - 1));
           const minSincePada = Math.max(0, (selVin - p0 * padaVin) * 0.4);
@@ -14424,13 +14436,15 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           entryHtml = `<strong>${_fmtClockFromMs(entryMs)}</strong>`;
           exitHtml = `<strong>${_fmtClockFromMs(exitMs)}</strong> → ${nextInfo.text}`;
           nextBoxText = nextInfo.navTa + " அம்சம் (" + nextInfo.nakTa + "-" + nextInfo.pada + ")";
-        } else if (typeof window.computeFullPaambuPadasaramYearTable === "function") {
-          const effY = (calc.paambuExtras && calc.paambuExtras.effectiveGregYear) ? Number(calc.paambuExtras.effectiveGregYear) : (Number(String(dobStr).slice(0, 4)) || 2014);
+        } else if (typeof window.getPaambu1989To2027YearTable === "function") {
+          const effY = (activeCalc.paambuExtras && activeCalc.paambuExtras.effectiveGregYear) ? Number(activeCalc.paambuExtras.effectiveGregYear) : (Number(String(dobStr).slice(0, 4)) || 2014);
           let allEvents = [];
           [effY - 1, effY, effY + 1].forEach(function(yr) {
             try {
-              const tbl = window.computeFullPaambuPadasaramYearTable(yr);
-              const rows = tbl && tbl[planetKey];
+              const tbl = window.getPaambu1989To2027YearTable(yr);
+              const rows = (yr === 2024 && typeof KRODHI_PAAMBU_28_TABLE !== "undefined" && KRODHI_PAAMBU_28_TABLE[planetKey])
+                ? KRODHI_PAAMBU_28_TABLE[planetKey]
+                : (tbl && tbl[planetKey]);
               if (Array.isArray(rows)) {
                 rows.forEach(function(r) {
                   const ev = _rowToMsAndLabel(yr, r, srMin);
@@ -14513,6 +14527,492 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           const calc = _prevCalcProof(profile);
           window._mjLastFullCalc = calc;
           window._mjLastFullProfile = profile || {};
+          return calc;
+        };
+      }
+    })();
+  </script>
+
+
+  <script id="mjQuickDasaCalibrationScript">
+    (function() {
+      // ⏳ Quick 1-Tap Paambu Dasa Balance Calibration Popup (Auto-dot 4116 -> 41.16)
+      window._mjCustomDasaStars = window._mjCustomDasaStars || { prevDot: "", currDot: "" };
+
+      function _parseDotVin(s) {
+        const clean = String(s || "").trim();
+        if (!/^\d{1,2}\.\d{1,2}$/.test(clean)) return null;
+        const p = clean.split(".");
+        const n = parseInt(p[0], 10) || 0;
+        const v = parseInt(p[1].padEnd(2, "0").slice(0, 2), 10) || 0;
+        if (v >= 60) return null;
+        return n * 60 + v;
+      }
+
+      window.mjAutoDotNazhigai = function(el) {
+        if (!el) return;
+        const digits = String(el.value || "").replace(/\D/g, "").slice(0, 4);
+        const fmt = digits.length > 2 ? (digits.slice(0, 2) + "." + digits.slice(2)) : digits;
+        if (el.value !== fmt) el.value = fmt;
+      };
+
+      window.mjCloseQuickDasaModal = function() {
+        const m = document.getElementById("mjQuickDasaModal");
+        if (m) m.remove();
+      };
+
+      window.mjApplyQuickDasaStars = function() {
+        const prevVal = (document.getElementById("inpModalPrevStarDot")?.value || "").trim();
+        const currVal = (document.getElementById("inpModalCurrStarDot")?.value || "").trim();
+        window._mjCustomDasaStars = { prevDot: prevVal, currDot: currVal };
+        const elP = document.getElementById("inpManPrevStarDot");
+        const elC = document.getElementById("inpManCurrStarDot");
+        if (elP) elP.value = prevVal;
+        if (elC) elC.value = currVal;
+        window.mjCloseQuickDasaModal();
+        if (typeof calculateAndFillBook === "function") calculateAndFillBook();
+        if (typeof showToast === "function") {
+          showToast((prevVal || currVal) ? "✅ அச்சுப் பஞ்சாங்க நட்சத்திர முடிவுப்படி தசா இருப்பு புதுப்பிக்கப்பட்டது!" : "↺ தசா இருப்பு தானியங்கி நிலைக்கு மாற்றப்பட்டது!", "success");
+        }
+      };
+
+      window.mjResetQuickDasaStars = function() {
+        const pEl = document.getElementById("inpModalPrevStarDot");
+        const cEl = document.getElementById("inpModalCurrStarDot");
+        if (pEl) pEl.value = "";
+        if (cEl) cEl.value = "";
+        window.mjApplyQuickDasaStars();
+      };
+
+      window.mjOpenQuickDasaModal = function() {
+        const existing = document.getElementById("mjQuickDasaModal");
+        if (existing) existing.remove();
+        const curPrev = document.getElementById("inpManPrevStarDot")?.value || window._mjCustomDasaStars.prevDot || "";
+        const curCurr = document.getElementById("inpManCurrStarDot")?.value || window._mjCustomDasaStars.currDot || "";
+
+        const modal = document.createElement("div");
+        modal.id = "mjQuickDasaModal";
+        modal.className = "no-print fixed inset-0 z-[135] bg-black/65 backdrop-blur-[2px] flex items-center justify-center p-3";
+        modal.onclick = function(e) { if (e.target === modal) window.mjCloseQuickDasaModal(); };
+        modal.innerHTML = `
+          <div class="w-full max-w-md rounded-2xl bg-white border-2 border-amber-500 shadow-2xl overflow-hidden">
+            <div class="bg-gradient-to-r from-[#2e050d] via-[#6b0f22] to-[#2e050d] text-amber-50 px-4 py-3 flex items-center justify-between">
+              <div class="font-extrabold text-sm">⏳ தசா இருப்பு — அச்சு பஞ்சாங்க நட்சத்திர முடிவு</div>
+              <button type="button" onclick="mjCloseQuickDasaModal()" class="px-2 py-0.5 rounded-lg bg-white/15 text-white font-extrabold text-xs cursor-pointer">✕</button>
+            </div>
+            <div class="p-4 space-y-3 text-xs">
+              <div class="p-2.5 rounded-xl bg-amber-50 border border-amber-300 font-bold text-amber-950 leading-relaxed">
+                அச்சு பாம்பு பஞ்சாங்கத்தில் உள்ள <strong>நேற்றைய &amp; இன்றைய நட்சத்திர முடிவு நாழிகையை</strong> (4 எண்கள் மட்டும்: எ.கா <code>4116</code> ➔ <code>41.16</code>) உள்ளிட்டால், <strong>ஆதி • செல் • இருப்பு • 100 வருட தசா புத்தி</strong> ஒரு நாள் கூட மாறாமல் 100% துல்லியமாக வரும்!
+              </div>
+              <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label class="block text-[11px] font-extrabold text-slate-800 mb-1">நேற்றைய நட்சத்திர முடிவு</label>
+                  <input id="inpModalPrevStarDot" type="text" inputmode="numeric" maxlength="5" value="${curPrev}" placeholder="எ.கா: 41.16" oninput="mjAutoDotNazhigai(this)" class="w-full px-3 py-2 rounded-xl border-2 border-amber-400 text-sm font-black text-[#6b0f22]" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-extrabold text-slate-800 mb-1">இன்றைய நட்சத்திர முடிவு</label>
+                  <input id="inpModalCurrStarDot" type="text" inputmode="numeric" maxlength="5" value="${curCurr}" placeholder="எ.கா: 47.06" oninput="mjAutoDotNazhigai(this)" class="w-full px-3 py-2 rounded-xl border-2 border-amber-400 text-sm font-black text-[#6b0f22]" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2 pt-1">
+                <button type="button" onclick="mjApplyQuickDasaStars()" class="px-3 py-2 rounded-xl bg-gradient-to-r from-[#6b0f22] to-[#9b1c1c] text-white font-extrabold text-xs shadow cursor-pointer">✅ தசா இருப்பு கணக்கிடு</button>
+                <button type="button" onclick="mjResetQuickDasaStars()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 font-extrabold text-xs cursor-pointer">↺ தானியங்கி (Auto)</button>
+              </div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+      };
+
+      // Also apply custom prevDot/currDot in Main App (where inpManPrevStarDot doesn't exist)
+      if (typeof calculateFullJathagam === "function") {
+        const _prevCalcDasa = calculateFullJathagam;
+        calculateFullJathagam = function(profile) {
+          const calc = _prevCalcDasa(profile);
+          try {
+            const hasKaiUI = Boolean(document.getElementById("inpManPrevStarDot"));
+            if (!hasKaiUI && calc && calc.dasa && calc.planets && calc.planets.Moon) {
+              const pVin = _parseDotVin(window._mjCustomDasaStars.prevDot);
+              const cVin = _parseDotVin(window._mjCustomDasaStars.currDot);
+              if (pVin !== null && cVin !== null) {
+                const dob = (profile && profile.dob) || document.getElementById("inpDob")?.value || "";
+                const tob = (profile && profile.tob) || document.getElementById("inpTob")?.value || "12:00";
+                const sr = (profile && profile.customSunrise) || document.getElementById("inpSunrise")?.value || "06:00";
+                const uday = (typeof computeUdayathiNazhigai === "function") ? computeUdayathiNazhigai(dob, tob, sr) : { totalVinazhigai: 0 };
+                const uVin = uday.totalVinazhigai;
+                const aathi = (3600 - pVin) + cVin;
+                let iruppu = (uVin <= cVin) ? (cVin - uVin) : (cVin + 3600 - uVin);
+                iruppu = Math.max(0, Math.min(aathi, iruppu));
+                const sel = Math.max(0, aathi - iruppu);
+                const lordY = calc.dasa.firstLord.years;
+                const totDays = Math.round((iruppu / aathi) * lordY * 360);
+                const remY = Math.floor(totDays / 360);
+                const remM = Math.floor((totDays % 360) / 30);
+                const remD = totDays % 30;
+                calc.dasa.aathiVin = aathi;
+                calc.dasa.paramVin = aathi;
+                calc.dasa.selVin = sel;
+                calc.dasa.iruppuVin = iruppu;
+                calc.dasa.balanceYears = remY;
+                calc.dasa.balanceMonths = remM;
+                calc.dasa.balanceDays = remD;
+                calc.dasa.balanceTextTa = remY + " வருடம் " + remM + " மாதம் " + remD + " நாள்";
+              }
+            }
+          } catch (e) {}
+          return calc;
+        };
+      }
+
+      // Inject 1-tap button on Dasa Balance pages (Page 10 & Page 12)
+      function _injectDasaCalButton() {
+        document.querySelectorAll(".mj-dasa-cal-btn-wrap").forEach(function(el) { el.remove(); });
+        const pages = document.querySelectorAll(".puthagam-page");
+        pages.forEach(function(pg) {
+          const txt = pg.textContent || "";
+          if (txt.includes("உடுமகாதிசை விபரம்") || txt.includes("உடுமகாதிசை இருப்பு")) {
+            const btnWrap = document.createElement("div");
+            btnWrap.className = "mj-dasa-cal-btn-wrap no-print mb-2 flex justify-end";
+            btnWrap.innerHTML = `<button type="button" onclick="mjOpenQuickDasaModal()" class="px-3 py-1 rounded-xl bg-amber-100 hover:bg-amber-200 border border-amber-500 text-[#6b0f22] font-extrabold text-[11px] shadow-2xs cursor-pointer">⏳ அச்சு பஞ்சாங்க நட்சத்திர முடிவு உள்ளிட (தசா இருப்பு)</button>`;
+            const first = pg.firstElementChild;
+            if (first) pg.insertBefore(btnWrap, first);
+          }
+        });
+      }
+
+      if (typeof calculateAndFillBook === "function") {
+        const _prevFillD = calculateAndFillBook;
+        calculateAndFillBook = function() {
+          const r = _prevFillD.apply(this, arguments);
+          try { _injectDasaCalButton(); } catch (e) {}
+          return r;
+        };
+      }
+      document.addEventListener("DOMContentLoaded", function() { setTimeout(_injectDasaCalButton, 650); });
+    })();
+  </script>
+
+
+  <script id="mjJsonDailyStarsTabScript">
+    (function() {
+      // 📦 Dedicated JSON Upload Tab + Cloud Sync (daily_stars_<YEAR>) + Auto-Priority Dasa Engine
+      window._mjCloudDailyStarsByYear = window._mjCloudDailyStarsByYear || (function() {
+        try { const s = localStorage.getItem("MJ_CLOUD_DAILY_STARS_V1"); return s ? JSON.parse(s) : {}; } catch (e) { return {}; }
+      })();
+
+      function _rebuildFlatDailyMap() {
+        const flat = {};
+        const byY = window._mjCloudDailyStarsByYear || {};
+        Object.keys(byY).forEach(function(yk) {
+          const daysObj = (byY[yk] && byY[yk].days) ? byY[yk].days : {};
+          Object.keys(daysObj).forEach(function(dStr) { flat[dStr] = daysObj[dStr]; });
+        });
+        window._mjCloudDailyStarsMap = flat;
+      }
+      _rebuildFlatDailyMap();
+
+      function _parseDotToVin(s) {
+        const clean = String(s || "").trim();
+        if (!/^\d{1,2}\.\d{1,2}$/.test(clean)) return null;
+        const p = clean.split(".");
+        const n = parseInt(p[0], 10) || 0;
+        const v = parseInt(p[1].padEnd(2, "0").slice(0, 2), 10) || 0;
+        if (v >= 60) return null;
+        return n * 60 + v;
+      }
+
+      const SAMPLE_JSON_STR = JSON.stringify({
+        year: 2017,
+        dailyStars: {
+          "2017-06-07": { prev: "41.16", curr: "47.06", sunrise: "05:53" },
+          "2017-06-08": { prev: "47.06", curr: "52.14", sunrise: "05:53" }
+        }
+      }, null, 2);
+
+      window.mjCopySampleDailyJson = function() {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(SAMPLE_JSON_STR).then(function() {
+            if (typeof showToast === "function") showToast("📋 மாதிரி JSON நகலெடுக்கப்பட்டது!", "success");
+          }).catch(function() {});
+        }
+        const ta = document.getElementById("inpJsonPasteArea");
+        if (ta && !ta.value.trim()) ta.value = SAMPLE_JSON_STR;
+      };
+
+      function _parseUploadedDailyJson(rawText) {
+        const parsed = JSON.parse(rawText);
+        if (!parsed || typeof parsed !== "object") throw new Error("சரியான JSON வடிவம் இல்லை");
+        const srcDays = parsed.dailyStars || parsed.days || parsed;
+        if (!srcDays || typeof srcDays !== "object") throw new Error("dailyStars பகுதி இல்லை");
+        const grouped = {};
+        let totalValid = 0;
+        Object.keys(srcDays).forEach(function(k) {
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(k)) return;
+          const row = srcDays[k];
+          if (!row || typeof row !== "object") return;
+          const prev = String(row.prev || "").trim();
+          const curr = String(row.curr || "").trim();
+          const sr = String(row.sunrise || "").trim();
+          if (_parseDotToVin(prev) === null || _parseDotToVin(curr) === null) return;
+          const yKey = k.slice(0, 4);
+          if (!grouped[yKey]) grouped[yKey] = {};
+          grouped[yKey][k] = sr ? { prev: prev, curr: curr, sunrise: sr } : { prev: prev, curr: curr };
+          totalValid++;
+        });
+        if (totalValid === 0) throw new Error("சரியான தேதி (YYYY-MM-DD) மற்றும் prev/curr (எ.கா: 41.16) தரவு எதுவும் இல்லை!");
+        return { grouped: grouped, totalValid: totalValid };
+      }
+
+      window.mjSaveDailyStarsJsonText = function(rawText) {
+        let parsedRes;
+        try {
+          parsedRes = _parseUploadedDailyJson(rawText);
+        } catch (err) {
+          if (typeof showToast === "function") showToast("❌ JSON பிழை: " + (err.message || err), "error");
+          const st = document.getElementById("mjJsonUploadStatusBox");
+          if (st) { st.textContent = "❌ JSON பிழை: " + (err.message || err); st.classList.remove("hidden"); }
+          return;
+        }
+
+        const yearsList = Object.keys(parsedRes.grouped).sort();
+        const doSave = async function() {
+          const st = document.getElementById("mjJsonUploadStatusBox");
+          const setSt = function(m) { if (st) { st.textContent = m; st.classList.remove("hidden"); } };
+          try {
+            setSt("☁️ " + parsedRes.totalValid + " நாட்கள் Cloud-இல் சேமிக்கப்படுகிறது...");
+            if (typeof mjDb === "undefined" || !mjDb) throw new Error("Firebase Cloud இணைப்பு இல்லை");
+            for (let i = 0; i < yearsList.length; i++) {
+              const yKey = yearsList[i];
+              const existingDays = (window._mjCloudDailyStarsByYear[yKey] && window._mjCloudDailyStarsByYear[yKey].days) ? window._mjCloudDailyStarsByYear[yKey].days : {};
+              const mergedDays = Object.assign({}, existingDays, parsedRes.grouped[yKey]);
+              const docObj = {
+                isDailyStarsJson: true,
+                year: Number(yKey),
+                dayCount: Object.keys(mergedDays).length,
+                days: mergedDays,
+                updatedAt: new Date().toISOString()
+              };
+              await mjDb.collection("panchangam_years").doc("daily_stars_" + yKey).set(docObj, { merge: true });
+              window._mjCloudDailyStarsByYear[yKey] = docObj;
+            }
+            _rebuildFlatDailyMap();
+            try { localStorage.setItem("MJ_CLOUD_DAILY_STARS_V1", JSON.stringify(window._mjCloudDailyStarsByYear)); } catch (e) {}
+            const okTxt = "✅ " + yearsList.join(", ") + " (" + parsedRes.totalValid + " நாட்கள்) Cloud-இல் சேமிக்கப்பட்டது! இனி அந்தத் தேதிகளுக்குத் தானாக JSON தசா இருப்பு வரும்.";
+            setSt(okTxt);
+            if (typeof showToast === "function") showToast(okTxt, "success");
+            if (typeof calculateAndFillBook === "function") calculateAndFillBook();
+            window.mjRenderJsonUploadTab();
+          } catch (err) {
+            const eTxt = "❌ Cloud சேமிப்புப் பிழை: " + (err && err.message ? err.message : err);
+            setSt(eTxt);
+            if (typeof showToast === "function") showToast(eTxt, "error");
+          }
+        };
+
+        if (typeof window.mjRequestPanchangamPassword === "function") {
+          window.mjRequestPanchangamPassword(
+            "add",
+            "🔐 JSON தரவு சேர்க்க கடவுச்சொல்",
+            yearsList.join(", ") + " (" + parsedRes.totalValid + " நாட்கள்) JSON தரவை Cloud-இல் சேமிக்க Add கடவுச்சொல்லை உள்ளிடவும்:",
+            doSave
+          );
+        } else { doSave(); }
+      };
+
+      window.mjHandleDailyJsonFilePicked = function(ev) {
+        const file = ev && ev.target && ev.target.files && ev.target.files[0];
+        if (!file) return;
+        const rd = new FileReader();
+        rd.onload = function() {
+          const txt = String(rd.result || "");
+          const ta = document.getElementById("inpJsonPasteArea");
+          if (ta) ta.value = txt;
+          window.mjSaveDailyStarsJsonText(txt);
+        };
+        rd.readAsText(file, "utf-8");
+      };
+
+      window.mjDeleteDailyStarsJsonYear = function(yKey) {
+        const yStr = String(yKey);
+        const doDel = async function() {
+          try {
+            if (typeof mjDb !== "undefined" && mjDb) {
+              await mjDb.collection("panchangam_years").doc("daily_stars_" + yStr).delete();
+            }
+            delete window._mjCloudDailyStarsByYear[yStr];
+            _rebuildFlatDailyMap();
+            try { localStorage.setItem("MJ_CLOUD_DAILY_STARS_V1", JSON.stringify(window._mjCloudDailyStarsByYear)); } catch (e) {}
+            if (typeof calculateAndFillBook === "function") calculateAndFillBook();
+            window.mjRenderJsonUploadTab();
+            if (typeof showToast === "function") showToast("🗑️ " + yStr + " JSON தரவு Cloud-லிருந்து நீக்கப்பட்டது!", "success");
+          } catch (err) {
+            if (typeof showToast === "function") showToast("❌ நீக்கப் பிழை: " + (err.message || err), "error");
+          }
+        };
+        if (typeof window.mjRequestPanchangamPassword === "function") {
+          window.mjRequestPanchangamPassword(
+            "remove",
+            "🗑️ JSON தரவு நீக்க கடவுச்சொல்",
+            yStr + " ஆண்டின் தினசரி நட்சத்திர JSON தரவை Cloud-லிருந்து நீக்க Remove கடவுச்சொல்லை உள்ளிடவும்:",
+            doDel
+          );
+        } else { doDel(); }
+      };
+
+      window.mjRenderJsonUploadTab = function() {
+        const box = document.getElementById("jsonUploadTabContainer");
+        if (!box) return;
+        const byY = window._mjCloudDailyStarsByYear || {};
+        const yKeys = Object.keys(byY).sort(function(a, b) { return Number(b) - Number(a); });
+        const totalDays = Object.keys(window._mjCloudDailyStarsMap || {}).length;
+
+        const listHtml = yKeys.length === 0
+          ? `<div class="p-4 rounded-xl bg-slate-50 border border-dashed border-slate-300 text-center text-xs font-bold text-slate-600">இன்னும் எந்த JSON தரவும் Cloud-இல் சேர்க்கப்படவில்லை. மேலே JSON கோப்பை Upload செய்யவும்.</div>`
+          : yKeys.map(function(yk) {
+              const cnt = (byY[yk] && byY[yk].days) ? Object.keys(byY[yk].days).length : 0;
+              return `<div class="p-3 rounded-xl bg-emerald-50/70 border-2 border-emerald-300 flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <div class="font-black text-sm text-emerald-950">📅 ${yk} ஆண்டு JSON தரவு</div>
+                  <div class="text-[11px] font-bold text-emerald-800">✅ ${cnt} நாட்கள் Cloud-இல் இணைக்கப்பட்டுள்ளன (2 Apps Sync)</div>
+                </div>
+                <button type="button" onclick="mjDeleteDailyStarsJsonYear('${yk}')" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs shadow cursor-pointer">🗑️ நீக்கு</button>
+              </div>`;
+            }).join("");
+
+        box.innerHTML = `
+          <div class="space-y-4 pb-8">
+            <div class="p-4 rounded-2xl bg-gradient-to-r from-[#0f3d3e] via-[#115e59] to-[#0f3d3e] text-white shadow-lg">
+              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v25.3</span></div>
+              <div class="text-xs text-teal-100 font-bold mt-1">JSON-இல் உள்ள தேதிகளுக்குத் தானாக 0-நாள் துல்லிய அச்சுப் பஞ்சாங்க தசா இருப்பு வரும்; JSON இல்லாத தேதிகளுக்கு எப்போதும் போல ஆப் தானாகக் கணக்கிடும்!</div>
+            </div>
+
+            <div id="mjJsonUploadStatusBox" class="hidden p-3 rounded-xl bg-indigo-50 border-2 border-indigo-400 text-xs font-extrabold text-indigo-950"></div>
+
+            <div class="p-4 rounded-2xl bg-white border-2 border-teal-500 shadow-md space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h3 class="font-extrabold text-sm text-teal-950">1️⃣ JSON கோப்பு பதிவேற்றம் (.json) அல்லது நேரடி பேஸ்ட்</h3>
+                <button type="button" onclick="mjCopySampleDailyJson()" class="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 border border-amber-400 font-extrabold text-xs cursor-pointer">📋 மாதிரி JSON நகலெடு</button>
+              </div>
+              <div class="flex flex-wrap items-center gap-2.5">
+                <label class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-teal-700 to-emerald-700 hover:opacity-95 text-white font-extrabold text-xs sm:text-sm shadow cursor-pointer inline-flex items-center gap-2">
+                  <span>📤 JSON கோப்பு தேர்வு செய் (.json)</span>
+                  <input type="file" accept=".json,application/json" onchange="mjHandleDailyJsonFilePicked(event)" class="hidden" />
+                </label>
+              </div>
+              <div>
+                <label class="block text-xs font-extrabold text-slate-700 mb-1">அல்லது JSON உரையை இங்கே நேரடியாக பேஸ்ட் செய்யவும்:</label>
+                <textarea id="inpJsonPasteArea" rows="6" placeholder='{ "year": 2017, "dailyStars": { "2017-06-07": { "prev": "41.16", "curr": "47.06", "sunrise": "05:53" } } }' class="w-full p-3 rounded-xl border-2 border-slate-300 font-mono text-xs bg-slate-50 text-slate-900"></textarea>
+                <button type="button" onclick="mjSaveDailyStarsJsonText(document.getElementById('inpJsonPasteArea')?.value || '')" class="mt-2 px-4 py-2 rounded-xl bg-[#6b0f22] hover:opacity-95 text-white font-extrabold text-xs shadow cursor-pointer">☁️ பேஸ்ட் செய்த JSON-ஐ Cloud-இல் சேமி</button>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-white border-2 border-emerald-400 shadow-md space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h3 class="font-extrabold text-sm text-emerald-950">2️⃣ Cloud-இல் சேர்க்கப்பட்டுள்ள JSON ஆண்டுகள் (${yKeys.length} ஆண்டுகள் • ${totalDays} நாட்கள்)</h3>
+              </div>
+              <div class="space-y-2">${listHtml}</div>
+            </div>
+          </div>
+        `;
+      };
+
+      // Hook switchMainAppTab so 'jsonupload' opens cleanly and hides all other containers
+      if (typeof switchMainAppTab === "function") {
+        const _prevSwJson = switchMainAppTab;
+        switchMainAppTab = function(tabKey) {
+          const isJson = (tabKey === "jsonupload");
+          if (isJson && typeof IS_FRIEND_APP_MODE !== "undefined" && IS_FRIEND_APP_MODE) {
+            return _prevSwJson("book");
+          }
+          _prevSwJson(isJson ? "book" : tabKey);
+          const jEl = document.getElementById("jsonUploadTabContainer");
+          const jBtn = document.getElementById("btnTabJsonUploadView");
+          const bookEl = document.getElementById("puthagamBookContainer");
+          if (isJson) {
+            if (typeof currentMainAppTab !== "undefined") currentMainAppTab = "jsonupload";
+            if (bookEl) bookEl.classList.add("hidden");
+            if (jEl) { jEl.classList.remove("hidden"); window.mjRenderJsonUploadTab(); }
+            if (jBtn) jBtn.className = "px-4 py-2.5 rounded-xl bg-teal-700 text-white border-2 border-teal-800 font-extrabold text-xs sm:text-sm shadow flex items-center gap-2 cursor-pointer transition";
+            if (typeof window.mjCloseSideMenu === "function") window.mjCloseSideMenu();
+          } else {
+            if (jEl) jEl.classList.add("hidden");
+            if (jBtn) jBtn.className = "px-4 py-2.5 rounded-xl bg-teal-100 hover:bg-teal-200 text-teal-950 border-2 border-teal-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition";
+          }
+        };
+        window.switchMainAppTab = switchMainAppTab;
+      }
+
+      // Live Cloud Sync for daily_stars_* docs (lightweight query, never downloads PDF chunks!)
+      function _startDailyStarsCloudListener() {
+        if (typeof mjDb === "undefined" || !mjDb) return;
+        mjDb.collection("panchangam_years").where("isDailyStarsJson", "==", true).onSnapshot(function(snap) {
+          const nextByY = {};
+          snap.forEach(function(doc) {
+            const d = doc.data();
+            if (d && d.year && d.days) nextByY[String(d.year)] = d;
+          });
+          const prevStr = JSON.stringify(window._mjCloudDailyStarsByYear || {});
+          const nextStr = JSON.stringify(nextByY);
+          window._mjCloudDailyStarsByYear = nextByY;
+          _rebuildFlatDailyMap();
+          try { localStorage.setItem("MJ_CLOUD_DAILY_STARS_V1", nextStr); } catch (e) {}
+          if (prevStr !== nextStr) {
+            if (typeof calculateAndFillBook === "function") calculateAndFillBook();
+            if (typeof currentMainAppTab !== "undefined" && currentMainAppTab === "jsonupload") window.mjRenderJsonUploadTab();
+          }
+        }, function() {});
+      }
+
+      document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(_startDailyStarsCloudListener, 900);
+      });
+
+      // Automatic Priority Engine: Manual Override -> Cloud JSON -> Normal Auto Calculation
+      if (typeof calculateFullJathagam === "function") {
+        const _prevCalcJsonDasa = calculateFullJathagam;
+        calculateFullJathagam = function(profile) {
+          const prof = Object.assign({}, profile || {});
+          const dob = prof.dob || document.getElementById("inpDob")?.value || "";
+          const hasManualPrev = Boolean((prof.manPrevStarDot || document.getElementById("inpManPrevStarDot")?.value || "").trim());
+          const hasManualCurr = Boolean((prof.manCurrStarDot || document.getElementById("inpManCurrStarDot")?.value || "").trim());
+          const jsonHit = (!hasManualPrev && !hasManualCurr && dob && window._mjCloudDailyStarsMap) ? window._mjCloudDailyStarsMap[dob] : null;
+          if (jsonHit) {
+            prof.manPrevStarDot = jsonHit.prev;
+            prof.manCurrStarDot = jsonHit.curr;
+            if (jsonHit.sunrise && /^\d{2}:\d{2}/.test(jsonHit.sunrise)) prof.customSunrise = jsonHit.sunrise;
+          }
+          const calc = _prevCalcJsonDasa(prof);
+          // Also apply JSON Dasa balance in Main App (where Kai-Kanakku manPrevStarDot override doesn't run)
+          try {
+            const hasKaiUI = Boolean(document.getElementById("inpManPrevStarDot"));
+            if (!hasKaiUI && jsonHit && calc && calc.dasa) {
+              const pVin = _parseDotToVin(jsonHit.prev);
+              const cVin = _parseDotToVin(jsonHit.curr);
+              if (pVin !== null && cVin !== null) {
+                const tob = prof.tob || document.getElementById("inpTob")?.value || "12:00";
+                const sr = prof.customSunrise || document.getElementById("inpSunrise")?.value || "06:00";
+                const uday = (typeof computeUdayathiNazhigai === "function") ? computeUdayathiNazhigai(dob, tob, sr) : { totalVinazhigai: 0 };
+                const uVin = uday.totalVinazhigai;
+                const aathi = (3600 - pVin) + cVin;
+                let iruppu = (uVin <= cVin) ? (cVin - uVin) : (cVin + 3600 - uVin);
+                iruppu = Math.max(0, Math.min(aathi, iruppu));
+                const sel = Math.max(0, aathi - iruppu);
+                const lordY = calc.dasa.firstLord.years;
+                const totDays = Math.round((iruppu / aathi) * lordY * 360);
+                const remY = Math.floor(totDays / 360);
+                const remM = Math.floor((totDays % 360) / 30);
+                const remD = totDays % 30;
+                calc.dasa.aathiVin = aathi;
+                calc.dasa.paramVin = aathi;
+                calc.dasa.selVin = sel;
+                calc.dasa.iruppuVin = iruppu;
+                calc.dasa.balanceYears = remY;
+                calc.dasa.balanceMonths = remM;
+                calc.dasa.balanceDays = remD;
+                calc.dasa.balanceTextTa = remY + " வருடம் " + remM + " மாதம் " + remD + " நாள்";
+              }
+            }
+          } catch (e) {}
           return calc;
         };
       }
