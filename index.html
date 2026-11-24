@@ -13505,7 +13505,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v24.6</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v24.8</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -13938,9 +13938,10 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
 
   <script id="mjBorderlinePadaAdvisorScript">
     (function() {
-      // ⚠️ Auto Borderline (+1/-1) Pada Detector + Chart Side Popup with Explanation
+      // ⚠️ Required-Changes-Only Kai-Kanakku vs Auto Advisor (2 Clean Options per Change)
       const PADA_SPAN = 360.0 / 108.0; // 3.333333 deg
-      const BORDER_DEG = 0.60; // ~18% of a pada
+      const BORDER_DEG = 0.60;
+      const CLASSIC_NOTEBOOK_VIN = [255, 285, 315, 330, 315, 300, 300, 315, 330, 315, 285, 255];
       const BODY_META = [
         { key: "Lagnam", ta: "லக்னம்", adjId: "inpPadaAdjLagnam" },
         { key: "Sun", ta: "சூரியன்", adjId: "inpPadaAdjSun" },
@@ -13986,6 +13987,32 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         return Number(window._mjSmartPadaAdj[key] || 0) || 0;
       }
 
+      function _computeClassicNotebookLagnaGPada(calc, profile) {
+        try {
+          if (!calc || !calc.planets || !calc.planets.Sun || typeof computeUdayathiNazhigai !== "function") return null;
+          const srStr = (profile && profile.customSunrise && /^\d{2}:\d{2}/.test(profile.customSunrise))
+            ? profile.customSunrise
+            : ((calc.paambuExtras && calc.paambuExtras.sunrise24) || "06:00");
+          const uday = computeUdayathiNazhigai(profile.dob, profile.tob, srStr);
+          const udayVin = uday.totalVinazhigai;
+          const sunRasiIdx = calc.planets.Sun.rasiIdx;
+          const sunFullVin = CLASSIC_NOTEBOOK_VIN[sunRasiIdx];
+          const sunDeg = ((calc.planets.Sun.longitude % 30) + 30) % 30;
+          let cumVin = Math.max(5, Math.min(sunFullVin, Math.round(((30.0 - sunDeg) / 30.0) * sunFullVin)));
+          let lRasi = sunRasiIdx;
+          let step = 1;
+          while (cumVin < udayVin && step <= 12) {
+            lRasi = (sunRasiIdx + step) % 12;
+            cumVin += CLASSIC_NOTEBOOK_VIN[lRasi];
+            step++;
+          }
+          const lFull = CLASSIC_NOTEBOOK_VIN[lRasi];
+          const lSel = Math.max(0, lFull - Math.max(0, cumVin - udayVin));
+          const p1to9 = Math.max(1, Math.min(9, Math.ceil((lSel / (lFull / 9.0)) || 0.01)));
+          return (lRasi * 9 + (p1to9 - 1)) % 108;
+        } catch (e) { return null; }
+      }
+
       window.mjApplyBorderlinePadaDelta = function(planetKey, deltaVal) {
         const meta = BODY_META.find(function(b) { return b.key === planetKey; });
         const d = Number(deltaVal) || 0;
@@ -13995,22 +14022,11 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           if (el) el.value = String(d);
         }
         if (typeof calculateAndFillBook === "function") calculateAndFillBook();
-        window.mjOpenBorderlineExplainModal(true);
+        window.mjOpenBorderlineExplainModal();
         if (typeof showToast === "function") {
           const nameTa = meta ? meta.ta : planetKey;
-          showToast(d === 0 ? ("↺ " + nameTa + " தானியங்கி நிலைக்கு மாற்றப்பட்டது!") : ("✅ " + nameTa + " (" + (d > 0 ? "+" + d : d) + " பாதம்) மாற்றப்பட்டது!"), "success");
+          showToast(d === 0 ? ("↺ " + nameTa + " அப்படியே வைக்கப்பட்டது!") : ("✅ " + nameTa + " கைக்கணக்கு படி (" + (d > 0 ? "+" + d : d) + " பாதம்) மாற்றப்பட்டது!"), "success");
         }
-      };
-
-      window.mjResetAllBorderlineAdjs = function() {
-        BODY_META.forEach(function(b) {
-          window._mjSmartPadaAdj[b.key] = 0;
-          const el = document.getElementById(b.adjId);
-          if (el) el.value = "0";
-        });
-        if (typeof calculateAndFillBook === "function") calculateAndFillBook();
-        window.mjOpenBorderlineExplainModal(true);
-        if (typeof showToast === "function") showToast("↺ அனைத்தும் தானியங்கி நிலைக்கு மீட்டமைக்கப்பட்டது!", "success");
       };
 
       window.mjCloseBorderlineExplainModal = function() {
@@ -14018,69 +14034,64 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         if (m) m.remove();
       };
 
-      window.mjOpenBorderlineExplainModal = function(isRefresh) {
+      window.mjOpenBorderlineExplainModal = function() {
         const existing = document.getElementById("mjBorderlineExplainModal");
         if (existing) existing.remove();
         const items = window._mjLastBorderlineItems || [];
-        const activeAdjs = BODY_META.filter(function(b) { return _getCurrentAdj(b.key, b.adjId) !== 0; });
 
         const modal = document.createElement("div");
         modal.id = "mjBorderlineExplainModal";
         modal.className = "no-print fixed inset-0 z-[120] bg-black/65 backdrop-blur-[2px] flex items-center justify-center p-3";
         modal.onclick = function(e) { if (e.target === modal) window.mjCloseBorderlineExplainModal(); };
 
-        let cardsHtml = "";
-        if (items.length === 0) {
-          cardsHtml = `<div class="p-4 rounded-xl bg-emerald-50 border-2 border-emerald-300 text-xs font-extrabold text-emerald-950 leading-relaxed">
-            ✅ இந்த ஜாதகத்தில் உள்ள அனைத்து 9 கிரகங்களும் லக்னமும் பாதத்தின் மையப்பகுதியில் தெளிவாக உள்ளன. எல்லைப் பாத (+1 / -1) மாற்றம் தேவையில்லை!
-          </div>`;
-        } else {
-          cardsHtml = items.map(function(it) {
-            const curAdj = _getCurrentAdj(it.key, it.adjId);
-            const isApplied = (curAdj === it.suggestedDelta);
-            const signStr = it.suggestedDelta > 0 ? ("+" + it.suggestedDelta) : String(it.suggestedDelta);
-            return `
-              <div class="p-3 rounded-xl border-2 ${isApplied ? "bg-emerald-50/90 border-emerald-500" : "bg-amber-50/90 border-amber-400"} space-y-2">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <div class="font-black text-sm text-[#6b0f22]">🪐 ${it.ta} — எல்லைப் பாதம் (${signStr} பரிந்துரை)</div>
-                  <span class="text-[10px] px-2 py-0.5 rounded-full font-extrabold ${isApplied ? "bg-emerald-200 text-emerald-950" : "bg-amber-200 text-amber-950"}">${isApplied ? ("✅ " + signStr + " மாற்றம் செயலில்") : "தானியங்கி நிலையில்"}</span>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px] font-bold">
-                  <div class="p-2 rounded-lg bg-white border border-slate-200">
-                    <div class="text-[10px] text-slate-500">தானியங்கி கணக்கு (Auto):</div>
-                    <div class="font-extrabold text-slate-900">${it.autoInfo.nakTa} - ${it.autoInfo.pada} (${it.autoInfo.rasiTa} / அம்சம்: ${it.autoInfo.navTa})</div>
+        const cardsHtml = items.length === 0
+          ? `<div class="p-4 rounded-xl bg-emerald-50 border-2 border-emerald-300 text-xs font-extrabold text-emerald-950 leading-relaxed">
+              ✅ கைக்கணக்கு மற்றும் ஆப் கணக்கு இரண்டும் 100% ஒன்றாகவே உள்ளன — எந்த மாற்றமும் தேவையில்லை!
+            </div>`
+          : items.map(function(it) {
+              const curAdj = _getCurrentAdj(it.key, it.adjId);
+              const isApplied = (curAdj === it.suggestedDelta);
+              const signStr = it.suggestedDelta > 0 ? ("+" + it.suggestedDelta) : String(it.suggestedDelta);
+              return `
+                <div class="p-3 rounded-xl border-2 ${isApplied ? "bg-emerald-50 border-emerald-500" : "bg-amber-50 border-amber-400"} space-y-2">
+                  <div class="flex flex-wrap items-center justify-between gap-1.5">
+                    <div class="font-black text-sm text-[#6b0f22]">🪐 ${it.ta} (${signStr} பாதம்)</div>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full font-extrabold ${isApplied ? "bg-emerald-200 text-emerald-950" : "bg-amber-200 text-amber-950"}">${isApplied ? "✅ மாற்றப்பட்டது" : "அப்படியே உள்ளது"}</span>
                   </div>
-                  <div class="p-2 rounded-lg bg-white border border-amber-300">
-                    <div class="text-[10px] text-amber-800">${signStr} பாதம் மாற்றினால்:</div>
-                    <div class="font-extrabold text-[#6b0f22]">${it.altInfo.nakTa} - ${it.altInfo.pada} (${it.altInfo.rasiTa} / அம்சம்: ${it.altInfo.navTa})</div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px] font-bold">
+                    <div class="p-2 rounded-lg bg-white border border-slate-200">
+                      <div class="text-[10px] text-slate-500">தற்போது (அப்படியே):</div>
+                      <div class="font-extrabold text-slate-900">${it.autoInfo.nakTa}-${it.autoInfo.pada} • அம்சம்: ${it.autoInfo.navTa}</div>
+                    </div>
+                    <div class="p-2 rounded-lg bg-white border border-amber-400">
+                      <div class="text-[10px] text-amber-800">கைக்கணக்கு படி (${signStr}):</div>
+                      <div class="font-extrabold text-[#6b0f22]">${it.altInfo.nakTa}-${it.altInfo.pada} • அம்சம்: ${it.altInfo.navTa}</div>
+                    </div>
+                  </div>
+                  <div class="p-2 rounded-lg bg-white/90 border border-amber-200 text-[11px] font-bold text-slate-800 leading-relaxed">
+                    <strong>💡 விளக்கம்:</strong> ${it.reasonTa}
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
+                    <button type="button" onclick="mjApplyBorderlinePadaDelta('${it.key}', ${it.suggestedDelta})" class="px-3 py-2 rounded-xl ${isApplied ? "bg-emerald-700 text-white" : "bg-[#6b0f22] hover:opacity-95 text-white"} font-extrabold text-xs shadow cursor-pointer">✅ கைக்கணக்கு படி மாற்று (${signStr})</button>
+                    <button type="button" onclick="mjApplyBorderlinePadaDelta('${it.key}', 0)" class="px-3 py-2 rounded-xl ${!isApplied ? "bg-slate-800 text-white" : "bg-white border-2 border-slate-300 text-slate-800"} font-extrabold text-xs cursor-pointer">↺ அப்படியே இருக்கட்டும்</button>
                   </div>
                 </div>
-                <div class="p-2 rounded-lg bg-white/90 border border-amber-200 text-[11px] font-bold text-slate-800 leading-relaxed">
-                  <strong>💡 ஏன் மாற வாய்ப்புள்ளது?</strong> ${it.reasonTa}
-                </div>
-                <div class="flex flex-wrap items-center gap-2 pt-0.5">
-                  <button type="button" onclick="mjApplyBorderlinePadaDelta('${it.key}', ${it.suggestedDelta})" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#6b0f22] to-[#9b1c1c] hover:opacity-95 text-white font-extrabold text-xs shadow cursor-pointer">✅ ${signStr} பாதம் மாற்று (${it.altInfo.navTa} அம்சம்)</button>
-                  <button type="button" onclick="mjApplyBorderlinePadaDelta('${it.key}', 0)" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-extrabold text-xs cursor-pointer">↺ தானியங்கி (அப்படியே வை)</button>
-                </div>
-              </div>
-            `;
-          }).join("");
-        }
+              `;
+            }).join("");
 
         modal.innerHTML = `
           <div class="w-full max-w-lg max-h-[88vh] flex flex-col rounded-2xl bg-white border-2 border-amber-500 shadow-2xl overflow-hidden">
             <div class="bg-gradient-to-r from-[#2e050d] via-[#6b0f22] to-[#2e050d] text-amber-50 px-4 py-3 flex items-center justify-between shrink-0">
-              <div class="font-extrabold text-sm">⚠️ எல்லைப் பாதம் (+1 / -1) விளக்கம் & மாற்றம்</div>
+              <div class="font-extrabold text-sm">⚠️ கைக்கணக்கு மாற்றம் — 2 விருப்பங்கள்</div>
               <button type="button" onclick="mjCloseBorderlineExplainModal()" class="px-2 py-0.5 rounded-lg bg-white/15 hover:bg-white/25 text-white font-extrabold text-xs cursor-pointer">✕ மூடு</button>
             </div>
             <div class="p-3.5 space-y-3 overflow-y-auto">
-              <div class="text-[11px] font-bold text-slate-700 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                நீங்கள் விரும்பினால் கீழே உள்ள <strong>"+1 / -1 பாதம் மாற்று"</strong> பொத்தானை அழுத்தி அம்சம் கட்டத்தை உடனே மாற்றலாம்; வேண்டாமென்றால் <strong>"தானியங்கி (அப்படியே வை)"</strong> நிலையிலேயே விட்டுவிடலாம்.
+              <div class="p-2.5 rounded-xl bg-amber-50 border border-amber-300 text-xs font-extrabold text-[#6b0f22] leading-relaxed">
+                இது கைக்கணக்கு படி மாறுகிறது — தேவைப்பட்டால் <strong>"கைக்கணக்கு படி மாற்று"</strong> அழுத்தவும்; இல்லையென்றால் <strong>"அப்படியே இருக்கட்டும்"</strong> என விட்டுவிடலாம்.
               </div>
               ${cardsHtml}
             </div>
-            <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2 shrink-0">
-              ${activeAdjs.length > 0 ? `<button type="button" onclick="mjResetAllBorderlineAdjs()" class="px-3 py-1.5 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-900 border border-rose-300 font-extrabold text-xs cursor-pointer">↺ அனைத்தையும் மீட்டமை</button>` : `<span></span>`}
+            <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-200 flex justify-end shrink-0">
               <button type="button" onclick="mjCloseBorderlineExplainModal()" class="px-4 py-1.5 rounded-xl bg-slate-800 text-white font-extrabold text-xs cursor-pointer">மூடு</button>
             </div>
           </div>
@@ -14091,25 +14102,24 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       function _injectChartSideBadges() {
         document.querySelectorAll(".mj-chart-borderline-badge").forEach(function(el) { el.remove(); });
         const items = window._mjLastBorderlineItems || [];
-        const activeCount = BODY_META.filter(function(b) { return _getCurrentAdj(b.key, b.adjId) !== 0; }).length;
         const grids = document.querySelectorAll(".book-kattam-grid");
         if (!grids.length) return;
 
         grids.forEach(function(grid) {
           const wrap = document.createElement("div");
           wrap.className = "mj-chart-borderline-badge no-print mb-2 flex flex-wrap items-center justify-end gap-2";
-          if (items.length > 0 || activeCount > 0) {
-            const names = items.map(function(it) { return it.ta + " (" + (it.suggestedDelta > 0 ? "+1" : "-1") + ")"; }).join(", ");
+          if (items.length > 0) {
+            const names = items.map(function(it) { return it.ta + " (" + (it.suggestedDelta > 0 ? "+" + it.suggestedDelta : it.suggestedDelta) + ")"; }).join(", ");
             wrap.innerHTML = `
-              <button type="button" onclick="mjOpenBorderlineExplainModal(false)" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-100 to-orange-100 hover:from-amber-200 hover:to-orange-200 border-2 border-amber-500 text-[#6b0f22] font-extrabold text-[11px] sm:text-xs shadow-sm cursor-pointer flex items-center gap-1.5">
-                <span>⚠️ எல்லைப் பாதம் (${items.length}): ${names || "மாற்றம் செயலில்"}</span>
+              <button type="button" onclick="mjOpenBorderlineExplainModal()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-100 to-orange-100 hover:from-amber-200 hover:to-orange-200 border-2 border-amber-500 text-[#6b0f22] font-extrabold text-[11px] sm:text-xs shadow-sm cursor-pointer flex items-center gap-1.5">
+                <span>⚠️ கைக்கணக்கு மாற்றம் (${items.length}): ${names}</span>
                 <span class="px-1.5 py-0.5 rounded-md bg-[#6b0f22] text-white text-[10px]">விளக்கம் / மாற்று</span>
               </button>
             `;
           } else {
             wrap.innerHTML = `
-              <button type="button" onclick="mjOpenBorderlineExplainModal(false)" class="px-2.5 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-900 font-bold text-[10px] sm:text-[11px] cursor-pointer">
-                ✅ எல்லைப் பாதம் இல்லை (அனைத்தும் தெளிவு)
+              <button type="button" onclick="mjOpenBorderlineExplainModal()" class="px-2.5 py-1 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 font-bold text-[10px] sm:text-[11px] cursor-pointer">
+                ✅ கைக்கணக்கு & ஆப் கணக்கு 100% ஒன்று
               </button>
             `;
           }
@@ -14117,7 +14127,6 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         });
       }
 
-      // Wrap calculateFullJathagam to capture true borderline status & apply Main App smartPadaAdj if needed
       if (typeof calculateFullJathagam === "function") {
         const _prevCalcForBorderline = calculateFullJathagam;
         calculateFullJathagam = function(profile) {
@@ -14126,11 +14135,12 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             if (calc && calc.planets) {
               const detected = [];
               const hasKaiOverrideUI = Boolean(document.getElementById("inpPadaAdjMars"));
+              const classicLagnaGP = _computeClassicNotebookLagnaGPada(calc, profile || {});
+
               BODY_META.forEach(function(b) {
                 const pl = calc.planets[b.key];
                 if (!pl || typeof pl.longitude !== "number" || isNaN(pl.longitude)) return;
                 const curAdj = _getCurrentAdj(b.key, b.adjId);
-                // If Main App (no Kai override UI), apply window._mjSmartPadaAdj[b.key] directly
                 if (!hasKaiOverrideUI && curAdj !== 0) {
                   const baseGPada = (((pl.nakIdx * 4) + ((pl.pada || 1) - 1)) % 108 + 108) % 108;
                   const newGPada = ((baseGPada + curAdj) % 108 + 108) % 108;
@@ -14148,26 +14158,40 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                   pl.navamsaRasi = RASIS[newNav];
                   pl.starLord = DASA_LORDS[NAKSHATRAS[newNak].lordIdx];
                 }
-                // Compute unadjusted original longitude to test true borderline proximity
+
                 const origLon = ((pl.longitude - (curAdj * PADA_SPAN)) % 360 + 360) % 360;
                 const origGPada = Math.floor(origLon / PADA_SPAN) % 108;
                 const posInPada = origLon - (origGPada * PADA_SPAN);
                 const distPrev = posInPada;
                 const distNext = PADA_SPAN - posInPada;
 
-                if (distNext <= BORDER_DEG || distPrev <= BORDER_DEG) {
-                  const delta = (distNext <= distPrev) ? 1 : -1;
-                  const distDeg = (delta === 1) ? distNext : distPrev;
-                  const autoInfo = _getPadaInfo(origGPada);
-                  const altInfo = _getPadaInfo(origGPada + delta);
-                  const dirTa = delta === 1 ? "அடுத்த பாதத்திற்கு (+1)" : "முந்தைய பாதத்திற்கு (-1)";
-                  const reasonTa = b.key === "Lagnam"
-                    ? ("லக்னம் பாத எல்லையிலிருந்து வெறும் " + _fmtDM(distDeg) + " தொலைவில் உள்ளது. பிறந்த நேரத்தில் 1–2 நிமிட வித்தியாசம் அல்லது பாரம்பரிய சூரிய உதயம் / ராசி பிரமாண வேறுபாட்டால் " + dirTa + " (" + altInfo.navTa + " அம்சம்) மாற வாய்ப்புள்ளது.")
-                    : (b.ta + " பாத எல்லையிலிருந்து வெறும் " + _fmtDM(distDeg) + " தொலைவில் உள்ளது. அந்த நாளில் கிரகம் பாதம் மாறும் எல்லை நேரம் என்பதால் பாம்பு பஞ்சாங்கக் கணக்குப்படி " + dirTa + " (" + altInfo.navTa + " அம்சம்) மாற வாய்ப்புள்ளது.");
+                let suggestedDelta = 0;
+                let reasonTa = "";
+
+                if (b.key === "Lagnam" && classicLagnaGP !== null && classicLagnaGP !== origGPada) {
+                  let diff = classicLagnaGP - origGPada;
+                  if (diff > 54) diff -= 108;
+                  if (diff < -54) diff += 108;
+                  if (Math.abs(diff) >= 1 && Math.abs(diff) <= 2) {
+                    suggestedDelta = diff;
+                    const altInfoL = _getPadaInfo(origGPada + diff);
+                    reasonTa = "பாரம்பரிய நோட்புக் ராசி பிரமாணம் (4.15 / 4.45 / 5.15 / 5.30) படி லக்னம் " + (diff > 0 ? "+" + diff : diff) + " பாதம் மாறி " + altInfoL.nakTa + "-" + altInfoL.pada + " (" + altInfoL.navTa + " அம்சம்) ஆக வருகிறது.";
+                  }
+                }
+                if (suggestedDelta === 0 && (distNext <= BORDER_DEG || distPrev <= BORDER_DEG)) {
+                  suggestedDelta = (distNext <= distPrev) ? 1 : -1;
+                  const distDeg = (suggestedDelta === 1) ? distNext : distPrev;
+                  const altInfoP = _getPadaInfo(origGPada + suggestedDelta);
+                  reasonTa = b.ta + " பாத எல்லையிலிருந்து வெறும் " + _fmtDM(distDeg) + " தூரத்தில் உள்ளதால், கைக்கணக்கு / பாம்பு பஞ்சாங்க மாறுதல் நேரப்படி " + (suggestedDelta > 0 ? "+1" : "-1") + " பாதம் மாறி " + altInfoP.nakTa + "-" + altInfoP.pada + " (" + altInfoP.navTa + " அம்சம்) ஆக வர வாய்ப்புள்ளது.";
+                }
+
+                if (suggestedDelta !== 0) {
                   detected.push({
                     key: b.key, ta: b.ta, adjId: b.adjId,
-                    suggestedDelta: delta, distDeg: distDeg,
-                    autoInfo: autoInfo, altInfo: altInfo, reasonTa: reasonTa
+                    suggestedDelta: suggestedDelta,
+                    autoInfo: _getPadaInfo(origGPada),
+                    altInfo: _getPadaInfo(origGPada + suggestedDelta),
+                    reasonTa: reasonTa
                   });
                 }
               });
