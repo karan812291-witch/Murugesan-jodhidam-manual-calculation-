@@ -678,11 +678,13 @@
         <div>
           <label class="block text-xs font-extrabold text-amber-950 mb-1">ஆங்கிலப் பிறந்த தேதி</label>
           <input id="inpDob" oninput="mjUpdateLiveTamilDatePopup()" type="date" value="" onchange="handleDobOrModeChange()" class="w-full px-3 py-2 rounded-xl border border-amber-300 text-sm font-bold text-slate-900" />
+          <input id="inpDobManualText" type="text" inputmode="numeric" placeholder="✍️ கைமுறை தேதி: 07-06-2017" oninput="mjSyncManualDobText(this.value)" class="w-full mt-1 px-2.5 py-1.5 rounded-lg border border-amber-300 bg-amber-50/60 text-xs font-extrabold text-amber-950 placeholder:text-slate-500" />
           <div id="mjLiveTamilDatePopup" class="hidden mt-1.5 px-2.5 py-2 rounded-xl bg-gradient-to-r from-amber-100 via-yellow-50 to-rose-50 border-2 border-amber-500 shadow-sm text-[11px] sm:text-xs font-extrabold text-[#7f1d1d] leading-snug"></div>
         </div>
         <div>
           <label class="block text-xs font-extrabold text-amber-950 mb-1">பிறந்த நேரம்</label>
           <input id="inpTob" type="time" step="60" value="" onchange="calculateAndFillBook()" class="w-full px-3 py-2 rounded-xl border border-amber-300 text-sm font-bold text-slate-900" />
+          <input id="inpTobManualText" type="text" placeholder="✍️ கைமுறை நேரம்: 10:11 AM / 22:11" oninput="mjSyncManualTobText(this.value)" class="w-full mt-1 px-2.5 py-1.5 rounded-lg border border-amber-300 bg-amber-50/60 text-xs font-extrabold text-amber-950 placeholder:text-slate-500" />
         </div>
         <div>
           <label class="block text-xs font-extrabold text-amber-950 mb-1">பிறந்த ஊர் / நகரம்</label>
@@ -752,39 +754,70 @@
             </div>
             <div>
               <label class="block text-[11px] font-extrabold text-violet-950 mb-1">சூரியன் இருப்பு நாழிகை (எ.கா: 2.24)</label>
-              <input id="inpManSunRemDot" type="text" value="" placeholder="தானியங்கி (காலியாக விடலாம்)" oninput="calculateAndFillBook()" class="w-full px-2.5 py-1.5 rounded-xl border border-violet-300 text-xs font-bold bg-white text-slate-900" />
+              <input id="inpManSunRemDot","inpManUdayathiDot","inpManLagnaStarPada","inpPadaAdjLagnam","inpPadaAdjSun","inpPadaAdjMoon","inpPadaAdjRahu","inpPadaAdjKetu" type="text" value="" placeholder="தானியங்கி (காலியாக விடலாம்)" oninput="calculateAndFillBook()" class="w-full px-2.5 py-1.5 rounded-xl border border-violet-300 text-xs font-bold bg-white text-slate-900" />
             </div>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-1">
             <div>
               <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">செவ்வாய் பாதம்</label>
               <select id="inpPadaAdjMars" onchange="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white">
-                <option value="0" selected>தானியங்கி</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option>
+                <option value="0" selected>தானியங்கி</option><option value="-2">-2 பாதம்</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option><option value="2">+2 பாதம்</option>
               </select>
             </div>
             <div>
               <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">சனி பாதம்</label>
               <select id="inpPadaAdjSaturn" onchange="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white">
-                <option value="0" selected>தானியங்கி</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option>
+                <option value="0" selected>தானியங்கி</option><option value="-2">-2 பாதம்</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option><option value="2">+2 பாதம்</option>
               </select>
             </div>
             <div>
               <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">குரு பாதம்</label>
               <select id="inpPadaAdjJupiter" onchange="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white">
-                <option value="0" selected>தானியங்கி</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option>
+                <option value="0" selected>தானியங்கி</option><option value="-2">-2 பாதம்</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option><option value="2">+2 பாதம்</option>
               </select>
             </div>
             <div>
               <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">புதன் பாதம்</label>
               <select id="inpPadaAdjMercury" onchange="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white">
-                <option value="0" selected>தானியங்கி</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option>
+                <option value="0" selected>தானியங்கி</option><option value="-2">-2 பாதம்</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option><option value="2">+2 பாதம்</option>
               </select>
             </div>
             <div>
               <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">சுக்கிரன் பாதம்</label>
               <select id="inpPadaAdjVenus" onchange="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white">
-                <option value="0" selected>தானியங்கி</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option>
+                <option value="0" selected>தானியங்கி</option><option value="-2">-2 பாதம்</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option><option value="2">+2 பாதம்</option>
               </select>
+            </div>
+            
+            <div>
+              <label class="block text-[10px] font-extrabold text-violet-950 mb-0.5">✍️ உதயாதி நாழிகை (எ.கா: 10.46)</label>
+              <input id="inpManUdayathiDot" type="text" value="" placeholder="தானியங்கி" oninput="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white text-slate-900" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-extrabold text-violet-950 mb-0.5">✍️ லக்னம் நட்சத்திரம் & பாதம்</label>
+              <select id="inpManLagnaStarPada" onchange="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white text-slate-900">
+                <option value="" selected>தானியங்கி (கணக்கு)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">லக்னம் பாதம்</label>
+              <select id="inpPadaAdjLagnam" onchange="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white"><option value="0" selected>தானியங்கி</option><option value="-2">-2 பாதம்</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option><option value="2">+2 பாதம்</option></select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">சூரியன் பாதம்</label>
+              <select id="inpPadaAdjSun" onchange="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white"><option value="0" selected>தானியங்கி</option><option value="-2">-2 பாதம்</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option><option value="2">+2 பாதம்</option></select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">சந்திரன் பாதம்</label>
+              <select id="inpPadaAdjMoon" onchange="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white"><option value="0" selected>தானியங்கி</option><option value="-2">-2 பாதம்</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option><option value="2">+2 பாதம்</option></select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">ராகு பாதம்</label>
+              <select id="inpPadaAdjRahu" onchange="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white"><option value="0" selected>தானியங்கி</option><option value="-2">-2 பாதம்</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option><option value="2">+2 பாதம்</option></select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-extrabold text-slate-700 mb-0.5">கேது பாதம்</label>
+              <select id="inpPadaAdjKetu" onchange="calculateAndFillBook()" class="w-full px-2 py-1 rounded-lg border border-violet-300 text-xs font-bold bg-white"><option value="0" selected>தானியங்கி</option><option value="-2">-2 பாதம்</option><option value="-1">-1 பாதம்</option><option value="1">+1 பாதம்</option><option value="2">+2 பாதம்</option></select>
             </div>
             <div class="flex items-end">
               <button type="button" onclick="mjResetManualOverrides()" class="w-full px-2 py-1.5 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-900 border border-rose-300 font-extrabold text-[11px] cursor-pointer">↺ மீட்டமை (Reset)</button>
@@ -10230,10 +10263,10 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
     // 🧮 FULL MANUAL KAI-KANAKKU ENGINE + OPTIONAL PANCHANGAM NOTEBOOK OVERRIDE
     // ============================================================================
     window.mjResetManualOverrides = function() {
-      ["inpManPrevStarDot","inpManCurrStarDot","inpManSunRemDot"].forEach(function(id) {
+      ["inpManPrevStarDot","inpManCurrStarDot","inpManSunRemDot","inpManUdayathiDot","inpManLagnaStarPada","inpPadaAdjLagnam","inpPadaAdjSun","inpPadaAdjMoon","inpPadaAdjRahu","inpPadaAdjKetu","inpManUdayathiDot","inpManLagnaStarPada"].forEach(function(id) {
         const el = document.getElementById(id); if (el) el.value = "";
       });
-      ["inpPadaAdjMars","inpPadaAdjSaturn","inpPadaAdjJupiter","inpPadaAdjMercury","inpPadaAdjVenus"].forEach(function(id) {
+      ["inpPadaAdjMars","inpPadaAdjSaturn","inpPadaAdjJupiter","inpPadaAdjMercury","inpPadaAdjVenus","inpPadaAdjLagnam","inpPadaAdjSun","inpPadaAdjMoon","inpPadaAdjRahu","inpPadaAdjKetu"].forEach(function(id) {
         const el = document.getElementById(id); if (el) el.value = "0";
       });
       const rp = document.getElementById("inpRasiPramanamType");
@@ -10273,7 +10306,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           const rpMode = profile.rasiPramanamType || (document.getElementById("inpRasiPramanamType")?.value) || "tn_exact";
           const prevStarVin = _parseDotToVin(profile.manPrevStarDot ?? document.getElementById("inpManPrevStarDot")?.value);
           const currStarVin = _parseDotToVin(profile.manCurrStarDot ?? document.getElementById("inpManCurrStarDot")?.value);
-          const sunRemOverrideVin = _parseDotToVin(profile.manSunRemDot ?? document.getElementById("inpManSunRemDot")?.value);
+          const sunRemOverrideVin = _parseDotToVin(profile.manSunRemDot ?? document.getElementById("inpManSunRemDot","inpManUdayathiDot","inpManLagnaStarPada","inpPadaAdjLagnam","inpPadaAdjSun","inpPadaAdjMoon","inpPadaAdjRahu","inpPadaAdjKetu")?.value);
 
           const RASI_VIN_ARR = (rpMode === "classic_notebook")
             ? CLASSIC_NOTEBOOK_VIN
@@ -10283,7 +10316,8 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             ? profile.customSunrise
             : ((calc.paambuExtras && calc.paambuExtras.sunrise24) || "06:00");
           const uday = computeUdayathiNazhigai(profile.dob, profile.tob, srStr);
-          const udayVin = uday.totalVinazhigai;
+          const manUdayVin = _parseDotToVin(profile.manUdayathiDot ?? document.getElementById("inpManUdayathiDot")?.value);
+          const udayVin = (manUdayVin !== null) ? manUdayVin : uday.totalVinazhigai;
 
           const sunRasiIdx = calc.planets.Sun.rasiIdx;
           const sunRasiFullVin = RASI_VIN_ARR[sunRasiIdx];
@@ -10311,29 +10345,47 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           const lagnaPada = (lagnaGlobalPada % 4) + 1;
           const lagnaNavIdx = lagnaGlobalPada % 12;
 
+          const manLagnaSP = String(profile.manLagnaStarPada ?? document.getElementById("inpManLagnaStarPada")?.value ?? "").trim();
+          const lagnaAdj = Number(profile.padaAdjLagnam ?? document.getElementById("inpPadaAdjLagnam")?.value ?? 0) || 0;
+          let finalLagnaGlobalPada = lagnaGlobalPada;
+          if (/^\d+-\d+$/.test(manLagnaSP)) {
+            const spParts = manLagnaSP.split("-").map(Number);
+            finalLagnaGlobalPada = ((spParts[0] * 4 + (spParts[1] - 1)) % 108 + 108) % 108;
+          } else if (lagnaAdj !== 0) {
+            finalLagnaGlobalPada = ((lagnaGlobalPada + lagnaAdj) % 108 + 108) % 108;
+          }
+          const finalLagnaRasiIdx = Math.floor(finalLagnaGlobalPada / 9) % 12;
+          const finalLagnaNakIdx = Math.floor(finalLagnaGlobalPada / 4) % 27;
+          const finalLagnaPada = (finalLagnaGlobalPada % 4) + 1;
+          const finalLagnaNavIdx = finalLagnaGlobalPada % 12;
+
           const L = calc.planets.Lagnam;
-          L.longitude = manualLagnaLon;
-          L.rasiIdx = lagnaRasiIdx;
-          L.rasi = RASIS[lagnaRasiIdx];
-          L.navamsaIdx = lagnaNavIdx;
-          L.navamsa = RASIS[lagnaNavIdx];
-          L.navamsaRasi = RASIS[lagnaNavIdx];
-          L.nakIdx = lagnaNakIdx;
-          L.nakshatra = NAKSHATRAS[lagnaNakIdx];
-          L.pada = lagnaPada;
-          L.starLord = DASA_LORDS[NAKSHATRAS[lagnaNakIdx].lordIdx];
-          L.degInRasi = _fmtDegMin(lagnaDegInRasiNum);
-          L.degNum = lagnaDegInRasiNum;
+          L.longitude = (finalLagnaGlobalPada !== lagnaGlobalPada) ? ((finalLagnaGlobalPada + 0.5) * (360.0 / 108.0)) % 360 : manualLagnaLon;
+          L.rasiIdx = finalLagnaRasiIdx;
+          L.rasi = RASIS[finalLagnaRasiIdx];
+          L.navamsaIdx = finalLagnaNavIdx;
+          L.navamsa = RASIS[finalLagnaNavIdx];
+          L.navamsaRasi = RASIS[finalLagnaNavIdx];
+          L.nakIdx = finalLagnaNakIdx;
+          L.nakshatra = NAKSHATRAS[finalLagnaNakIdx];
+          L.pada = finalLagnaPada;
+          L.starLord = DASA_LORDS[NAKSHATRAS[finalLagnaNakIdx].lordIdx];
+          L.degInRasi = _fmtDegMin(((L.longitude % 30) + 30) % 30);
+          L.degNum = ((L.longitude % 30) + 30) % 30;
 
           const padaSpan = 360.0 / 108.0;
           const padaAdjMap = {
+            Sun: Number(profile.padaAdjSun ?? document.getElementById("inpPadaAdjSun")?.value ?? 0) || 0,
+            Moon: Number(profile.padaAdjMoon ?? document.getElementById("inpPadaAdjMoon")?.value ?? 0) || 0,
             Mars: Number(profile.padaAdjMars ?? document.getElementById("inpPadaAdjMars")?.value ?? 0) || 0,
             Saturn: Number(profile.padaAdjSaturn ?? document.getElementById("inpPadaAdjSaturn")?.value ?? 0) || 0,
             Jupiter: Number(profile.padaAdjJupiter ?? document.getElementById("inpPadaAdjJupiter")?.value ?? 0) || 0,
             Mercury: Number(profile.padaAdjMercury ?? document.getElementById("inpPadaAdjMercury")?.value ?? 0) || 0,
-            Venus: Number(profile.padaAdjVenus ?? document.getElementById("inpPadaAdjVenus")?.value ?? 0) || 0
+            Venus: Number(profile.padaAdjVenus ?? document.getElementById("inpPadaAdjVenus")?.value ?? 0) || 0,
+            Rahu: Number(profile.padaAdjRahu ?? document.getElementById("inpPadaAdjRahu")?.value ?? 0) || 0,
+            Ketu: Number(profile.padaAdjKetu ?? document.getElementById("inpPadaAdjKetu")?.value ?? 0) || 0
           };
-          ["Sun", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"].forEach(function(pk) {
+          ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"].forEach(function(pk) {
             const pl = calc.planets[pk];
             if (!pl) return;
             const adj = padaAdjMap[pk] || 0;
@@ -11776,7 +11828,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
   <script id="mjTopResetRefreshScript">
     window.mjResetNewHoroscopeForm = function() {
       try {
-        ["inpName","inpFather","inpMother","inpDob","inpTob","inpTown","inpDistrict","inpTownSelect","mjClientPhoneSearch","mjClientPhoneInput","inpManPrevStarDot","inpManCurrStarDot","inpManSunRemDot"].forEach(function(id) {
+        ["inpName","inpFather","inpMother","inpDob","inpDobManualText","inpTob","inpTobManualText","inpTown","inpDistrict","inpTownSelect","mjClientPhoneSearch","mjClientPhoneInput","inpManPrevStarDot","inpManCurrStarDot","inpManSunRemDot","inpManUdayathiDot","inpManLagnaStarPada","inpPadaAdjLagnam","inpPadaAdjSun","inpPadaAdjMoon","inpPadaAdjRahu","inpPadaAdjKetu"].forEach(function(id) {
           const el = document.getElementById(id);
           if (el) el.value = "";
         });
@@ -13422,7 +13474,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v24.4</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v24.6</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -13529,9 +13581,9 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         + (document.title.includes("கைக்கணக்கு") ? "KAI_V1" : "MAIN_V1");
 
       const FIELD_IDS = [
-        "inpName","inpFather","inpMother","inpGender","inpDob","inpTob","inpCity","inpSunrise",
+        "inpName","inpFather","inpMother","inpGender","inpDob","inpDobManualText","inpTob","inpTobManualText","inpCity","inpSunrise",
         "inpDistrict","inpTownSelect","inpTown","inpMode","inpPage0Deity",
-        "inpRasiPramanamType","inpManPrevStarDot","inpManCurrStarDot","inpManSunRemDot",
+        "inpRasiPramanamType","inpManPrevStarDot","inpManCurrStarDot","inpManSunRemDot","inpManUdayathiDot","inpManLagnaStarPada","inpPadaAdjLagnam","inpPadaAdjSun","inpPadaAdjMoon","inpPadaAdjRahu","inpPadaAdjKetu",
         "inpPadaAdjMars","inpPadaAdjSaturn","inpPadaAdjJupiter","inpPadaAdjMercury","inpPadaAdjVenus"
       ];
 
@@ -13764,6 +13816,392 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           return res;
         };
       }
+    })();
+  </script>
+
+
+  <script id="mjManualDateTimeSyncScript">
+    (function() {
+      window.mjSyncManualDobText = function(raw) {
+        const s = String(raw || "").trim().replace(/[./]/g, "-");
+        const m = s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+        if (!m) return;
+        const dd = m[1].padStart(2, "0");
+        const mm = m[2].padStart(2, "0");
+        const yyyy = m[3];
+        const iso = yyyy + "-" + mm + "-" + dd;
+        const dobEl = document.getElementById("inpDob");
+        if (dobEl && dobEl.value !== iso) {
+          dobEl.value = iso;
+          if (typeof mjUpdateLiveTamilDatePopup === "function") mjUpdateLiveTamilDatePopup();
+          if (typeof handleDobOrModeChange === "function") handleDobOrModeChange();
+        }
+      };
+
+      window.mjSyncManualTobText = function(raw) {
+        const s = String(raw || "").trim().toUpperCase().replace(/\./g, ":");
+        const m = s.match(/^(\d{1,2}):(\d{2})(?:\s*(AM|PM))?$/);
+        if (!m) return;
+        let hh = parseInt(m[1], 10);
+        const min = parseInt(m[2], 10);
+        const ap = m[3] || "";
+        if (isNaN(hh) || isNaN(min) || min > 59) return;
+        if (ap === "PM" && hh < 12) hh += 12;
+        else if (ap === "AM" && hh === 12) hh = 0;
+        if (hh < 0 || hh > 23) return;
+        const t24 = String(hh).padStart(2, "0") + ":" + String(min).padStart(2, "0");
+        const tobEl = document.getElementById("inpTob");
+        if (tobEl && tobEl.value !== t24) {
+          tobEl.value = t24;
+          if (typeof calculateAndFillBook === "function") calculateAndFillBook();
+        }
+      };
+
+      function _reflectNativeToManual() {
+        const dobEl = document.getElementById("inpDob");
+        const dobTxt = document.getElementById("inpDobManualText");
+        if (dobEl && dobTxt && /^\d{4}-\d{2}-\d{2}$/.test(dobEl.value)) {
+          const p = dobEl.value.split("-");
+          const dmy = p[2] + "-" + p[1] + "-" + p[0];
+          if (document.activeElement !== dobTxt) dobTxt.value = dmy;
+        }
+        const tobEl = document.getElementById("inpTob");
+        const tobTxt = document.getElementById("inpTobManualText");
+        if (tobEl && tobTxt && /^\d{2}:\d{2}/.test(tobEl.value)) {
+          const p = tobEl.value.split(":").map(Number);
+          const ap = p[0] >= 12 ? "PM" : "AM";
+          const h12 = (p[0] % 12) || 12;
+          const fmt = String(h12).padStart(2, "0") + ":" + String(p[1]).padStart(2, "0") + " " + ap;
+          if (document.activeElement !== tobTxt) tobTxt.value = fmt;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function() {
+        const dobEl = document.getElementById("inpDob");
+        const tobEl = document.getElementById("inpTob");
+        if (dobEl) dobEl.addEventListener("change", _reflectNativeToManual);
+        if (tobEl) tobEl.addEventListener("change", _reflectNativeToManual);
+        setTimeout(_reflectNativeToManual, 400);
+      });
+    })();
+  </script>
+
+<script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const sel = document.getElementById("inpManLagnaStarPada");
+        if (sel && sel.options.length <= 1 && typeof NAKSHATRAS !== "undefined") {
+          for (let s = 0; s < 27; s++) {
+            for (let p = 1; p <= 4; p++) {
+              const gPada = s * 4 + (p - 1);
+              const rTa = RASIS[Math.floor(gPada / 9) % 12].ta;
+              const nTa = RASIS[gPada % 12].ta;
+              const opt = document.createElement("option");
+              opt.value = s + "-" + p;
+              opt.textContent = NAKSHATRAS[s].ta + " - " + p + " (" + rTa + " / அம்சம்: " + nTa + ")";
+              sel.appendChild(opt);
+            }
+          }
+        }
+      });
+    </script>
+
+  <script id="mjBorderlinePadaAdvisorScript">
+    (function() {
+      // ⚠️ Auto Borderline (+1/-1) Pada Detector + Chart Side Popup with Explanation
+      const PADA_SPAN = 360.0 / 108.0; // 3.333333 deg
+      const BORDER_DEG = 0.60; // ~18% of a pada
+      const BODY_META = [
+        { key: "Lagnam", ta: "லக்னம்", adjId: "inpPadaAdjLagnam" },
+        { key: "Sun", ta: "சூரியன்", adjId: "inpPadaAdjSun" },
+        { key: "Moon", ta: "சந்திரன்", adjId: "inpPadaAdjMoon" },
+        { key: "Mars", ta: "செவ்வாய்", adjId: "inpPadaAdjMars" },
+        { key: "Mercury", ta: "புதன்", adjId: "inpPadaAdjMercury" },
+        { key: "Jupiter", ta: "குரு", adjId: "inpPadaAdjJupiter" },
+        { key: "Venus", ta: "சுக்கிரன்", adjId: "inpPadaAdjVenus" },
+        { key: "Saturn", ta: "சனி", adjId: "inpPadaAdjSaturn" },
+        { key: "Rahu", ta: "ராகு", adjId: "inpPadaAdjRahu" },
+        { key: "Ketu", ta: "கேது", adjId: "inpPadaAdjKetu" }
+      ];
+
+      window._mjSmartPadaAdj = window._mjSmartPadaAdj || {};
+      window._mjLastBorderlineItems = [];
+
+      function _fmtDM(degVal) {
+        const d = Math.max(0, Number(degVal) || 0);
+        const dd = Math.floor(d);
+        const mm = Math.round((d - dd) * 60);
+        if (mm >= 60) return (dd + 1) + "° 00'";
+        return dd + "° " + String(mm).padStart(2, "0") + "'";
+      }
+
+      function _getPadaInfo(gPada) {
+        const gp = ((gPada % 108) + 108) % 108;
+        const nIdx = Math.floor(gp / 4) % 27;
+        const pNum = (gp % 4) + 1;
+        const rIdx = Math.floor(gp / 9) % 12;
+        const navIdx = gp % 12;
+        return {
+          gPada: gp,
+          nakTa: (typeof NAKSHATRAS !== "undefined" && NAKSHATRAS[nIdx]) ? NAKSHATRAS[nIdx].ta : ("நட்சத்திரம் " + (nIdx + 1)),
+          pada: pNum,
+          rasiTa: (typeof RASIS !== "undefined" && RASIS[rIdx]) ? RASIS[rIdx].ta : "",
+          navTa: (typeof RASIS !== "undefined" && RASIS[navIdx]) ? RASIS[navIdx].ta : ""
+        };
+      }
+
+      function _getCurrentAdj(key, adjId) {
+        const el = document.getElementById(adjId);
+        if (el) return Number(el.value || 0) || 0;
+        return Number(window._mjSmartPadaAdj[key] || 0) || 0;
+      }
+
+      window.mjApplyBorderlinePadaDelta = function(planetKey, deltaVal) {
+        const meta = BODY_META.find(function(b) { return b.key === planetKey; });
+        const d = Number(deltaVal) || 0;
+        window._mjSmartPadaAdj[planetKey] = d;
+        if (meta && meta.adjId) {
+          const el = document.getElementById(meta.adjId);
+          if (el) el.value = String(d);
+        }
+        if (typeof calculateAndFillBook === "function") calculateAndFillBook();
+        window.mjOpenBorderlineExplainModal(true);
+        if (typeof showToast === "function") {
+          const nameTa = meta ? meta.ta : planetKey;
+          showToast(d === 0 ? ("↺ " + nameTa + " தானியங்கி நிலைக்கு மாற்றப்பட்டது!") : ("✅ " + nameTa + " (" + (d > 0 ? "+" + d : d) + " பாதம்) மாற்றப்பட்டது!"), "success");
+        }
+      };
+
+      window.mjResetAllBorderlineAdjs = function() {
+        BODY_META.forEach(function(b) {
+          window._mjSmartPadaAdj[b.key] = 0;
+          const el = document.getElementById(b.adjId);
+          if (el) el.value = "0";
+        });
+        if (typeof calculateAndFillBook === "function") calculateAndFillBook();
+        window.mjOpenBorderlineExplainModal(true);
+        if (typeof showToast === "function") showToast("↺ அனைத்தும் தானியங்கி நிலைக்கு மீட்டமைக்கப்பட்டது!", "success");
+      };
+
+      window.mjCloseBorderlineExplainModal = function() {
+        const m = document.getElementById("mjBorderlineExplainModal");
+        if (m) m.remove();
+      };
+
+      window.mjOpenBorderlineExplainModal = function(isRefresh) {
+        const existing = document.getElementById("mjBorderlineExplainModal");
+        if (existing) existing.remove();
+        const items = window._mjLastBorderlineItems || [];
+        const activeAdjs = BODY_META.filter(function(b) { return _getCurrentAdj(b.key, b.adjId) !== 0; });
+
+        const modal = document.createElement("div");
+        modal.id = "mjBorderlineExplainModal";
+        modal.className = "no-print fixed inset-0 z-[120] bg-black/65 backdrop-blur-[2px] flex items-center justify-center p-3";
+        modal.onclick = function(e) { if (e.target === modal) window.mjCloseBorderlineExplainModal(); };
+
+        let cardsHtml = "";
+        if (items.length === 0) {
+          cardsHtml = `<div class="p-4 rounded-xl bg-emerald-50 border-2 border-emerald-300 text-xs font-extrabold text-emerald-950 leading-relaxed">
+            ✅ இந்த ஜாதகத்தில் உள்ள அனைத்து 9 கிரகங்களும் லக்னமும் பாதத்தின் மையப்பகுதியில் தெளிவாக உள்ளன. எல்லைப் பாத (+1 / -1) மாற்றம் தேவையில்லை!
+          </div>`;
+        } else {
+          cardsHtml = items.map(function(it) {
+            const curAdj = _getCurrentAdj(it.key, it.adjId);
+            const isApplied = (curAdj === it.suggestedDelta);
+            const signStr = it.suggestedDelta > 0 ? ("+" + it.suggestedDelta) : String(it.suggestedDelta);
+            return `
+              <div class="p-3 rounded-xl border-2 ${isApplied ? "bg-emerald-50/90 border-emerald-500" : "bg-amber-50/90 border-amber-400"} space-y-2">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div class="font-black text-sm text-[#6b0f22]">🪐 ${it.ta} — எல்லைப் பாதம் (${signStr} பரிந்துரை)</div>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full font-extrabold ${isApplied ? "bg-emerald-200 text-emerald-950" : "bg-amber-200 text-amber-950"}">${isApplied ? ("✅ " + signStr + " மாற்றம் செயலில்") : "தானியங்கி நிலையில்"}</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px] font-bold">
+                  <div class="p-2 rounded-lg bg-white border border-slate-200">
+                    <div class="text-[10px] text-slate-500">தானியங்கி கணக்கு (Auto):</div>
+                    <div class="font-extrabold text-slate-900">${it.autoInfo.nakTa} - ${it.autoInfo.pada} (${it.autoInfo.rasiTa} / அம்சம்: ${it.autoInfo.navTa})</div>
+                  </div>
+                  <div class="p-2 rounded-lg bg-white border border-amber-300">
+                    <div class="text-[10px] text-amber-800">${signStr} பாதம் மாற்றினால்:</div>
+                    <div class="font-extrabold text-[#6b0f22]">${it.altInfo.nakTa} - ${it.altInfo.pada} (${it.altInfo.rasiTa} / அம்சம்: ${it.altInfo.navTa})</div>
+                  </div>
+                </div>
+                <div class="p-2 rounded-lg bg-white/90 border border-amber-200 text-[11px] font-bold text-slate-800 leading-relaxed">
+                  <strong>💡 ஏன் மாற வாய்ப்புள்ளது?</strong> ${it.reasonTa}
+                </div>
+                <div class="flex flex-wrap items-center gap-2 pt-0.5">
+                  <button type="button" onclick="mjApplyBorderlinePadaDelta('${it.key}', ${it.suggestedDelta})" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#6b0f22] to-[#9b1c1c] hover:opacity-95 text-white font-extrabold text-xs shadow cursor-pointer">✅ ${signStr} பாதம் மாற்று (${it.altInfo.navTa} அம்சம்)</button>
+                  <button type="button" onclick="mjApplyBorderlinePadaDelta('${it.key}', 0)" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-extrabold text-xs cursor-pointer">↺ தானியங்கி (அப்படியே வை)</button>
+                </div>
+              </div>
+            `;
+          }).join("");
+        }
+
+        modal.innerHTML = `
+          <div class="w-full max-w-lg max-h-[88vh] flex flex-col rounded-2xl bg-white border-2 border-amber-500 shadow-2xl overflow-hidden">
+            <div class="bg-gradient-to-r from-[#2e050d] via-[#6b0f22] to-[#2e050d] text-amber-50 px-4 py-3 flex items-center justify-between shrink-0">
+              <div class="font-extrabold text-sm">⚠️ எல்லைப் பாதம் (+1 / -1) விளக்கம் & மாற்றம்</div>
+              <button type="button" onclick="mjCloseBorderlineExplainModal()" class="px-2 py-0.5 rounded-lg bg-white/15 hover:bg-white/25 text-white font-extrabold text-xs cursor-pointer">✕ மூடு</button>
+            </div>
+            <div class="p-3.5 space-y-3 overflow-y-auto">
+              <div class="text-[11px] font-bold text-slate-700 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                நீங்கள் விரும்பினால் கீழே உள்ள <strong>"+1 / -1 பாதம் மாற்று"</strong> பொத்தானை அழுத்தி அம்சம் கட்டத்தை உடனே மாற்றலாம்; வேண்டாமென்றால் <strong>"தானியங்கி (அப்படியே வை)"</strong> நிலையிலேயே விட்டுவிடலாம்.
+              </div>
+              ${cardsHtml}
+            </div>
+            <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2 shrink-0">
+              ${activeAdjs.length > 0 ? `<button type="button" onclick="mjResetAllBorderlineAdjs()" class="px-3 py-1.5 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-900 border border-rose-300 font-extrabold text-xs cursor-pointer">↺ அனைத்தையும் மீட்டமை</button>` : `<span></span>`}
+              <button type="button" onclick="mjCloseBorderlineExplainModal()" class="px-4 py-1.5 rounded-xl bg-slate-800 text-white font-extrabold text-xs cursor-pointer">மூடு</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+      };
+
+      function _injectChartSideBadges() {
+        document.querySelectorAll(".mj-chart-borderline-badge").forEach(function(el) { el.remove(); });
+        const items = window._mjLastBorderlineItems || [];
+        const activeCount = BODY_META.filter(function(b) { return _getCurrentAdj(b.key, b.adjId) !== 0; }).length;
+        const grids = document.querySelectorAll(".book-kattam-grid");
+        if (!grids.length) return;
+
+        grids.forEach(function(grid) {
+          const wrap = document.createElement("div");
+          wrap.className = "mj-chart-borderline-badge no-print mb-2 flex flex-wrap items-center justify-end gap-2";
+          if (items.length > 0 || activeCount > 0) {
+            const names = items.map(function(it) { return it.ta + " (" + (it.suggestedDelta > 0 ? "+1" : "-1") + ")"; }).join(", ");
+            wrap.innerHTML = `
+              <button type="button" onclick="mjOpenBorderlineExplainModal(false)" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-100 to-orange-100 hover:from-amber-200 hover:to-orange-200 border-2 border-amber-500 text-[#6b0f22] font-extrabold text-[11px] sm:text-xs shadow-sm cursor-pointer flex items-center gap-1.5">
+                <span>⚠️ எல்லைப் பாதம் (${items.length}): ${names || "மாற்றம் செயலில்"}</span>
+                <span class="px-1.5 py-0.5 rounded-md bg-[#6b0f22] text-white text-[10px]">விளக்கம் / மாற்று</span>
+              </button>
+            `;
+          } else {
+            wrap.innerHTML = `
+              <button type="button" onclick="mjOpenBorderlineExplainModal(false)" class="px-2.5 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-900 font-bold text-[10px] sm:text-[11px] cursor-pointer">
+                ✅ எல்லைப் பாதம் இல்லை (அனைத்தும் தெளிவு)
+              </button>
+            `;
+          }
+          if (grid.parentNode) grid.parentNode.insertBefore(wrap, grid);
+        });
+      }
+
+      // Wrap calculateFullJathagam to capture true borderline status & apply Main App smartPadaAdj if needed
+      if (typeof calculateFullJathagam === "function") {
+        const _prevCalcForBorderline = calculateFullJathagam;
+        calculateFullJathagam = function(profile) {
+          const calc = _prevCalcForBorderline(profile);
+          try {
+            if (calc && calc.planets) {
+              const detected = [];
+              const hasKaiOverrideUI = Boolean(document.getElementById("inpPadaAdjMars"));
+              BODY_META.forEach(function(b) {
+                const pl = calc.planets[b.key];
+                if (!pl || typeof pl.longitude !== "number" || isNaN(pl.longitude)) return;
+                const curAdj = _getCurrentAdj(b.key, b.adjId);
+                // If Main App (no Kai override UI), apply window._mjSmartPadaAdj[b.key] directly
+                if (!hasKaiOverrideUI && curAdj !== 0) {
+                  const baseGPada = (((pl.nakIdx * 4) + ((pl.pada || 1) - 1)) % 108 + 108) % 108;
+                  const newGPada = ((baseGPada + curAdj) % 108 + 108) % 108;
+                  const newNak = Math.floor(newGPada / 4) % 27;
+                  const newPada = (newGPada % 4) + 1;
+                  const newRasi = Math.floor(newGPada / 9) % 12;
+                  const newNav = newGPada % 12;
+                  pl.nakIdx = newNak;
+                  pl.nakshatra = NAKSHATRAS[newNak];
+                  pl.pada = newPada;
+                  pl.rasiIdx = newRasi;
+                  pl.rasi = RASIS[newRasi];
+                  pl.navamsaIdx = newNav;
+                  pl.navamsa = RASIS[newNav];
+                  pl.navamsaRasi = RASIS[newNav];
+                  pl.starLord = DASA_LORDS[NAKSHATRAS[newNak].lordIdx];
+                }
+                // Compute unadjusted original longitude to test true borderline proximity
+                const origLon = ((pl.longitude - (curAdj * PADA_SPAN)) % 360 + 360) % 360;
+                const origGPada = Math.floor(origLon / PADA_SPAN) % 108;
+                const posInPada = origLon - (origGPada * PADA_SPAN);
+                const distPrev = posInPada;
+                const distNext = PADA_SPAN - posInPada;
+
+                if (distNext <= BORDER_DEG || distPrev <= BORDER_DEG) {
+                  const delta = (distNext <= distPrev) ? 1 : -1;
+                  const distDeg = (delta === 1) ? distNext : distPrev;
+                  const autoInfo = _getPadaInfo(origGPada);
+                  const altInfo = _getPadaInfo(origGPada + delta);
+                  const dirTa = delta === 1 ? "அடுத்த பாதத்திற்கு (+1)" : "முந்தைய பாதத்திற்கு (-1)";
+                  const reasonTa = b.key === "Lagnam"
+                    ? ("லக்னம் பாத எல்லையிலிருந்து வெறும் " + _fmtDM(distDeg) + " தொலைவில் உள்ளது. பிறந்த நேரத்தில் 1–2 நிமிட வித்தியாசம் அல்லது பாரம்பரிய சூரிய உதயம் / ராசி பிரமாண வேறுபாட்டால் " + dirTa + " (" + altInfo.navTa + " அம்சம்) மாற வாய்ப்புள்ளது.")
+                    : (b.ta + " பாத எல்லையிலிருந்து வெறும் " + _fmtDM(distDeg) + " தொலைவில் உள்ளது. அந்த நாளில் கிரகம் பாதம் மாறும் எல்லை நேரம் என்பதால் பாம்பு பஞ்சாங்கக் கணக்குப்படி " + dirTa + " (" + altInfo.navTa + " அம்சம்) மாற வாய்ப்புள்ளது.");
+                  detected.push({
+                    key: b.key, ta: b.ta, adjId: b.adjId,
+                    suggestedDelta: delta, distDeg: distDeg,
+                    autoInfo: autoInfo, altInfo: altInfo, reasonTa: reasonTa
+                  });
+                }
+              });
+              window._mjLastBorderlineItems = detected;
+            }
+          } catch (e) { console.warn("Borderline detect err:", e); }
+          return calc;
+        };
+      }
+
+      if (typeof calculateAndFillBook === "function") {
+        const _prevFill = calculateAndFillBook;
+        calculateAndFillBook = function() {
+          const res = _prevFill.apply(this, arguments);
+          try { _injectChartSideBadges(); } catch (e) {}
+          return res;
+        };
+      }
+
+      document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(_injectChartSideBadges, 600);
+      });
+    })();
+  </script>
+
+
+  <script id="mjAutoPaambuSunriseGuardScript">
+    (function() {
+      window._mjUserEditedSunrise = false;
+      window._mjLastAutoSunriseDob = "";
+
+      function _ensureFreshPaambuSunrise() {
+        const dobEl = document.getElementById("inpDob");
+        const srEl = document.getElementById("inpSunrise");
+        if (!dobEl || !srEl || !/^\d{4}-\d{2}-\d{2}$/.test(dobEl.value)) return;
+        if (dobEl.value !== window._mjLastAutoSunriseDob) {
+          window._mjUserEditedSunrise = false;
+          window._mjLastAutoSunriseDob = dobEl.value;
+          if (typeof autoSyncSunriseInput === "function") autoSyncSunriseInput();
+        } else if (!window._mjUserEditedSunrise && typeof autoSyncSunriseInput === "function") {
+          autoSyncSunriseInput();
+        }
+      }
+
+      if (typeof calculateAndFillBook === "function") {
+        const _prevCalcFill = calculateAndFillBook;
+        calculateAndFillBook = function() {
+          try { _ensureFreshPaambuSunrise(); } catch (e) {}
+          return _prevCalcFill.apply(this, arguments);
+        };
+      }
+
+      document.addEventListener("DOMContentLoaded", function() {
+        const srEl = document.getElementById("inpSunrise");
+        if (srEl) {
+          srEl.addEventListener("input", function() { window._mjUserEditedSunrise = true; });
+          srEl.addEventListener("change", function() { window._mjUserEditedSunrise = true; });
+        }
+        const dobEl = document.getElementById("inpDob");
+        if (dobEl) {
+          dobEl.addEventListener("input", function() { window._mjUserEditedSunrise = false; _ensureFreshPaambuSunrise(); });
+          dobEl.addEventListener("change", function() { window._mjUserEditedSunrise = false; _ensureFreshPaambuSunrise(); });
+        }
+        setTimeout(_ensureFreshPaambuSunrise, 500);
+      });
     })();
   </script>
 
