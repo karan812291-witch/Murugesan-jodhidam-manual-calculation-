@@ -12230,7 +12230,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
 
       window.mjRequestPanchangamPassword = function(mode, titleText, descText, onSuccess) {
         _pendingAction = onSuccess;
-        _pendingRequiredPwd = (mode === "remove") ? REMOVE_PANJAGAM_PWD : (mode === "open" ? OPEN_PANJAGAM_PWD : ADD_PANJAGAM_PWD);
+        _pendingRequiredPwd = (mode === "remove") ? REMOVE_PANJAGAM_PWD : (mode === "open" ? OPEN_PANJAGAM_PWD : (mode === "json" ? "81229102@Json" : ADD_PANJAGAM_PWD));
         const modal = document.getElementById("mjPanchangamPwdModal");
         const titleEl = document.getElementById("mjPwdModalTitle");
         const descEl = document.getElementById("mjPwdModalDesc");
@@ -12634,27 +12634,44 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         return inp;
       }
 
-      function _mjShowFloatingPdfStatus(msg, tone) {
+      function _mjShowFloatingPdfStatus(msg, tone, pct) {
         let box = document.getElementById("mjFloatingPdfProgress");
         if (!box) {
           box = document.createElement("div");
           box.id = "mjFloatingPdfProgress";
-          box.style.cssText = "position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:99999;max-width:92vw;width:440px;";
+          box.style.cssText = "position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:99999;max-width:94vw;width:460px;";
           document.body.appendChild(box);
         }
+        const hasPct = (typeof pct === "number" && !isNaN(pct));
+        const clampedPct = hasPct ? Math.max(0, Math.min(100, Math.round(pct))) : (tone === "success" ? 100 : null);
         const cls = tone === "error"
-          ? "bg-rose-900 text-white border-rose-400"
-          : (tone === "success" ? "bg-emerald-900 text-white border-emerald-400" : "bg-indigo-950 text-white border-amber-400");
-        box.innerHTML = `<div class="px-4 py-3 rounded-2xl border-2 shadow-2xl flex items-center justify-between gap-3 text-xs sm:text-sm font-extrabold ${cls}">
-          <span>${msg}</span>
-          <button type="button" onclick="this.closest('#mjFloatingPdfProgress').remove()" class="px-2 py-0.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-xs cursor-pointer">✕</button>
+          ? "bg-rose-950 text-white border-rose-400"
+          : (tone === "success" ? "bg-emerald-950 text-white border-emerald-400" : "bg-indigo-950 text-white border-amber-400");
+        const barColor = tone === "error" ? "bg-rose-400" : (tone === "success" ? "bg-emerald-400" : "bg-amber-400");
+        const barHtml = (clampedPct !== null)
+          ? `<div class="mt-2 w-full bg-white/20 rounded-full h-2.5 overflow-hidden">
+               <div class="${barColor} h-2.5 rounded-full transition-all duration-200" style="width:${clampedPct}%"></div>
+             </div>`
+          : "";
+        const pctPill = (clampedPct !== null)
+          ? `<span class="px-2 py-0.5 rounded-full bg-white/20 text-[11px] font-black shrink-0">${clampedPct}%</span>`
+          : "";
+        box.innerHTML = `<div class="px-4 py-3 rounded-2xl border-2 shadow-2xl ${cls}">
+          <div class="flex items-center justify-between gap-2 text-xs sm:text-sm font-extrabold">
+            <span class="leading-snug">${msg}</span>
+            <div class="flex items-center gap-1.5 shrink-0">
+              ${pctPill}
+              <button type="button" onclick="this.closest('#mjFloatingPdfProgress').remove()" class="px-2 py-0.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-xs cursor-pointer">✕</button>
+            </div>
+          </div>
+          ${barHtml}
         </div>`;
+        clearTimeout(window._mjFloatPdfTimer);
         if (tone === "success") {
-          clearTimeout(window._mjFloatPdfTimer);
           window._mjFloatPdfTimer = setTimeout(function() {
             const b = document.getElementById("mjFloatingPdfProgress");
             if (b) b.remove();
-          }, 7000);
+          }, 8000);
         }
       }
 
@@ -12687,8 +12704,8 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         _mjShowFloatingPdfStatus("📄 " + yKey + " கோப்பு தேர்வானது (" + safeFileName + ") — கடவுச்சொல் உள்ளிடவும்...", "info");
 
         const doUpload = async function() {
-          const setProg = function(msg, tone) {
-            _mjShowFloatingPdfStatus(msg, tone || "info");
+          const setProg = function(msg, tone, pct) {
+            _mjShowFloatingPdfStatus(msg, tone || "info", pct);
             const progEl = document.getElementById("mjAddTabStatusMsg");
             if (progEl) { progEl.textContent = msg; progEl.classList.remove("hidden"); }
           };
@@ -12697,7 +12714,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             if (navigator.wakeLock && typeof navigator.wakeLock.request === "function") {
               try { wakeLockSentinel = await navigator.wakeLock.request("screen"); } catch (wlErr) {}
             }
-            setProg("⏳ " + yKey + " PDF படிக்கப்படுகிறது (" + (file.size / 1024 / 1024).toFixed(2) + " MB)...");
+            setProg("⏳ " + yKey + " PDF படிக்கப்படுகிறது (" + (file.size / 1024 / 1024).toFixed(2) + " MB)...", "info", 5);
             const b64Full = await new Promise(function(resolve, reject) {
               const rd = new FileReader();
               rd.onload = function() {
@@ -12731,7 +12748,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                       data: b64Full.slice(c * CHUNK_SIZE, (c + 1) * CHUNK_SIZE)
                     }).then(function() {
                       doneChunks++;
-                      setProg("⚡ " + yKey + " விரைவு Cloud பதிவேற்றம்: " + doneChunks + " / " + totalChunks + " ...");
+                      setProg("⚡ " + yKey + " Cloud பதிவேற்றம்: " + doneChunks + " / " + totalChunks + " ...", "info", Math.min(98, Math.round((doneChunks / totalChunks) * 95) + 3));
                     })
                   );
                 }
@@ -12763,7 +12780,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
 
             const okMsg = "✅ " + yKey + "–" + (Number(yKey) + 1) + " அசல் PDF (" + safeFileName + ") Cloud-இல் சேமிக்கப்பட்டது!";
             if (typeof window.refreshAddPanchangamTabView === "function") window.refreshAddPanchangamTabView();
-            setProg(okMsg, "success");
+            setProg(okMsg + " (வெற்றிகரமாக முடிந்தது)", "success", 100);
             if (typeof showToast === "function") showToast(okMsg, "success");
             if (typeof currentMainAppTab !== "undefined" && currentMainAppTab === "fullpanchangam") {
               window._mjFullPanViewMode = "pdf";
@@ -12952,7 +12969,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                         doneChunks++;
                         item.statusText = "⚡ Cloud பதிவேற்றம்: " + doneChunks + " / " + totalChunks + " ...";
                         window.mjRenderMultiPdfQueue();
-                        _mjShowFloatingPdfStatus("⚡ (" + (i + 1) + "/" + q.length + ") " + yKey + ": " + doneChunks + " / " + totalChunks + " ...", "info");
+                        _mjShowFloatingPdfStatus("⚡ (" + (i + 1) + "/" + q.length + ") " + yKey + ": " + doneChunks + " / " + totalChunks + " ...", "info", Math.min(99, Math.round(((i + (doneChunks / totalChunks)) / q.length) * 100)));
                       })
                     );
                   }
@@ -12980,7 +12997,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             }
             if (typeof window.refreshAddPanchangamTabView === "function") window.refreshAddPanchangamTabView();
             window.mjRenderMultiPdfQueue();
-            _mjShowFloatingPdfStatus("🎉 மொத்தம் " + okCount + " / " + validItems.length + " PDF-கள் Cloud-இல் சேமிக்கப்பட்டன!", okCount > 0 ? "success" : "error");
+            _mjShowFloatingPdfStatus("🎉 வெற்றிகரமாக முடிந்தது! மொத்தம் " + okCount + " / " + validItems.length + " PDF-கள் Cloud-இல் சேமிக்கப்பட்டன.", okCount > 0 ? "success" : "error", 100);
           } finally {
             if (wakeLockSentinel && typeof wakeLockSentinel.release === "function") {
               try { await wakeLockSentinel.release(); } catch (e) {}
@@ -13489,7 +13506,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v25.4</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v25.6</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -14779,7 +14796,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           const st = document.getElementById("mjJsonUploadStatusBox");
           const setSt = function(m) { if (st) { st.textContent = m; st.classList.remove("hidden"); } };
           try {
-            setSt("☁️ " + parsedRes.totalValid + " நாட்கள் Cloud-இல் சேமிக்கப்படுகிறது...");
+            setSt("☁️ " + parsedRes.totalValid + " நாட்கள் Cloud-இல் சேமிக்கப்படுகிறது..."); if (typeof _mjShowFloatingPdfStatus === "function") _mjShowFloatingPdfStatus("☁️ JSON Cloud-இல் சேமிக்கப்படுகிறது...", "info", 55);
             if (typeof mjDb === "undefined" || !mjDb) throw new Error("Firebase Cloud இணைப்பு இல்லை");
             for (let i = 0; i < yearsList.length; i++) {
               const yKey = yearsList[i];
@@ -14799,6 +14816,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             try { localStorage.setItem("MJ_CLOUD_DAILY_STARS_V1", JSON.stringify(window._mjCloudDailyStarsByYear)); } catch (e) {}
             const okTxt = "✅ " + yearsList.join(", ") + " (" + parsedRes.totalValid + " நாட்கள்) Cloud-இல் சேமிக்கப்பட்டது! இனி அந்தத் தேதிகளுக்குத் தானாக JSON தசா இருப்பு வரும்.";
             setSt(okTxt);
+            if (typeof _mjShowFloatingPdfStatus === "function") _mjShowFloatingPdfStatus("✅ வெற்றிகரமாக JSON Cloud-இல் சேமிக்கப்பட்டது! (" + parsedRes.totalValid + " நாட்கள்)", "success", 100);
             if (typeof showToast === "function") showToast(okTxt, "success");
             if (typeof calculateAndFillBook === "function") calculateAndFillBook();
             window.mjRenderJsonUploadTab();
@@ -14811,9 +14829,9 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
 
         if (typeof window.mjRequestPanchangamPassword === "function") {
           window.mjRequestPanchangamPassword(
-            "add",
+            "json",
             "🔐 JSON தரவு சேர்க்க கடவுச்சொல்",
-            yearsList.join(", ") + " (" + parsedRes.totalValid + " நாட்கள்) JSON தரவை Cloud-இல் சேமிக்க Add கடவுச்சொல்லை உள்ளிடவும்:",
+            yearsList.join(", ") + " (" + parsedRes.totalValid + " நாட்கள்) JSON தரவை Cloud-இல் சேமிக்க JSON கடவுச்சொல்லை உள்ளிடவும்:",
             doSave
           );
         } else { doSave(); }
@@ -14901,10 +14919,27 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         })();
 
         const st = document.getElementById("mjJsonUploadStatusBox");
-        const setSt = function(msg, tone) {
-          if (st) { st.textContent = msg; st.classList.remove("hidden"); }
-          if (typeof _mjShowFloatingPdfStatus === "function") _mjShowFloatingPdfStatus(msg, tone || "info");
+        const setSt = function(msg, tone, pct) {
+          if (st) { st.textContent = msg + (typeof pct === "number" ? (" (" + Math.round(pct) + "%)") : ""); st.classList.remove("hidden"); }
+          if (typeof _mjShowFloatingPdfStatus === "function") _mjShowFloatingPdfStatus(msg, tone || "info", pct);
         };
+
+        function _normDot(raw) {
+          if (raw === null || raw === undefined) return "";
+          let s = String(raw).trim().replace(/[-:,]/g, ".");
+          const m = s.match(/(\d{1,2})\.(\d{1,2})/);
+          if (!m) return "";
+          const n = parseInt(m[1], 10);
+          const v = parseInt(m[2].padEnd(2, "0").slice(0, 2), 10);
+          if (isNaN(n) || isNaN(v) || n > 65 || v >= 60) return "";
+          return String(n).padStart(2, "0") + "." + String(v).padStart(2, "0");
+        }
+
+        function _prevIsoDate(iso) {
+          const p = iso.split("-").map(Number);
+          const dt = new Date(Date.UTC(p[0], p[1] - 1, p[2] - 1));
+          return dt.getUTCFullYear() + "-" + String(dt.getUTCMonth() + 1).padStart(2, "0") + "-" + String(dt.getUTCDate()).padStart(2, "0");
+        }
 
         let wakeLockSentinel = null;
         try {
@@ -14918,39 +14953,56 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           const pdfDoc = await pdfjsLib.getDocument({ data: new Uint8Array(arrBuf), disableWorker: true }).promise;
           const totalPages = pdfDoc.numPages;
 
-          const allDays = {};
+          const startP = Math.max(1, Math.min(totalPages, Number(document.getElementById("inpAiPdfStartPage")?.value || 1) || 1));
+          const rawEndP = Number(document.getElementById("inpAiPdfEndPage")?.value || totalPages) || totalPages;
+          const endP = Math.max(startP, Math.min(totalPages, rawEndP));
+
+          const rawCurrByDate = {};
+          let lastApiError = "";
+          let apiSuccessPages = 0;
+
           const promptText =
-            "You are reading a Tamil Paambu Panchangam scanned page for Tamil year starting April " + yrHint + " (spanning " + yrHint + "-" + (yrHint + 1) + "). " +
-            "If this page is a monthly daily panchangam table (சித்திரை to பங்குனி), extract EVERY day row's English date (YYYY-MM-DD), previous day's Nakshatra end nazhigai ('prev', format NN.VV where VV<60), today's Nakshatra end nazhigai ('curr', format NN.VV where VV<60), and sunrise ('sunrise', HH:MM 24h if visible, else omit). " +
-            "If this page is NOT a daily monthly table (e.g. cover, index, graha padasaram, festivals), return {\"days\":{}}. " +
-            "Return ONLY valid JSON: {\"days\":{\"YYYY-MM-DD\":{\"prev\":\"41.16\",\"curr\":\"47.06\",\"sunrise\":\"05:53\"}}}.";
+            "You are reading a Tamil Paambu Panchangam monthly page for Tamil year " + yrHint + "-" + (yrHint + 1) + " (April " + yrHint + " to April " + (yrHint + 1) + "). " +
+            "Each row in a monthly table has a Tamil date, English date, weekday, Tithi, and Nakshatra with end nazhigai-vinazhigai (printed like 'மக 35-35' or 'விசா 47-06' or 'ரோ 01-19'). " +
+            "Extract EVERY day row's English date (YYYY-MM-DD) and its Nakshatra end nazhigai ('curr' as 'NN.VV' replacing '-' with '.'). " +
+            "If this page is NOT a daily monthly calendar table (e.g. cover, index, graha padasaram), return {\"days\":{}}. " +
+            "Output ONLY valid JSON: {\"days\":{\"2026-04-14\":\"35.35\",\"2026-04-15\":\"31.43\"}}.";
 
           async function callGeminiVision(jpegB64) {
-            const models = ["gemini-2.5-flash", "gemini-2.0-flash"];
+            const models = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash"];
             let lastErr = null;
             for (let mi = 0; mi < models.length; mi++) {
-              const url = "https://generativelanguage.googleapis.com/v1beta/models/" + models[mi] + ":generateContent?key=" + encodeURIComponent(apiKey);
-              const resp = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  contents: [{
-                    parts: [
-                      { text: promptText },
-                      { inline_data: { mime_type: "image/jpeg", data: jpegB64 } }
-                    ]
-                  }],
-                  generationConfig: { temperature: 0.1, responseMimeType: "application/json" }
-                })
-              });
-              if (resp.ok) {
-                const j = await resp.json();
-                const txt = j && j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts && j.candidates[0].content.parts[0] && j.candidates[0].content.parts[0].text;
-                return txt || "{}";
-              } else {
+              for (let attempt = 0; attempt < 2; attempt++) {
+                const url = "https://generativelanguage.googleapis.com/v1beta/models/" + models[mi] + ":generateContent?key=" + encodeURIComponent(apiKey);
+                const resp = await fetch(url, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    contents: [{
+                      parts: [
+                        { text: promptText },
+                        { inline_data: { mime_type: "image/jpeg", data: jpegB64 } }
+                      ]
+                    }],
+                    generationConfig: { temperature: 0.1, responseMimeType: "application/json" }
+                  })
+                });
+                if (resp.ok) {
+                  const j = await resp.json();
+                  const txt = j && j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts && j.candidates[0].content.parts[0] && j.candidates[0].content.parts[0].text;
+                  return txt || "{}";
+                }
                 const errTxt = await resp.text();
-                lastErr = new Error("HTTP " + resp.status + ": " + errTxt.slice(0, 140));
-                if (resp.status === 400 || resp.status === 403) throw lastErr;
+                lastErr = new Error(models[mi] + " HTTP " + resp.status + ": " + errTxt.slice(0, 160));
+                if (resp.status === 429 && attempt === 0) {
+                  setSt("⏳ API வேக வரம்பு (429) — 10 விநாடி காத்திருந்து தொடர்கிறது...");
+                  await new Promise(function(r) { setTimeout(r, 10000); });
+                  continue;
+                }
+                if (resp.status === 400 || resp.status === 401 || resp.status === 403) {
+                  throw lastErr;
+                }
+                break; // Try next model on 404/500/429
               }
             }
             throw lastErr || new Error("Gemini API அழைப்பு தோல்வி");
@@ -14959,39 +15011,67 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
 
-          for (let p = 1; p <= totalPages; p++) {
-            setSt("🤖 AI படிக்கிறது: பக்கம் " + p + " / " + totalPages + " (இதுவரை " + Object.keys(allDays).length + " நாட்கள்)...");
+          for (let p = startP; p <= endP; p++) {
+            setSt("🤖 AI படிக்கிறது: பக்கம் " + p + " / " + endP + " (" + Object.keys(rawCurrByDate).length + " நாட்கள்)...", "info", Math.max(5, Math.round(((p - startP) / Math.max(1, endP - startP + 1)) * 90)));
             const page = await pdfDoc.getPage(p);
-            const vp = page.getViewport({ scale: 1.45 });
+            const vp = page.getViewport({ scale: 1.6 });
             canvas.width = vp.width;
             canvas.height = vp.height;
             await page.render({ canvasContext: ctx, viewport: vp }).promise;
-            const dataUrl = canvas.toDataURL("image/jpeg", 0.78);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
             const jpegB64 = dataUrl.slice(dataUrl.indexOf(",") + 1);
 
             try {
               const rawJson = await callGeminiVision(jpegB64);
+              apiSuccessPages++;
               const cleanJson = rawJson.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
               const parsed = JSON.parse(cleanJson);
-              const dObj = (parsed && (parsed.days || parsed.dailyStars)) || {};
+              const dObj = (parsed && (parsed.days || parsed.dailyStars || parsed)) || {};
               Object.keys(dObj).forEach(function(dk) {
-                if (/^\d{4}-\d{2}-\d{2}$/.test(dk) && dObj[dk] && dObj[dk].prev && dObj[dk].curr) {
-                  if (_parseDotToVin(dObj[dk].prev) !== null && _parseDotToVin(dObj[dk].curr) !== null) {
-                    allDays[dk] = dObj[dk];
+                if (!/^\d{4}-\d{2}-\d{2}$/.test(dk)) return;
+                const val = dObj[dk];
+                if (typeof val === "string" || typeof val === "number") {
+                  const cNorm = _normDot(val);
+                  if (cNorm) rawCurrByDate[dk] = { curr: cNorm };
+                } else if (val && typeof val === "object") {
+                  const cNorm = _normDot(val.curr || val.end || val.nazhigai || val.nakEnd);
+                  const pNorm = _normDot(val.prev);
+                  const sr = (val.sunrise && /^\d{2}:\d{2}/.test(String(val.sunrise))) ? String(val.sunrise).slice(0, 5) : "";
+                  if (cNorm) {
+                    rawCurrByDate[dk] = { curr: cNorm };
+                    if (pNorm) rawCurrByDate[dk].prev = pNorm;
+                    if (sr) rawCurrByDate[dk].sunrise = sr;
                   }
                 }
               });
             } catch (pageErr) {
-              console.warn("Page " + p + " AI parse warning:", pageErr);
-              if (String(pageErr.message || "").includes("HTTP 400") || String(pageErr.message || "").includes("HTTP 403")) {
-                throw new Error("API Key தவறானது அல்லது அனுமதி இல்லை (" + pageErr.message + ")");
+              lastApiError = (pageErr && pageErr.message) ? pageErr.message : String(pageErr);
+              console.warn("Page " + p + " AI warning:", lastApiError);
+              if (lastApiError.includes("HTTP 400") || lastApiError.includes("HTTP 401") || lastApiError.includes("HTTP 403")) {
+                throw new Error("API Key பிழை: " + lastApiError);
               }
             }
+            if (p < endP) await new Promise(function(r) { setTimeout(r, 1500); });
           }
+
+          // Auto-fill 'prev' from previous calendar day's 'curr'!
+          const allDays = {};
+          const sortedDates = Object.keys(rawCurrByDate).sort();
+          sortedDates.forEach(function(dk) {
+            const entry = rawCurrByDate[dk];
+            const prevD = _prevIsoDate(dk);
+            const prevVal = entry.prev || (rawCurrByDate[prevD] ? rawCurrByDate[prevD].curr : entry.curr);
+            allDays[dk] = entry.sunrise
+              ? { prev: prevVal, curr: entry.curr, sunrise: entry.sunrise }
+              : { prev: prevVal, curr: entry.curr };
+          });
 
           const foundCount = Object.keys(allDays).length;
           if (foundCount === 0) {
-            throw new Error("இந்த PDF-இல் தினசரி நட்சத்திர அட்டவணை எதுவும் கண்டறியப்படவில்லை.");
+            if (apiSuccessPages === 0 && lastApiError) {
+              throw new Error("Gemini API அழைப்பு தோல்வி — " + lastApiError);
+            }
+            throw new Error("பக்கங்கள் " + startP + "–" + endP + "-இல் தினசரி நட்சத்திர அட்டவணை கண்டறியப்படவில்லை." + (lastApiError ? (" (கடைசி API செய்தி: " + lastApiError + ")") : ""));
           }
           const finalJsonObj = { year: yrHint, dailyStars: allDays };
           const finalJsonText = JSON.stringify(finalJsonObj, null, 2);
@@ -15033,7 +15113,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         box.innerHTML = `
           <div class="space-y-4 pb-8">
             <div class="p-4 rounded-2xl bg-gradient-to-r from-[#0f3d3e] via-[#115e59] to-[#0f3d3e] text-white shadow-lg">
-              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v25.4</span></div>
+              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v25.6</span></div>
               <div class="text-xs text-teal-100 font-bold mt-1">JSON-இல் உள்ள தேதிகளுக்குத் தானாக 0-நாள் துல்லிய அச்சுப் பஞ்சாங்க தசா இருப்பு வரும்; JSON இல்லாத தேதிகளுக்கு எப்போதும் போல ஆப் தானாகக் கணக்கிடும்!</div>
             </div>
 
@@ -15058,6 +15138,16 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                 <div class="sm:col-span-2">
                   <label class="block text-[11px] font-extrabold text-indigo-950 mb-1">பஞ்சாங்க PDF கோப்பைத் தேர்வு செய் (.pdf)</label>
                   <input id="inpAiPdfToJsonFile" type="file" accept="application/pdf,.pdf" onchange="const m=(this.files&&this.files[0]&&this.files[0].name||'').match(/(19\\d{2}|20\\d{2})/); const yEl=document.getElementById('inpAiPdfYearHint'); if(m&&yEl) yEl.value=m[1];" class="w-full text-xs font-bold text-slate-800 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-extrabold file:bg-indigo-100 file:text-indigo-900" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label class="block text-[10px] font-extrabold text-indigo-950 mb-1">தொடக்கப் பக்கம் (Start Page)</label>
+                  <input id="inpAiPdfStartPage" type="number" min="1" value="1" class="w-full px-2.5 py-1.5 rounded-xl border border-indigo-300 bg-white text-xs font-extrabold" />
+                </div>
+                <div>
+                  <label class="block text-[10px] font-extrabold text-indigo-950 mb-1">முடிவுப் பக்கம் (End Page - காலியாக விட்டால் முழு PDF)</label>
+                  <input id="inpAiPdfEndPage" type="number" min="1" value="" placeholder="முழு PDF" class="w-full px-2.5 py-1.5 rounded-xl border border-indigo-300 bg-white text-xs font-extrabold" />
                 </div>
               </div>
               <button type="button" onclick="mjAutoConvertPdfToJsonWithGemini()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-700 via-purple-700 to-fuchsia-700 hover:opacity-95 text-white font-extrabold text-xs sm:text-sm shadow-md cursor-pointer">🤖 PDF-ஐ தானாக JSON-ஆக மாற்றி Cloud-இல் சேமி</button>
