@@ -4707,9 +4707,9 @@
             const aspCfg = GRAHA_DRISHTI_BOOK[p.key] || [];
             const aspShort = aspCfg.map(a => `${a.h}(${a.deg}°→${RASIS[(rIdx + a.h - 1) % 12].ta.slice(0, 2)})`).join(" ");
             if (!showDeg) {
-              return `<span class="inline-block px-1.5 py-0.5 rounded bg-amber-50 border border-amber-300 text-sm font-extrabold ${p.meta.color}">${label}${retroMark}</span>`;
+              return `<span onclick="if(window.mjShowPlanetProofModal) mjShowPlanetProofModal('${p.key}')" title="கிளிக் செய்தால் முழு நேர விளக்கம் தெரியும்" class="inline-block px-1.5 py-0.5 rounded bg-amber-50 border border-amber-300 text-sm font-extrabold ${p.meta.color} cursor-pointer hover:ring-2 hover:ring-amber-500 transition">${label}${retroMark}</span>`;
             }
-            return `<div class="inline-flex flex-col items-start px-1.5 py-0.5 rounded bg-amber-50/90 border border-amber-300 shadow-2xs max-w-full">
+            return `<div onclick="if(window.mjShowPlanetProofModal) mjShowPlanetProofModal('${p.key}')" title="கிளிக் செய்தால் முழு நேர விளக்கம் தெரியும்" class="inline-flex flex-col items-start px-1.5 py-0.5 rounded bg-amber-50/90 border border-amber-300 shadow-2xs max-w-full cursor-pointer hover:ring-2 hover:ring-amber-500 transition">
               <div class="flex items-center gap-1 text-xs font-extrabold leading-tight">
                 <span class="${p.meta.color}">${label}${retroMark}</span>
                 <span class="text-[10px] font-extrabold text-blue-950 bg-white px-1 rounded border border-amber-200">${degCompact}</span>
@@ -13480,7 +13480,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v24.9</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v25.0</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -14065,7 +14065,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
 
         const cardsHtml = items.length === 0
           ? `<div class="p-4 rounded-xl bg-emerald-50 border-2 border-emerald-300 text-xs font-extrabold text-emerald-950 leading-relaxed">
-              ✅ கைக்கணக்கு மற்றும் ஆப் கணக்கு இரண்டும் 100% ஒன்றாகவே உள்ளன — எந்த மாற்றமும் தேவையில்லை!
+              ✅ எல்லைப் பாத எச்சரிக்கை இல்லை! எந்தக் கிரகத்தின்/லக்னத்தின் நேர விளக்கம் பார்க்கவும் கட்டத்தில் உள்ள அந்தக் கிரகத்தை கிளிக் செய்யலாம்.
             </div>`
           : items.map(function(it) {
               const curAdj = _getCurrentAdj(it.key, it.adjId);
@@ -14138,7 +14138,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           } else {
             wrap.innerHTML = `
               <button type="button" onclick="mjOpenBorderlineExplainModal()" class="px-2.5 py-1 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 font-bold text-[10px] sm:text-[11px] cursor-pointer">
-                ✅ கைக்கணக்கு & ஆப் கணக்கு 100% ஒன்று
+                ✅ எல்லைப் பாத எச்சரிக்கை இல்லை • 💡 எந்தக் கிரகத்தையும் தட்டி விளக்கம் பார்க்கலாம்
               </button>
             `;
           }
@@ -14278,6 +14278,244 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         }
         setTimeout(_ensureFreshPaambuSunrise, 500);
       });
+    })();
+  </script>
+
+
+  <script id="mjPlanetProofModalScript">
+    (function() {
+      // 🪐 Interactive Click-on-Any-Planet Proof Modal (Entry Time, Current Position & Next Box Exit Time)
+      const PLANET_TA_NAMES = {
+        Lagnam: "லக்னம் (உதய லக்னம்)",
+        Sun: "☀️ சூரியன் (ரவி)",
+        Moon: "🌙 சந்திரன் (திங்கள்)",
+        Mars: "🔴 செவ்வாய் (அங்காரகன்)",
+        Mercury: "🟢 புதன் (புந்தி)",
+        Jupiter: "🟡 குரு (வியாழன்)",
+        Venus: "⚪ சுக்கிரன் (வெள்ளி)",
+        Saturn: "🔵 சனி (மந்தன்)",
+        Rahu: "⚫ ராகு (சர்ப்பம்)",
+        Ketu: "🟤 கேது (சிகி)"
+      };
+      const TAMIL_M_NAMES = ["சித்திரை","வைகாசி","ஆனி","ஆடி","ஆவணி","புரட்டாசி","ஐப்பசி","கார்த்திகை","மார்கழி","தை","மாசி","பங்குனி"];
+
+      function _fmtClockFromMs(ms) {
+        if (!ms || isNaN(ms)) return "—";
+        const dt = new Date(ms);
+        const dd = String(dt.getUTCDate()).padStart(2, "0");
+        const mm = String(dt.getUTCMonth() + 1).padStart(2, "0");
+        const yyyy = dt.getUTCFullYear();
+        let hh = dt.getUTCHours();
+        const mi = String(dt.getUTCMinutes()).padStart(2, "0");
+        const ap = hh >= 12 ? "PM" : "AM";
+        const h12 = (hh % 12) || 12;
+        return dd + "-" + mm + "-" + yyyy + " • " + String(h12).padStart(2, "0") + ":" + mi + " " + ap;
+      }
+
+      function _fmtPadaLabel(gPada) {
+        const gp = ((gPada % 108) + 108) % 108;
+        const nIdx = Math.floor(gp / 4) % 27;
+        const pNum = (gp % 4) + 1;
+        const rIdx = Math.floor(gp / 9) % 12;
+        const navIdx = gp % 12;
+        const nTa = (typeof NAKSHATRAS !== "undefined" && NAKSHATRAS[nIdx]) ? NAKSHATRAS[nIdx].ta : ("நட்சத்திரம் " + (nIdx + 1));
+        const rTa = (typeof RASIS !== "undefined" && RASIS[rIdx]) ? RASIS[rIdx].ta : "";
+        const nvTa = (typeof RASIS !== "undefined" && RASIS[navIdx]) ? RASIS[navIdx].ta : "";
+        return { nakTa: nTa, pada: pNum, rasiTa: rTa, navTa: nvTa, text: nTa + "-" + pNum + " (" + rTa + " இராசி / " + nvTa + " அம்சம்)" };
+      }
+
+      function _parseBirthIstMs(dobStr, tobStr) {
+        const dp = String(dobStr || "2014-12-19").split("-").map(Number);
+        const tp = String(tobStr || "12:00").split(":").map(Number);
+        return Date.UTC(dp[0] || 2014, (dp[1] || 1) - 1, dp[2] || 1, tp[0] || 0, tp[1] || 0);
+      }
+
+      function _parseSrMin(srStr) {
+        const p = String(srStr || "06:00").split(":").map(Number);
+        return (p[0] || 6) * 60 + (p[1] || 0);
+      }
+
+      function _rowToMsAndLabel(Y, row, srMin) {
+        try {
+          const sInfo = (typeof window.getPaambuYearSankrantiInfo === "function") ? window.getPaambuYearSankrantiInfo(Y) : null;
+          if (!sInfo || !sInfo.mStartDays) return null;
+          const mIdx = Number(row[0]) || 0;
+          const tDay = Number(row[1]) || 1;
+          const naz = Number(row[2]) || 0;
+          const vin = Number(row[3]) || 0;
+          const ref2024Ms = Date.UTC(2024, 3, 14, 0, 0);
+          const dayOffset = sInfo.mStartDays[mIdx] + (tDay - 1);
+          const totalMinFromMidnight = srMin + (naz * 60 + vin) * 0.4;
+          const ms = ref2024Ms + dayOffset * 86400000 + Math.round(totalMinFromMidnight * 60000);
+          const gPada = (Number(row[4]) * 4) + ((Number(row[5]) || 1) - 1);
+          const pInfo = _fmtPadaLabel(gPada);
+          return {
+            ms: ms,
+            tamilStr: (TAMIL_M_NAMES[mIdx] || ("மாதம் " + (mIdx + 1))) + " " + tDay + " (" + String(naz).padStart(2, "0") + "." + String(vin).padStart(2, "0") + " நாழிகை)",
+            clockStr: _fmtClockFromMs(ms),
+            padaInfo: pInfo
+          };
+        } catch (e) { return null; }
+      }
+
+      window.mjClosePlanetProofModal = function() {
+        const m = document.getElementById("mjPlanetProofModal");
+        if (m) m.remove();
+      };
+
+      window.mjShowPlanetProofModal = function(planetKey) {
+        const calc = window._mjLastFullCalc;
+        const profile = window._mjLastFullProfile || {};
+        if (!calc || !calc.planets || !calc.planets[planetKey]) return;
+
+        const existing = document.getElementById("mjPlanetProofModal");
+        if (existing) existing.remove();
+
+        const pl = calc.planets[planetKey];
+        const dobStr = profile.dob || document.getElementById("inpDob")?.value || "";
+        const tobStr = profile.tob || document.getElementById("inpTob")?.value || "12:00";
+        const srStr = (profile.customSunrise && /^\d{2}:\d{2}/.test(profile.customSunrise))
+          ? profile.customSunrise
+          : (document.getElementById("inpSunrise")?.value || (calc.paambuExtras && calc.paambuExtras.sunrise24) || "06:00");
+        const srMin = _parseSrMin(srStr);
+        const birthMs = _parseBirthIstMs(dobStr, tobStr);
+        const uday = (typeof computeUdayathiNazhigai === "function") ? computeUdayathiNazhigai(dobStr, tobStr, srStr) : { nazhigai: 0, vinazhigai: 0, totalVinazhigai: 0 };
+        const udayDot = uday.nazhigai + "." + String(uday.vinazhigai).padStart(2, "0");
+
+        const curGPada = (((pl.nakIdx || 0) * 4) + ((pl.pada || 1) - 1)) % 108;
+        const curInfo = _fmtPadaLabel(curGPada);
+        const birthClockStr = _fmtClockFromMs(birthMs);
+
+        let entryHtml = "—";
+        let exitHtml = "—";
+        let nextBoxText = "";
+        let extraNoteHtml = "";
+
+        if (planetKey === "Lagnam") {
+          const RASI_VIN = (typeof RASI_PRAMANAM_NAZHIGAI !== "undefined") ? RASI_PRAMANAM_NAZHIGAI.map(function(r) { return r.vinazhigai; }) : [255,285,315,330,315,300,300,315,330,315,285,255];
+          const lFullVin = RASI_VIN[pl.rasiIdx] || 300;
+          const degInR = ((pl.longitude % 30) + 30) % 30;
+          const lSelVin = (degInR / 30.0) * lFullVin;
+          const lIruppuVin = Math.max(0, lFullVin - lSelVin);
+          const padaVin = lFullVin / 9.0;
+          const p0 = Math.max(0, Math.min(8, Math.floor(lSelVin / padaVin)));
+          const minSincePada = (lSelVin - p0 * padaVin) * 0.4;
+          const minToNextPada = ((p0 + 1) * padaVin - lSelVin) * 0.4;
+          const minToNextRasi = lIruppuVin * 0.4;
+          const entryMs = birthMs - Math.round(minSincePada * 60000);
+          const exitMs = birthMs + Math.round(minToNextPada * 60000);
+          const nextRasiMs = birthMs + Math.round(minToNextRasi * 60000);
+          const nextInfo = _fmtPadaLabel(curGPada + 1);
+          const nextRasiTa = (typeof RASIS !== "undefined" && RASIS[(pl.rasiIdx + 1) % 12]) ? RASIS[(pl.rasiIdx + 1) % 12].ta : "";
+          entryHtml = `<strong>${_fmtClockFromMs(entryMs)}</strong>`;
+          exitHtml = `<strong>${_fmtClockFromMs(exitMs)}</strong> → ${nextInfo.text}`;
+          nextBoxText = nextInfo.navTa + " அம்சம் (" + nextInfo.nakTa + "-" + nextInfo.pada + ")";
+          extraNoteHtml = `<div class="text-[11px] font-bold text-indigo-900 bg-indigo-50 p-2 rounded-lg border border-indigo-200">🔄 அடுத்த இராசி லக்னம் (<strong>${nextRasiTa}</strong>) தொடங்கும் நேரம்: <strong>${_fmtClockFromMs(nextRasiMs)}</strong></div>`;
+        } else if (planetKey === "Moon") {
+          const paramVin = (calc.dasa && calc.dasa.paramVin) ? calc.dasa.paramVin : 3600;
+          const selVin = (calc.dasa && typeof calc.dasa.selVin === "number") ? calc.dasa.selVin : ((pl.longitude % (360/27)) / (360/27)) * paramVin;
+          const padaVin = paramVin / 4.0;
+          const p0 = Math.max(0, Math.min(3, (pl.pada || 1) - 1));
+          const minSincePada = Math.max(0, (selVin - p0 * padaVin) * 0.4);
+          const minToNextPada = Math.max(1, ((p0 + 1) * padaVin - selVin) * 0.4);
+          const entryMs = birthMs - Math.round(minSincePada * 60000);
+          const exitMs = birthMs + Math.round(minToNextPada * 60000);
+          const nextInfo = _fmtPadaLabel(curGPada + 1);
+          entryHtml = `<strong>${_fmtClockFromMs(entryMs)}</strong>`;
+          exitHtml = `<strong>${_fmtClockFromMs(exitMs)}</strong> → ${nextInfo.text}`;
+          nextBoxText = nextInfo.navTa + " அம்சம் (" + nextInfo.nakTa + "-" + nextInfo.pada + ")";
+        } else if (typeof window.computeFullPaambuPadasaramYearTable === "function") {
+          const effY = (calc.paambuExtras && calc.paambuExtras.effectiveGregYear) ? Number(calc.paambuExtras.effectiveGregYear) : (Number(String(dobStr).slice(0, 4)) || 2014);
+          let allEvents = [];
+          [effY - 1, effY, effY + 1].forEach(function(yr) {
+            try {
+              const tbl = window.computeFullPaambuPadasaramYearTable(yr);
+              const rows = tbl && tbl[planetKey];
+              if (Array.isArray(rows)) {
+                rows.forEach(function(r) {
+                  const ev = _rowToMsAndLabel(yr, r, srMin);
+                  if (ev) allEvents.push(ev);
+                });
+              }
+            } catch (e) {}
+          });
+          allEvents.sort(function(a, b) { return a.ms - b.ms; });
+          let prevEv = null, nextEv = null;
+          for (let i = 0; i < allEvents.length; i++) {
+            if (allEvents[i].ms <= birthMs) prevEv = allEvents[i];
+            else { nextEv = allEvents[i]; break; }
+          }
+          if (prevEv) {
+            entryHtml = `<strong>${prevEv.clockStr}</strong><div class="text-[10px] text-slate-600">தமிழ் தேதி: ${prevEv.tamilStr}</div>`;
+          }
+          if (nextEv) {
+            exitHtml = `<strong>${nextEv.clockStr}</strong><div class="text-[10px] text-slate-600">தமிழ் தேதி: ${nextEv.tamilStr} → ${nextEv.padaInfo.text}</div>`;
+            nextBoxText = nextEv.padaInfo.navTa + " அம்சம் (" + nextEv.padaInfo.nakTa + "-" + nextEv.padaInfo.pada + ")";
+          }
+        }
+
+        const retroTa = (pl.isRetrograde && planetKey !== "Rahu" && planetKey !== "Ketu" && planetKey !== "Lagnam") ? "வக்ரம் (பின்னோக்கி)" : "நேர்கதி";
+        const summarySentence = `நீங்கள் கொடுத்த பிறந்த நேரமான <strong>${birthClockStr}</strong> (உதயாதி ${udayDot} நாழிகை) என்பது, இந்தக் கட்டத்தில் உள்ள கால அளவுக்குள் வருவதால் <strong>${PLANET_TA_NAMES[planetKey] || planetKey}</strong> தற்போது <strong>${curInfo.rasiTa} இராசி • ${curInfo.navTa} அம்சம் (${curInfo.nakTa}-${curInfo.pada})</strong> கட்டத்தில் உள்ளது.${nextBoxText ? (" மேற்கண்ட மாறுதல் நேரம் கடந்த பிறகே அடுத்த கட்டமான <strong>" + nextBoxText + "</strong> செல்லும்.") : ""}`;
+
+        const modal = document.createElement("div");
+        modal.id = "mjPlanetProofModal";
+        modal.className = "no-print fixed inset-0 z-[130] bg-black/65 backdrop-blur-[2px] flex items-center justify-center p-3";
+        modal.onclick = function(e) { if (e.target === modal) window.mjClosePlanetProofModal(); };
+        modal.innerHTML = `
+          <div class="w-full max-w-md max-h-[90vh] flex flex-col rounded-2xl bg-white border-2 border-amber-500 shadow-2xl overflow-hidden">
+            <div class="bg-gradient-to-r from-[#2e050d] via-[#6b0f22] to-[#2e050d] text-amber-50 px-4 py-3 flex items-center justify-between shrink-0">
+              <div class="font-extrabold text-sm">${PLANET_TA_NAMES[planetKey] || planetKey} — கட்ட விளக்கம்</div>
+              <button type="button" onclick="mjClosePlanetProofModal()" class="px-2 py-0.5 rounded-lg bg-white/15 hover:bg-white/25 text-white font-extrabold text-xs cursor-pointer">✕ மூடு</button>
+            </div>
+            <div class="p-3.5 space-y-2.5 overflow-y-auto text-xs">
+              <div class="p-2.5 rounded-xl bg-amber-50 border border-amber-300 font-bold text-amber-950">
+                <div>📅 பிறந்த நேரம்: <strong>${birthClockStr}</strong></div>
+                <div class="text-[11px] text-amber-900 mt-0.5">⏰ உதயாதி: <strong>${udayDot} நாழிகை</strong> • சூரிய உதயம்: <strong>${srStr}</strong></div>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                  <div class="text-[10px] font-bold text-slate-500">இராசி கட்டம்</div>
+                  <div class="font-black text-sm text-[#6b0f22]">${curInfo.rasiTa}</div>
+                  <div class="text-[10px] font-bold text-slate-700">${pl.degInRasi || ""} • ${retroTa}</div>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                  <div class="text-[10px] font-bold text-slate-500">நவாம்சம் (அம்சம்)</div>
+                  <div class="font-black text-sm text-indigo-900">${curInfo.navTa}</div>
+                  <div class="text-[10px] font-bold text-slate-700">${curInfo.nakTa} - ${curInfo.pada}-ம் பாதம்</div>
+                </div>
+              </div>
+              <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 space-y-1">
+                <div class="text-[10px] font-extrabold text-emerald-900">📥 இந்தக் கட்டத்திற்கு (பாதத்திற்கு) வந்த நேரம்:</div>
+                <div class="text-xs font-bold text-emerald-950">${entryHtml}</div>
+              </div>
+              <div class="p-2.5 rounded-xl bg-rose-50 border border-rose-300 space-y-1">
+                <div class="text-[10px] font-extrabold text-rose-900">📤 அடுத்த கட்டத்திற்கு (பாதத்திற்கு) செல்லும் நேரம்:</div>
+                <div class="text-xs font-bold text-rose-950">${exitHtml}</div>
+              </div>
+              ${extraNoteHtml}
+              <div class="p-2.5 rounded-xl bg-sky-50 border border-sky-300 text-[11px] font-bold text-sky-950 leading-relaxed">
+                <strong>💡 ஏன் இந்தக் கட்டத்தில் உள்ளது?</strong><br/>
+                ${summarySentence}
+              </div>
+            </div>
+            <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-200 flex justify-end shrink-0">
+              <button type="button" onclick="mjClosePlanetProofModal()" class="px-4 py-1.5 rounded-xl bg-slate-800 text-white font-extrabold text-xs cursor-pointer">மூடு</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+      };
+
+      // Capture latest calc & profile on every calculateFullJathagam call
+      if (typeof calculateFullJathagam === "function") {
+        const _prevCalcProof = calculateFullJathagam;
+        calculateFullJathagam = function(profile) {
+          const calc = _prevCalcProof(profile);
+          window._mjLastFullCalc = calc;
+          window._mjLastFullProfile = profile || {};
+          return calc;
+        };
+      }
     })();
   </script>
 
