@@ -693,11 +693,19 @@
         <div>
           <label class="block text-xs font-extrabold text-amber-950 mb-1">ஆங்கிலப் பிறந்த தேதி</label>
           <input id="inpDob" type="date" value="" onchange="onFriendDateTimeInputChanged('📅 பிறந்த தேதி மாற்றப்பட்டது! புதிய குறியீடு உருவாக்கப்பட்டுள்ளது.')" oninput="onFriendDateTimeInputChanged('📅 பிறந்த தேதி மாற்றப்பட்டது! புதிய குறியீடு உருவாக்கப்பட்டுள்ளது.')" class="w-full px-3 py-2 rounded-xl border border-amber-300 text-sm font-bold text-slate-900" />
+          <input id="inpDobManualText" type="text" inputmode="numeric" maxlength="10" placeholder="✍️ தேதி: 15/06/2015 (எண்கள் மட்டும்)" oninput="mjFormatAndSyncDob(this)" class="w-full mt-1 px-2.5 py-1.5 rounded-lg border-2 border-amber-400 bg-amber-50/80 text-xs sm:text-sm font-extrabold text-amber-950 placeholder:text-slate-500 tracking-wider" />
           <div id="mjLiveTamilDatePopup" class="hidden mt-1.5 px-2.5 py-2 rounded-xl bg-gradient-to-r from-amber-100 via-yellow-50 to-rose-50 border-2 border-amber-500 shadow-sm text-[11px] sm:text-xs font-extrabold text-[#7f1d1d] leading-snug"></div>
         </div>
         <div>
           <label class="block text-xs font-extrabold text-amber-950 mb-1">பிறந்த நேரம்</label>
           <input id="inpTob" type="time" step="60" value="" onchange="onFriendDateTimeInputChanged('பிறந்த நேரம் மாற்றப்பட்டது!')" class="w-full px-3 py-2 rounded-xl border border-amber-300 text-sm font-bold text-slate-900" />
+          <div class="mt-1 flex items-center gap-1.5">
+            <input id="inpTobManualText","inpTobAmPm" type="text" inputmode="numeric" maxlength="5" placeholder="✍️ நேரம்: 05:30" oninput="mjFormatAndSyncTob(this)" class="flex-1 min-w-0 px-2.5 py-1.5 rounded-lg border-2 border-amber-400 bg-amber-50/80 text-xs sm:text-sm font-extrabold text-amber-950 placeholder:text-slate-500 tracking-wider" />
+            <select id="inpTobAmPm" onchange="mjSyncManualTobWithAmPm()" class="px-2.5 py-1.5 rounded-lg border-2 border-amber-500 bg-white text-xs sm:text-sm font-black text-[#6b0f22] cursor-pointer shrink-0">
+              <option value="AM">AM (காலை)</option>
+              <option value="PM">PM (மாலை)</option>
+            </select>
+          </div>
         </div>
         <div>
           <label class="block text-xs font-extrabold text-amber-950 mb-1">பிறந்த ஊர் / நகரம்</label>
@@ -11859,7 +11867,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
   <script id="mjTopResetRefreshScript">
     window.mjResetNewHoroscopeForm = function() {
       try {
-        ["inpName","inpFather","inpMother","inpDob","inpDobManualText","inpTob","inpTobManualText","inpTown","inpDistrict","inpTownSelect","mjClientPhoneSearch","mjClientPhoneInput","inpManPrevStarDot","inpManCurrStarDot","inpManSunRemDot","inpManUdayathiDot","inpManLagnaStarPada","inpPadaAdjLagnam","inpPadaAdjSun","inpPadaAdjMoon","inpPadaAdjRahu","inpPadaAdjKetu"].forEach(function(id) {
+        ["inpName","inpFather","inpMother","inpDob","inpDobManualText","inpTob","inpTobManualText","inpTobAmPm","inpTown","inpDistrict","inpTownSelect","mjClientPhoneSearch","mjClientPhoneInput","inpManPrevStarDot","inpManCurrStarDot","inpManSunRemDot","inpManUdayathiDot","inpManLagnaStarPada","inpPadaAdjLagnam","inpPadaAdjSun","inpPadaAdjMoon","inpPadaAdjRahu","inpPadaAdjKetu"].forEach(function(id) {
           const el = document.getElementById(id);
           if (el) el.value = "";
         });
@@ -13505,7 +13513,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v24.8</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v24.9</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -13612,7 +13620,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         + (document.title.includes("கைக்கணக்கு") ? "KAI_V1" : "MAIN_V1");
 
       const FIELD_IDS = [
-        "inpName","inpFather","inpMother","inpGender","inpDob","inpDobManualText","inpTob","inpTobManualText","inpCity","inpSunrise",
+        "inpName","inpFather","inpMother","inpGender","inpDob","inpDobManualText","inpTob","inpTobManualText","inpTobAmPm","inpCity","inpSunrise",
         "inpDistrict","inpTownSelect","inpTown","inpMode","inpPage0Deity",
         "inpRasiPramanamType","inpManPrevStarDot","inpManCurrStarDot","inpManSunRemDot","inpManUdayathiDot","inpManLagnaStarPada","inpPadaAdjLagnam","inpPadaAdjSun","inpPadaAdjMoon","inpPadaAdjRahu","inpPadaAdjKetu",
         "inpPadaAdjMars","inpPadaAdjSaturn","inpPadaAdjJupiter","inpPadaAdjMercury","inpPadaAdjVenus"
@@ -13853,38 +13861,80 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
 
   <script id="mjManualDateTimeSyncScript">
     (function() {
-      window.mjSyncManualDobText = function(raw) {
-        const s = String(raw || "").trim().replace(/[./]/g, "-");
-        const m = s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
-        if (!m) return;
-        const dd = m[1].padStart(2, "0");
-        const mm = m[2].padStart(2, "0");
-        const yyyy = m[3];
-        const iso = yyyy + "-" + mm + "-" + dd;
-        const dobEl = document.getElementById("inpDob");
-        if (dobEl && dobEl.value !== iso) {
-          dobEl.value = iso;
-          if (typeof mjUpdateLiveTamilDatePopup === "function") mjUpdateLiveTamilDatePopup();
-          if (typeof handleDobOrModeChange === "function") handleDobOrModeChange();
+      window.mjFormatAndSyncDob = function(el) {
+        if (!el) return;
+        let digits = String(el.value || "").replace(/\D/g, "").slice(0, 8);
+        let formatted = digits;
+        if (digits.length > 4) formatted = digits.slice(0, 2) + "/" + digits.slice(2, 4) + "/" + digits.slice(4);
+        else if (digits.length > 2) formatted = digits.slice(0, 2) + "/" + digits.slice(2);
+        if (el.value !== formatted) el.value = formatted;
+
+        if (digits.length === 8) {
+          const dd = parseInt(digits.slice(0, 2), 10);
+          const mm = parseInt(digits.slice(2, 4), 10);
+          const yyyy = parseInt(digits.slice(4, 8), 10);
+          if (dd >= 1 && dd <= 31 && mm >= 1 && mm <= 12 && yyyy >= 1900 && yyyy <= 2100) {
+            const iso = String(yyyy) + "-" + String(mm).padStart(2, "0") + "-" + String(dd).padStart(2, "0");
+            const dobEl = document.getElementById("inpDob");
+            if (dobEl && dobEl.value !== iso) {
+              dobEl.value = iso;
+              if (typeof mjUpdateLiveTamilDatePopup === "function") mjUpdateLiveTamilDatePopup();
+              dobEl.dispatchEvent(new Event("change", { bubbles: true }));
+              if (typeof IS_FRIEND_APP_MODE === "undefined" || !IS_FRIEND_APP_MODE) {
+                if (typeof handleDobOrModeChange === "function") handleDobOrModeChange();
+              } else if (typeof onFriendDateTimeInputChanged === "function") {
+                onFriendDateTimeInputChanged("📅 பிறந்த தேதி மாற்றப்பட்டது! புதிய குறியீடு உருவாக்கப்பட்டுள்ளது.");
+              }
+            }
+          }
         }
       };
 
-      window.mjSyncManualTobText = function(raw) {
-        const s = String(raw || "").trim().toUpperCase().replace(/\./g, ":");
-        const m = s.match(/^(\d{1,2}):(\d{2})(?:\s*(AM|PM))?$/);
-        if (!m) return;
-        let hh = parseInt(m[1], 10);
-        const min = parseInt(m[2], 10);
-        const ap = m[3] || "";
+      window.mjSyncManualTobWithAmPm = function() {
+        const el = document.getElementById("inpTobManualText","inpTobAmPm");
+        const apEl = document.getElementById("inpTobAmPm");
+        if (!el) return;
+        const digits = String(el.value || "").replace(/\D/g, "").slice(0, 4);
+        if (digits.length < 4) return;
+        let hh = parseInt(digits.slice(0, 2), 10);
+        const min = parseInt(digits.slice(2, 4), 10);
         if (isNaN(hh) || isNaN(min) || min > 59) return;
-        if (ap === "PM" && hh < 12) hh += 12;
-        else if (ap === "AM" && hh === 12) hh = 0;
+        const ap = apEl ? apEl.value : "AM";
+        if (hh >= 1 && hh <= 12) {
+          if (ap === "PM" && hh < 12) hh += 12;
+          else if (ap === "AM" && hh === 12) hh = 0;
+        }
         if (hh < 0 || hh > 23) return;
         const t24 = String(hh).padStart(2, "0") + ":" + String(min).padStart(2, "0");
         const tobEl = document.getElementById("inpTob");
         if (tobEl && tobEl.value !== t24) {
           tobEl.value = t24;
-          if (typeof calculateAndFillBook === "function") calculateAndFillBook();
+          tobEl.dispatchEvent(new Event("change", { bubbles: true }));
+          if (typeof IS_FRIEND_APP_MODE === "undefined" || !IS_FRIEND_APP_MODE) {
+            if (typeof calculateAndFillBook === "function") calculateAndFillBook();
+          } else if (typeof onFriendDateTimeInputChanged === "function") {
+            onFriendDateTimeInputChanged("⏰ பிறந்த நேரம் மாற்றப்பட்டது! புதிய குறியீடு உருவாக்கப்பட்டுள்ளது.");
+          }
+        }
+      };
+
+      window.mjFormatAndSyncTob = function(el) {
+        if (!el) return;
+        let digits = String(el.value || "").replace(/\D/g, "").slice(0, 4);
+        let formatted = digits;
+        if (digits.length > 2) formatted = digits.slice(0, 2) + ":" + digits.slice(2);
+        if (el.value !== formatted) el.value = formatted;
+        if (digits.length === 4) {
+          const hh = parseInt(digits.slice(0, 2), 10);
+          const apEl = document.getElementById("inpTobAmPm");
+          if (apEl && hh >= 13 && hh <= 23) {
+            apEl.value = "PM";
+            el.value = String(hh - 12).padStart(2, "0") + ":" + digits.slice(2);
+          } else if (apEl && hh === 0) {
+            apEl.value = "AM";
+            el.value = "12:" + digits.slice(2);
+          }
+          window.mjSyncManualTobWithAmPm();
         }
       };
 
@@ -13893,17 +13943,19 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         const dobTxt = document.getElementById("inpDobManualText");
         if (dobEl && dobTxt && /^\d{4}-\d{2}-\d{2}$/.test(dobEl.value)) {
           const p = dobEl.value.split("-");
-          const dmy = p[2] + "-" + p[1] + "-" + p[0];
+          const dmy = p[2] + "/" + p[1] + "/" + p[0];
           if (document.activeElement !== dobTxt) dobTxt.value = dmy;
         }
         const tobEl = document.getElementById("inpTob");
-        const tobTxt = document.getElementById("inpTobManualText");
+        const tobTxt = document.getElementById("inpTobManualText","inpTobAmPm");
+        const apEl = document.getElementById("inpTobAmPm");
         if (tobEl && tobTxt && /^\d{2}:\d{2}/.test(tobEl.value)) {
           const p = tobEl.value.split(":").map(Number);
           const ap = p[0] >= 12 ? "PM" : "AM";
           const h12 = (p[0] % 12) || 12;
-          const fmt = String(h12).padStart(2, "0") + ":" + String(p[1]).padStart(2, "0") + " " + ap;
+          const fmt = String(h12).padStart(2, "0") + ":" + String(p[1]).padStart(2, "0");
           if (document.activeElement !== tobTxt) tobTxt.value = fmt;
+          if (apEl && document.activeElement !== apEl) apEl.value = ap;
         }
       }
 
@@ -13940,7 +13992,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
     (function() {
       // ⚠️ Required-Changes-Only Kai-Kanakku vs Auto Advisor (2 Clean Options per Change)
       const PADA_SPAN = 360.0 / 108.0; // 3.333333 deg
-      const BORDER_DEG = 0.60;
+      const BORDER_DEG = 0.20; // Strict razor-edge 12 arcmin only (zero false alarms)
       const CLASSIC_NOTEBOOK_VIN = [255, 285, 315, 330, 315, 300, 300, 315, 330, 315, 285, 255];
       const BODY_META = [
         { key: "Lagnam", ta: "லக்னம்", adjId: "inpPadaAdjLagnam" },
@@ -14178,7 +14230,9 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                     reasonTa = "பாரம்பரிய நோட்புக் ராசி பிரமாணம் (4.15 / 4.45 / 5.15 / 5.30) படி லக்னம் " + (diff > 0 ? "+" + diff : diff) + " பாதம் மாறி " + altInfoL.nakTa + "-" + altInfoL.pada + " (" + altInfoL.navTa + " அம்சம்) ஆக வருகிறது.";
                   }
                 }
-                if (suggestedDelta === 0 && (distNext <= BORDER_DEG || distPrev <= BORDER_DEG)) {
+                const effY = (calc && calc.paambuExtras && calc.paambuExtras.effectiveGregYear) ? Number(calc.paambuExtras.effectiveGregYear) : (profile && profile.dob ? Number(String(profile.dob).slice(0,4)) : 0);
+                const isAlreadyPinnedSlow = (b.key === "Jupiter" || b.key === "Saturn" || b.key === "Rahu" || b.key === "Ketu") && effY >= 1989 && effY <= 2026;
+                if (suggestedDelta === 0 && !isAlreadyPinnedSlow && (distNext <= BORDER_DEG || distPrev <= BORDER_DEG)) {
                   suggestedDelta = (distNext <= distPrev) ? 1 : -1;
                   const distDeg = (suggestedDelta === 1) ? distNext : distPrev;
                   const altInfoP = _getPadaInfo(origGPada + suggestedDelta);
