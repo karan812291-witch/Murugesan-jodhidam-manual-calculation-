@@ -601,7 +601,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — நண்பர் ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.8</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.9</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-rose-500 text-white shadow">🔐 ஒவ்வொரு தேதி / நேர மாற்றத்திற்கும் ரகசிய எண் பாதுகாப்பு</span>
           </div>
@@ -987,6 +987,9 @@
     <div id="kaiKanakkuTabContainer" class="hidden max-w-[210mm] mx-auto"></div>
     <div id="addPanchangamTabContainer" class="hidden max-w-6xl mx-auto"></div>
     <div id="jsonUploadTabContainer" class="hidden max-w-4xl mx-auto"></div>
+
+    <div id="poruthamTabContainer" class="hidden max-w-5xl mx-auto px-3 sm:px-6 pb-8"></div>
+    <div id="vasthuTabContainer" class="hidden max-w-5xl mx-auto px-3 sm:px-6 pb-8"></div>
   </main>
 
   <!-- 📞 Friend App Support Contact + Terms & Conditions -->
@@ -12183,6 +12186,8 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <span>📚</span>
             <span>1. ஜாதகப் புத்தகம் (26 பக்கங்கள்)</span>
           </button>
+      <button id="btnTabPoruthamView" type="button" onclick="switchMainAppTab('porutham')" class="px-4 py-2.5 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-950 border-2 border-pink-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition"><span>💍</span><span>திருமண பொருத்தம் (10 பொருத்தம்)</span></button>
+      <button id="btnTabVasthuView" type="button" onclick="switchMainAppTab('vasthu')" class="px-4 py-2.5 rounded-xl bg-teal-100 hover:bg-teal-200 text-teal-950 border-2 border-teal-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition"><span>🏠</span><span>வாஸ்து சாஸ்திரம் (ஆயாதி)</span></button>
           <button id="btnTabDasa100View" type="button" onclick="switchMainAppTab('dasa100')" class="px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 border-2 border-amber-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
             <span>📅</span>
             <span>2. தசா புத்தி விபரம் (பிறந்தது முதல் 100 வயது வரை)</span>
@@ -13579,7 +13584,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.8</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.9</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -15417,7 +15422,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       };
 
       
-      // 🪐 v26.8: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
+      // 🪐 v26.9: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
       window._mjJsonSubTab = window._mjJsonSubTab || "daily";
       window._mjPadasaramListFilter = window._mjPadasaramListFilter || "all";
 
@@ -15676,7 +15681,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         box.innerHTML = `
           <div class="space-y-4 pb-8">
             <div class="p-4 rounded-2xl bg-gradient-to-r from-[#0f3d3e] via-[#115e59] to-[#0f3d3e] text-white shadow-lg">
-              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.8</span></div>
+              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.9</span></div>
               <div class="text-xs text-teal-100 font-bold mt-1">JSON-இல் உள்ள தேதிகளுக்குத் தானாக 0-நாள் துல்லிய அச்சுப் பஞ்சாங்க தசா இருப்பு வரும்; JSON இல்லாத தேதிகளுக்கு எப்போதும் போல ஆப் தானாகக் கணக்கிடும்!</div>
             </div>
 
@@ -16044,6 +16049,448 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             }
           } catch (e) {}
           return calc;
+        };
+      }
+    })();
+  </script>
+
+
+  <script id="mjPoruthamAndVasthuScript">
+    (function() {
+      // =========================================================================
+      // 💍 1. THIRUMANA PORUTHAM (10 PORUTHAM + NADI + DOSHA) & 🏠 2. VASTHU
+      // =========================================================================
+      const NAK_LIST_27 = [
+        "அசுவினி","பரணி","கிருத்திகை","ரோகிணி","மிருகசீரிடம்","திருவாதிரை","புனர்பூசம்","பூசம்","ஆயில்யம்",
+        "மகம்","பூரம்","உத்திரம்","அஸ்தம்","சித்திரை","சுவாதி","விசாகம்","அனுஷம்","கேட்டை",
+        "மூலம்","பூராடம்","உத்திராடம்","திருவோணம்","அவிட்டம்","சதயம்","பூரட்டாதி","உத்திரட்டாதி","ரேவதி"
+      ];
+      const RASI_LIST_12 = [
+        "மேஷம்","ரிஷபம்","மிதுனம்","கடகம்","சிம்மம்","கன்னி",
+        "துலாம்","விருச்சிகம்","தனுசு","மகரம்","கும்பம்","மீனம்"
+      ];
+      // Gana: 0=Deva, 1=Manushya, 2=Rakshasa
+      const NAK_GANA = [0,1,2,0,0,1,0,0,2,2,1,1,0,2,0,2,0,2,2,1,1,0,2,2,1,1,0];
+      const GANA_NAMES = ["தேவ கணம்","மனுஷ கணம்","ராட்சச கணம்"];
+      // Yoni animal & gender (0..13 animal index)
+      const NAK_YONI = [
+        "குதிரை","யானை","ஆடு","பாம்பு","பாம்பு","நாய்","பூனை","ஆடு","பூனை",
+        "எலி","எலி","எருது","எருமை","புலி","மான்","புலி","மான்","மான்",
+        "நாய்","குரங்கு","கீரி","குரங்கு","சிங்கம்","குதிரை","சிங்கம்","பசு","யானை"
+      ];
+      const YONI_ENEMIES = [
+        ["பசு","புலி"],["சிங்கம்","யானை"],["குதிரை","எருமை"],["நாய்","மான்"],
+        ["கீரி","பாம்பு"],["குரங்கு","ஆடு"],["பூனை","எலி"]
+      ];
+      // Rajju: 0=Paada, 1=Kati(Thodai), 2=Nabhi(Vayiru), 3=Kanta(Kazhuthu), 4=Sira(Thalai)
+      const NAK_RAJJU = [0,1,2,3,4,3,2,1,0, 0,1,2,3,4,3,2,1,0, 0,1,2,3,4,3,2,1,0];
+      const RAJJU_NAMES = ["பாத ரஜ்ஜு","தொடை ரஜ்ஜு","வயிறு ரஜ்ஜு","கழுத்து ரஜ்ஜு","சிரசு ரஜ்ஜு"];
+      // Nadi: 0=Aadi, 1=Madhya, 2=Anthya
+      const NAK_NADI = [0,1,2,2,1,0,0,1,2, 0,1,2,2,1,0,0,1,2, 0,1,2,2,1,0,0,1,2];
+      const NADI_NAMES = ["ஆதி நாடி","மத்திய நாடி","அந்திய நாடி"];
+      // Rasi Lords (0..11)
+      const RASI_LORDS = ["செவ்வாய்","சுக்கிரன்","புதன்","சந்திரன்","சூரியன்","புதன்","சுக்கிரன்","செவ்வாய்","குரு","சனி","சனி","குரு"];
+      const PLANET_FRIENDS = {
+        "சூரியன்": ["சந்திரன்","செவ்வாய்","குரு"],
+        "சந்திரன்": ["சூரியன்","புதன்"],
+        "செவ்வாய்": ["சூரியன்","சந்திரன்","குரு"],
+        "புதன்": ["சூரியன்","சுக்கிரன்"],
+        "குரு": ["சூரியன்","சந்திரன்","செவ்வாய்"],
+        "சுக்கிரன்": ["புதன்","சனி"],
+        "சனி": ["புதன்","சுக்கிரன்"]
+      };
+      // Vedha pairs (0-indexed)
+      const VEDHA_PAIRS = [[0,17],[1,16],[2,15],[3,14],[5,21],[6,20],[7,19],[8,18],[9,26],[10,25],[11,24],[12,23],[4,13],[13,22],[4,22]];
+      // Vasya Rasis per Bride Rasi
+      const VASYA_MAP = {
+        0: [4,7], 1: [3,6], 2: [5], 3: [7,8], 4: [6], 5: [2,11],
+        6: [9,5], 7: [3], 8: [11], 9: [0,10], 10: [0], 11: [9]
+      };
+
+      window._mjPoruthamState = window._mjPoruthamState || {
+        brideName: "", brideDob: "", brideTob: "08:00", brideNak: 0, brideRasi: 0, brideMode: "dob",
+        groomName: "", groomDob: "", groomTob: "08:00", groomNak: 9, groomRasi: 4, groomMode: "dob",
+        resultHtml: "", unlockedKey: "", reqCode: ""
+      };
+      window._mjVasthuState = window._mjVasthuState || {
+        ownerName: "", widthFt: 30, lengthFt: 40, facing: "கிழக்கு", buildingType: "வீடு",
+        resultHtml: "", unlockedKey: "", reqCode: ""
+      };
+
+      function _mjIsFriend() {
+        return (typeof IS_FRIEND_APP_MODE !== "undefined" && IS_FRIEND_APP_MODE);
+      }
+
+      function _mjResolveNakRasiFromDob(dob, tob) {
+        if (!dob || typeof calculateFullJathagam !== "function") return null;
+        try {
+          const c = calculateFullJathagam({
+            id: "pv_tmp", dob: dob, tob: (tob || "08:00") + ":00",
+            cityId: "sankarapuram", panchangamMode: "vakya_paambu_28",
+            lat: 11.89, lon: 78.92, tz: 5.5
+          });
+          if (c && c.planets && c.planets.Moon) {
+            return { nakIdx: c.planets.Moon.nakIdx || 0, rasiIdx: c.planets.Moon.rasiIdx || 0, pada: c.planets.Moon.pada || 1 };
+          }
+        } catch (e) {}
+        return null;
+      }
+
+      function _mjCompute10Porutham(bNak, bRasi, gNak, gRasi) {
+        const count = ((gNak - bNak + 27) % 27) + 1;
+        // 1. Dina
+        const dinaGood = [2,4,6,8,9,11,13,15,18,20,24,26].includes(count) || (bNak === gNak);
+        // 2. Gana
+        const bg = NAK_GANA[bNak], gg = NAK_GANA[gNak];
+        const ganaGood = (bg === gg) || (bg === 0 && gg === 1) || (bg === 1 && gg === 0) || (bg === 2 && gg === 0 && count > 14);
+        // 3. Mahendra
+        const mahendraGood = [4,7,10,13,16,19,22,25].includes(count);
+        // 4. Sthree Dheerga
+        const sthreeGood = count >= 13;
+        // 5. Yoni
+        const by = NAK_YONI[bNak], gy = NAK_YONI[gNak];
+        const isYoniEnemy = YONI_ENEMIES.some(function(pr) { return (pr[0] === by && pr[1] === gy) || (pr[1] === by && pr[0] === gy); });
+        const yoniGood = !isYoniEnemy;
+        // 6. Rasi
+        const rCount = ((gRasi - bRasi + 12) % 12) + 1;
+        const rasiGood = (bRasi === gRasi) || [7,9,10,11,12].includes(rCount) || (rCount === 3 || rCount === 4);
+        // 7. Rasyadhipathi
+        const bl = RASI_LORDS[bRasi], gl = RASI_LORDS[gRasi];
+        const lordGood = (bl === gl) || (PLANET_FRIENDS[bl] && PLANET_FRIENDS[bl].includes(gl)) || (PLANET_FRIENDS[gl] && PLANET_FRIENDS[gl].includes(bl));
+        // 8. Vasya
+        const vasyaGood = (bRasi === gRasi) || ((VASYA_MAP[bRasi] || []).includes(gRasi)) || ((VASYA_MAP[gRasi] || []).includes(bRasi));
+        // 9. Rajju
+        const rajjuSame = (NAK_RAJJU[bNak] === NAK_RAJJU[gNak]);
+        const rajjuGood = !rajjuSame;
+        // 10. Vedha
+        const isVedha = VEDHA_PAIRS.some(function(pr) { return (pr[0] === bNak && pr[1] === gNak) || (pr[1] === bNak && pr[0] === gNak); });
+        const vedhaGood = !isVedha;
+        // Bonus: Nadi
+        const nadiGood = (NAK_NADI[bNak] !== NAK_NADI[gNak]);
+
+        const items = [
+          { no: 1, name: "தினப் பொருத்தம்", ok: dinaGood, note: dinaGood ? "உத்தமம் (எண்ணிக்கை " + count + ")" : "மத்திமம் / இல்லை (எண்ணிக்கை " + count + ")" },
+          { no: 2, name: "கணப் பொருத்தம்", ok: ganaGood, note: GANA_NAMES[bg] + " + " + GANA_NAMES[gg] },
+          { no: 3, name: "மகேந்திரப் பொருத்தம்", ok: mahendraGood, note: mahendraGood ? "புத்திர விருத்தி உண்டு" : "சாதாரணம் (எண்ணிக்கை " + count + ")" },
+          { no: 4, name: "ஸ்திரீ தீர்க்கப் பொருத்தம்", ok: sthreeGood, note: sthreeGood ? "தீர்க்க சுமங்கலி (" + count + " ≥ 13)" : "குறைவு (" + count + " < 13)" },
+          { no: 5, name: "யோனிப் பொருத்தம்", ok: yoniGood, note: by + " + " + gy + (yoniGood ? " (நட்பு)" : " (பகை)") },
+          { no: 6, name: "ராசிப் பொருத்தம்", ok: rasiGood, note: RASI_LIST_12[bRasi] + " → " + RASI_LIST_12[gRasi] + " (" + rCount + "-ம் ராசி)" },
+          { no: 7, name: "ராசி அதிபதி பொருத்தம்", ok: lordGood, note: bl + " + " + gl },
+          { no: 8, name: "வசியப் பொருத்தம்", ok: vasyaGood, note: vasyaGood ? "அன்யோன்யம் உண்டு" : "சாதாரணம்" },
+          { no: 9, name: "ரஜ்ஜுப் பொருத்தம் ★", ok: rajjuGood, note: rajjuGood ? ("வெவ்வேறு ரஜ்ஜு (" + RAJJU_NAMES[NAK_RAJJU[bNak]] + " / " + RAJJU_NAMES[NAK_RAJJU[gNak]] + ")") : ("⚠️ ஏக ரஜ்ஜு தோஷம் (" + RAJJU_NAMES[NAK_RAJJU[bNak]] + ")") },
+          { no: 10, name: "வேதைப் பொருத்தம் ★", ok: vedhaGood, note: vedhaGood ? "வேதை இல்லை (சுபம்)" : "⚠️ வேதை தட்டு உள்ளது" }
+        ];
+        const score = items.filter(function(x){ return x.ok; }).length;
+        return { items: items, score: score, nadiGood: nadiGood, rajjuGood: rajjuGood, vedhaGood: vedhaGood, bNadi: NADI_NAMES[NAK_NADI[bNak]], gNadi: NADI_NAMES[NAK_NADI[gNak]] };
+      }
+
+      window.mjRenderPoruthamTab = function() {
+        const box = document.getElementById("poruthamTabContainer");
+        if (!box) return;
+        const st = window._mjPoruthamState;
+        const nakOpts = function(sel) {
+          return NAK_LIST_27.map(function(n, idx) { return '<option value="' + idx + '"' + (idx === Number(sel) ? ' selected' : '') + '>' + n + '</option>'; }).join("");
+        };
+        const rasiOpts = function(sel) {
+          return RASI_LIST_12.map(function(r, idx) { return '<option value="' + idx + '"' + (idx === Number(sel) ? ' selected' : '') + '>' + r + '</option>'; }).join("");
+        };
+
+        const friendOtpGateHtml = (_mjIsFriend() && st.reqCode && st.unlockedKey !== st._pendingKey) ? `
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-[#2e050d] via-[#5c0b1b] to-[#2e050d] text-amber-50 border-2 border-amber-400 shadow-xl space-y-3">
+            <div class="font-black text-sm sm:text-base text-amber-300">🔐 திருமண பொருத்தம் முடிவுகளைக் காண ரகசிய எண் (OTP) தேவை</div>
+            <div class="text-xs text-amber-100">கீழே உள்ள 6-இலக்க குறியீட்டை <b>ஜெ. கரண் BE, DA. (7418609681)</b> அவர்களுக்கு அனுப்பி ரகசிய எண்ணைப் பெற்று உள்ளிடவும்.</div>
+            <div class="flex flex-wrap items-center gap-3 bg-black/30 p-3 rounded-xl border border-amber-400/50">
+              <div>
+                <div class="text-[11px] text-amber-200 font-bold">உங்கள் குறியீடு (Request Code):</div>
+                <div class="text-2xl font-black tracking-widest text-amber-300">${st.reqCode}</div>
+              </div>
+              <a href="https://wa.me/917418609681?text=${encodeURIComponent("வணக்கம் ஐயா, திருமண பொருத்தம் பார்க்க OTP தேவை. குறியீடு: " + st.reqCode)}" target="_blank" rel="noopener" class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-black text-xs shadow">💬 WhatsApp-இல் அனுப்பு</a>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <input id="inpPoruthamOtpEnter" type="tel" maxlength="6" placeholder="6-இலக்க OTP உள்ளிடவும்" class="flex-1 min-w-[160px] px-3 py-2 rounded-xl bg-white text-slate-900 font-black tracking-widest text-center border-2 border-amber-300" />
+              <button type="button" onclick="mjVerifyPoruthamOtp()" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-black text-xs sm:text-sm shadow cursor-pointer">🔓 திறந்து பார்</button>
+            </div>
+            <div id="poruthamOtpErr" class="hidden text-xs font-extrabold text-rose-300"></div>
+          </div>
+        ` : "";
+
+        box.innerHTML = `
+          <div class="space-y-4">
+            <div class="p-4 rounded-2xl bg-gradient-to-r from-[#5b0b1a] via-[#8b1c1c] to-[#5b0b1a] text-white shadow-lg border-2 border-amber-400">
+              <div class="text-base sm:text-lg font-black">💍 திருமண பொருத்தம் (10 பொருத்தம் + நாடி + ரஜ்ஜு)</div>
+              <div class="text-xs text-amber-100 font-bold mt-0.5">மணமகள் &amp; மணமகன் பிறந்த தேதி/நேரம் அல்லது நட்சத்திரம்–ராசி உள்ளிட்டுத் துல்லியப் பொருத்தம் பார்க்கவும்.</div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-4 rounded-2xl bg-rose-50/70 border-2 border-rose-300 space-y-2.5">
+                <div class="font-black text-sm text-rose-950 border-b border-rose-200 pb-1.5">👰 மணமகள் விவரம் (Bride)</div>
+                <input id="inpPorBrideName" type="text" value="${st.brideName}" placeholder="மணமகள் பெயர் (விருப்பம்)" class="w-full px-3 py-2 rounded-xl border border-rose-300 bg-white text-xs font-bold" />
+                <div class="grid grid-cols-2 gap-2">
+                  <div><label class="block text-[11px] font-bold text-rose-900 mb-0.5">பிறந்த தேதி</label><input id="inpPorBrideDob" type="date" value="${st.brideDob}" onchange="mjSyncPoruthamPerson('bride')" class="w-full px-2.5 py-1.5 rounded-xl border border-rose-300 bg-white text-xs font-bold" /></div>
+                  <div><label class="block text-[11px] font-bold text-rose-900 mb-0.5">பிறந்த நேரம்</label><input id="inpPorBrideTob" type="time" value="${st.brideTob}" onchange="mjSyncPoruthamPerson('bride')" class="w-full px-2.5 py-1.5 rounded-xl border border-rose-300 bg-white text-xs font-bold" /></div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div><label class="block text-[11px] font-bold text-rose-900 mb-0.5">நட்சத்திரம்</label><select id="inpPorBrideNak" class="w-full px-2.5 py-1.5 rounded-xl border border-rose-300 bg-white text-xs font-bold">${nakOpts(st.brideNak)}</select></div>
+                  <div><label class="block text-[11px] font-bold text-rose-900 mb-0.5">ராசி</label><select id="inpPorBrideRasi" class="w-full px-2.5 py-1.5 rounded-xl border border-rose-300 bg-white text-xs font-bold">${rasiOpts(st.brideRasi)}</select></div>
+                </div>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-sky-50/70 border-2 border-sky-300 space-y-2.5">
+                <div class="font-black text-sm text-sky-950 border-b border-sky-200 pb-1.5">🤵 மணமகன் விவரம் (Groom)</div>
+                <input id="inpPorGroomName" type="text" value="${st.groomName}" placeholder="மணமகன் பெயர் (விருப்பம்)" class="w-full px-3 py-2 rounded-xl border border-sky-300 bg-white text-xs font-bold" />
+                <div class="grid grid-cols-2 gap-2">
+                  <div><label class="block text-[11px] font-bold text-sky-900 mb-0.5">பிறந்த தேதி</label><input id="inpPorGroomDob" type="date" value="${st.groomDob}" onchange="mjSyncPoruthamPerson('groom')" class="w-full px-2.5 py-1.5 rounded-xl border border-sky-300 bg-white text-xs font-bold" /></div>
+                  <div><label class="block text-[11px] font-bold text-sky-900 mb-0.5">பிறந்த நேரம்</label><input id="inpPorGroomTob" type="time" value="${st.groomTob}" onchange="mjSyncPoruthamPerson('groom')" class="w-full px-2.5 py-1.5 rounded-xl border border-sky-300 bg-white text-xs font-bold" /></div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div><label class="block text-[11px] font-bold text-sky-900 mb-0.5">நட்சத்திரம்</label><select id="inpPorGroomNak" class="w-full px-2.5 py-1.5 rounded-xl border border-sky-300 bg-white text-xs font-bold">${nakOpts(st.groomNak)}</select></div>
+                  <div><label class="block text-[11px] font-bold text-sky-900 mb-0.5">ராசி</label><select id="inpPorGroomRasi" class="w-full px-2.5 py-1.5 rounded-xl border border-sky-300 bg-white text-xs font-bold">${rasiOpts(st.groomRasi)}</select></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-center gap-3">
+              <button type="button" onclick="mjCalculatePoruthamNow()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-stone-950 font-black text-sm shadow-lg border-2 border-[#7f1d1d] cursor-pointer">💍 திருமண பொருத்தம் கணி</button>
+              ${st.resultHtml ? `<button type="button" onclick="window.print()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-white font-extrabold text-xs shadow cursor-pointer">🖨️ அச்சு / PDF</button>` : ""}
+            </div>
+
+            ${friendOtpGateHtml}
+            <div id="poruthamResultArea">${(!_mjIsFriend() || st.unlockedKey === st._pendingKey) ? st.resultHtml : ""}</div>
+          </div>
+        `;
+      };
+
+      window.mjSyncPoruthamPerson = function(who) {
+        const isB = (who === "bride");
+        const dob = document.getElementById(isB ? "inpPorBrideDob" : "inpPorGroomDob")?.value || "";
+        const tob = document.getElementById(isB ? "inpPorBrideTob" : "inpPorGroomTob")?.value || "08:00";
+        const res = _mjResolveNakRasiFromDob(dob, tob);
+        if (res) {
+          const nEl = document.getElementById(isB ? "inpPorBrideNak" : "inpPorGroomNak");
+          const rEl = document.getElementById(isB ? "inpPorBrideRasi" : "inpPorGroomRasi");
+          if (nEl) nEl.value = String(res.nakIdx);
+          if (rEl) rEl.value = String(res.rasiIdx);
+        }
+      };
+
+      window.mjVerifyPoruthamOtp = function() {
+        const st = window._mjPoruthamState;
+        const entered = (document.getElementById("inpPoruthamOtpEnter")?.value || "").trim();
+        const expected = (typeof computeOtpFromFriendRequestCode === "function") ? computeOtpFromFriendRequestCode(st.reqCode) : "";
+        if (!entered || entered !== expected) {
+          const er = document.getElementById("poruthamOtpErr");
+          if (er) { er.textContent = "❌ தவறான OTP! சரியான ரகசிய எண்ணை உள்ளிடவும்."; er.classList.remove("hidden"); }
+          return;
+        }
+        st.unlockedKey = st._pendingKey;
+        if (typeof showToast === "function") showToast("✅ திருமண பொருத்தம் திறக்கப்பட்டது!", "success");
+        window.mjRenderPoruthamTab();
+      };
+
+      window.mjCalculatePoruthamNow = function() {
+        const st = window._mjPoruthamState;
+        st.brideName = (document.getElementById("inpPorBrideName")?.value || "").trim();
+        st.brideDob = document.getElementById("inpPorBrideDob")?.value || "";
+        st.brideTob = document.getElementById("inpPorBrideTob")?.value || "08:00";
+        st.brideNak = Number(document.getElementById("inpPorBrideNak")?.value || 0);
+        st.brideRasi = Number(document.getElementById("inpPorBrideRasi")?.value || 0);
+
+        st.groomName = (document.getElementById("inpPorGroomName")?.value || "").trim();
+        st.groomDob = document.getElementById("inpPorGroomDob")?.value || "";
+        st.groomTob = document.getElementById("inpPorGroomTob")?.value || "08:00";
+        st.groomNak = Number(document.getElementById("inpPorGroomNak")?.value || 0);
+        st.groomRasi = Number(document.getElementById("inpPorGroomRasi")?.value || 0);
+
+        const res = _mjCompute10Porutham(st.brideNak, st.brideRasi, st.groomNak, st.groomRasi);
+        const verdict = (res.rajjuGood && res.vedhaGood && res.score >= 7)
+          ? "✅ உத்தம பொருத்தம் (திருமணம் செய்யலாம்)"
+          : (res.rajjuGood && res.score >= 5 ? "🟡 மத்திம பொருத்தம் (பெரியோர் / ஜோதிட ஆலோசனையுடன் செய்யலாம்)" : "⚠️ பொருத்தம் குறைவு / ரஜ்ஜு-வேதை கவனிக்கவும்");
+        const verdictCls = (res.rajjuGood && res.vedhaGood && res.score >= 7) ? "bg-emerald-100 text-emerald-950 border-emerald-500" : (res.rajjuGood && res.score >= 5 ? "bg-amber-100 text-amber-950 border-amber-500" : "bg-rose-100 text-rose-950 border-rose-500");
+
+        st.resultHtml = `
+          <div class="p-4 rounded-2xl bg-white border-2 border-amber-400 shadow-md space-y-3">
+            <div class="p-3 rounded-xl border-2 ${verdictCls} flex flex-wrap items-center justify-between gap-2">
+              <div class="font-black text-sm sm:text-base">${verdict}</div>
+              <div class="px-3 py-1 rounded-full bg-white font-black text-sm border border-current">மதிப்பெண்: ${res.score} / 10</div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-bold bg-slate-50 p-3 rounded-xl border border-slate-200">
+              <div>👰 <b>மணமகள்:</b> ${st.brideName || "—"} • ${NAK_LIST_27[st.brideNak]} (${RASI_LIST_12[st.brideRasi]}) • ${res.bNadi}</div>
+              <div>🤵 <b>மணமகன்:</b> ${st.groomName || "—"} • ${NAK_LIST_27[st.groomNak]} (${RASI_LIST_12[st.groomRasi]}) • ${res.gNadi}</div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs border-collapse">
+                <thead><tr class="bg-[#6b0f22] text-white"><th class="p-2 text-left">எண்</th><th class="p-2 text-left">பொருத்தம்</th><th class="p-2 text-center">நிலை</th><th class="p-2 text-left">விவரம்</th></tr></thead>
+                <tbody>
+                  ${res.items.map(function(it) {
+                    return '<tr class="border-b border-slate-200"><td class="p-2 font-bold">' + it.no + '</td><td class="p-2 font-extrabold">' + it.name + '</td><td class="p-2 text-center font-black">' + (it.ok ? '<span class="text-emerald-700">✅ உண்டு</span>' : '<span class="text-rose-700">❌ இல்லை</span>') + '</td><td class="p-2 font-semibold text-slate-700">' + it.note + '</td></tr>';
+                  }).join("")}
+                  <tr class="bg-amber-50/70"><td class="p-2 font-bold">11</td><td class="p-2 font-extrabold">நாடிப் பொருத்தம்</td><td class="p-2 text-center font-black">${res.nadiGood ? '<span class="text-emerald-700">✅ உண்டு</span>' : '<span class="text-rose-700">⚠️ ஏக நாடி</span>'}</td><td class="p-2 font-semibold text-slate-700">${res.bNadi} + ${res.gNadi}</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+
+        const key = [st.brideNak, st.brideRasi, st.groomNak, st.groomRasi, st.brideDob, st.groomDob].join("_");
+        st._pendingKey = key;
+        if (_mjIsFriend() && st.unlockedKey !== key) {
+          st.reqCode = (typeof computeMurugesanOtpForSeed === "function")
+            ? computeMurugesanOtpForSeed("PORUTHAM_" + key + "_" + Date.now())
+            : String(Math.floor(100000 + Math.random() * 900000));
+        }
+        window.mjRenderPoruthamTab();
+      };
+
+      // --- 🏠 VASTHU SHASTRA CALCULATOR ---
+      window.mjRenderVasthuTab = function() {
+        const box = document.getElementById("vasthuTabContainer");
+        if (!box) return;
+        const st = window._mjVasthuState;
+        const friendOtpGateHtml = (_mjIsFriend() && st.reqCode && st.unlockedKey !== st._pendingKey) ? `
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-[#2e050d] via-[#5c0b1b] to-[#2e050d] text-amber-50 border-2 border-amber-400 shadow-xl space-y-3">
+            <div class="font-black text-sm sm:text-base text-amber-300">🔐 வாஸ்து சாஸ்திர முடிவுகளைக் காண ரகசிய எண் (OTP) தேவை</div>
+            <div class="text-xs text-amber-100">கீழே உள்ள 6-இலக்க குறியீட்டை <b>ஜெ. கரண் BE, DA. (7418609681)</b> அவர்களுக்கு அனுப்பி ரகசிய எண்ணைப் பெற்று உள்ளிடவும்.</div>
+            <div class="flex flex-wrap items-center gap-3 bg-black/30 p-3 rounded-xl border border-amber-400/50">
+              <div>
+                <div class="text-[11px] text-amber-200 font-bold">உங்கள் குறியீடு (Request Code):</div>
+                <div class="text-2xl font-black tracking-widest text-amber-300">${st.reqCode}</div>
+              </div>
+              <a href="https://wa.me/917418609681?text=${encodeURIComponent("வணக்கம் ஐயா, வாஸ்து கணக்கீடு பார்க்க OTP தேவை. குறியீடு: " + st.reqCode)}" target="_blank" rel="noopener" class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-black text-xs shadow">💬 WhatsApp-இல் அனுப்பு</a>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <input id="inpVasthuOtpEnter" type="tel" maxlength="6" placeholder="6-இலக்க OTP உள்ளிடவும்" class="flex-1 min-w-[160px] px-3 py-2 rounded-xl bg-white text-slate-900 font-black tracking-widest text-center border-2 border-amber-300" />
+              <button type="button" onclick="mjVerifyVasthuOtp()" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-black text-xs sm:text-sm shadow cursor-pointer">🔓 திறந்து பார்</button>
+            </div>
+            <div id="vasthuOtpErr" class="hidden text-xs font-extrabold text-rose-300"></div>
+          </div>
+        ` : "";
+
+        box.innerHTML = `
+          <div class="space-y-4">
+            <div class="p-4 rounded-2xl bg-gradient-to-r from-[#0f3d3e] via-[#115e59] to-[#0f3d3e] text-white shadow-lg border-2 border-amber-400">
+              <div class="text-base sm:text-lg font-black">🏠 வாஸ்து சாஸ்திரம் (ஆயாதி பொருத்தம் &amp; 8 திசை அறை அமைப்பு)</div>
+              <div class="text-xs text-teal-100 font-bold mt-0.5">மனை / வீட்டின் அகலம், நீளம் (அடி) மற்றும் திசையை உள்ளிட்டு ஆயாதி கணிதமும் வாஸ்து அமைப்பும் பார்க்கவும்.</div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-white border-2 border-teal-500 shadow-sm grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+              <div><label class="block text-xs font-extrabold text-slate-800 mb-1">உரிமையாளர் பெயர்</label><input id="inpVasthuOwner" type="text" value="${st.ownerName}" placeholder="விருப்பம்" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold" /></div>
+              <div><label class="block text-xs font-extrabold text-slate-800 mb-1">அகலம் (அடி / Feet) *</label><input id="inpVasthuW" type="number" min="5" max="500" value="${st.widthFt}" class="w-full px-3 py-2 rounded-xl border-2 border-teal-400 text-xs font-black" /></div>
+              <div><label class="block text-xs font-extrabold text-slate-800 mb-1">நீளம் (அடி / Feet) *</label><input id="inpVasthuL" type="number" min="5" max="500" value="${st.lengthFt}" class="w-full px-3 py-2 rounded-xl border-2 border-teal-400 text-xs font-black" /></div>
+              <div>
+                <label class="block text-xs font-extrabold text-slate-800 mb-1">வீடு / மனை பார்த்த திசை *</label>
+                <select id="inpVasthuFacing" class="w-full px-3 py-2 rounded-xl border-2 border-teal-400 text-xs font-black bg-white">
+                  ${["கிழக்கு","வடக்கு","மேற்கு","தெற்கு"].map(function(d){ return '<option value="'+d+'"'+(st.facing===d?' selected':'')+'>'+d+'</option>'; }).join("")}
+                </select>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-center gap-3">
+              <button type="button" onclick="mjCalculateVasthuNow()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-stone-950 font-black text-sm shadow-lg border-2 border-teal-900 cursor-pointer">🏠 வாஸ்து கணிப்பு பார்</button>
+              ${st.resultHtml ? `<button type="button" onclick="window.print()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-white font-extrabold text-xs shadow cursor-pointer">🖨️ அச்சு / PDF</button>` : ""}
+            </div>
+
+            ${friendOtpGateHtml}
+            <div id="vasthuResultArea">${(!_mjIsFriend() || st.unlockedKey === st._pendingKey) ? st.resultHtml : ""}</div>
+          </div>
+        `;
+      };
+
+      window.mjVerifyVasthuOtp = function() {
+        const st = window._mjVasthuState;
+        const entered = (document.getElementById("inpVasthuOtpEnter")?.value || "").trim();
+        const expected = (typeof computeOtpFromFriendRequestCode === "function") ? computeOtpFromFriendRequestCode(st.reqCode) : "";
+        if (!entered || entered !== expected) {
+          const er = document.getElementById("vasthuOtpErr");
+          if (er) { er.textContent = "❌ தவறான OTP! சரியான ரகசிய எண்ணை உள்ளிடவும்."; er.classList.remove("hidden"); }
+          return;
+        }
+        st.unlockedKey = st._pendingKey;
+        if (typeof showToast === "function") showToast("✅ வாஸ்து கணிப்பு திறக்கப்பட்டது!", "success");
+        window.mjRenderVasthuTab();
+      };
+
+      window.mjCalculateVasthuNow = function() {
+        const st = window._mjVasthuState;
+        st.ownerName = (document.getElementById("inpVasthuOwner")?.value || "").trim();
+        st.widthFt = Math.max(5, Number(document.getElementById("inpVasthuW")?.value || 30) || 30);
+        st.lengthFt = Math.max(5, Number(document.getElementById("inpVasthuL")?.value || 40) || 40);
+        st.facing = document.getElementById("inpVasthuFacing")?.value || "கிழக்கு";
+
+        const area = Math.round(st.widthFt * st.lengthFt);
+        const aayam = ((area * 8) % 12) || 12;
+        const vyayam = ((area * 9) % 10) || 10;
+        const yoniIdx = ((area * 3) % 8) || 8;
+        const yoniNames = ["துவஜம் (கிழக்கு — சுபம்)","தூமம் (தென்கிழக்கு)","சிம்மம் (தெற்கு — சுபம்)","சுவானம் (தென்மேற்கு)","வ்ருஷபம் (மேற்கு — சுபம்)","கரம் (வடமேற்கு)","கஜம் (வடக்கு — சுபம்)","காகம் (வடகிழக்கு)"];
+        const yoniOk = [1,3,5,7].includes(yoniIdx);
+        const vaaram = ((area * 9) % 7) || 7;
+        const vaaraNames = ["ஞாயிறு","திங்கள்","செவ்வாய்","புதன்","வியாழன்","வெள்ளி","சனி"];
+        const vaaraOk = [2,4,5,6].includes(vaaram);
+        const nakNum = ((area * 8) % 27) || 27;
+        const ayush = ((area * 9) % 120) || 120;
+        const profitOk = aayam > vyayam;
+
+        st.resultHtml = `
+          <div class="p-4 rounded-2xl bg-white border-2 border-teal-500 shadow-md space-y-4">
+            <div class="p-3 rounded-xl ${profitOk && yoniOk ? 'bg-emerald-100 border-emerald-500 text-emerald-950' : 'bg-amber-100 border-amber-500 text-amber-950'} border-2 font-black text-sm flex flex-wrap justify-between gap-2">
+              <span>${profitOk && yoniOk ? '✅ உத்தம வாஸ்து குழி அளவு (ஆதாயம் > விரயம்)' : '🟡 மத்திம குழி அளவு — நீளம்/அகலம் 1 அடி கூட்டி/குறைத்துப் பார்க்கலாம்'}</span>
+              <span>பரப்பளவு: ${area} சதுர அடி</span>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+              <div class="p-3 rounded-xl bg-teal-50 border border-teal-300"><div class="text-slate-600 font-bold">ஆதாயம் (Income)</div><div class="text-base font-black text-teal-950">${aayam}</div></div>
+              <div class="p-3 rounded-xl bg-rose-50 border border-rose-300"><div class="text-slate-600 font-bold">விரயம் (Expense)</div><div class="text-base font-black text-rose-950">${vyayam}</div></div>
+              <div class="p-3 rounded-xl bg-amber-50 border border-amber-300"><div class="text-slate-600 font-bold">யோனி (திசை பலன்)</div><div class="text-sm font-black text-amber-950">${yoniNames[yoniIdx-1]}</div></div>
+              <div class="p-3 rounded-xl bg-indigo-50 border border-indigo-300"><div class="text-slate-600 font-bold">வாரம்</div><div class="text-sm font-black text-indigo-950">${vaaraNames[vaaram-1]} ${vaaraOk ? "✅" : "⚠️"}</div></div>
+              <div class="p-3 rounded-xl bg-purple-50 border border-purple-300"><div class="text-slate-600 font-bold">நட்சத்திரம்</div><div class="text-sm font-black text-purple-950">${NAK_LIST_27[nakNum-1]}</div></div>
+              <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-300"><div class="text-slate-600 font-bold">ஆயுள் பலம்</div><div class="text-base font-black text-emerald-950">${ayush} வருடம்</div></div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-300 space-y-1.5 text-xs">
+              <div class="font-black text-[#0f3d3e]">🧭 ${st.facing} பார்த்த மனை — உள் அறை அமைப்பு வழிகாட்டி:</div>
+              <ul class="list-disc pl-5 space-y-1 font-semibold text-slate-700">
+                <li><b>வடகிழக்கு (ஈசானியம்):</b> பூஜை அறை, போர்வெல் / நிலத்தடி நீர்த்தொட்டி (திறந்த &amp; தாழ்வான பகுதி).</li>
+                <li><b>தென்கிழக்கு (அக்னி மூலை):</b> சமையலறை (கிழக்கு நோக்கி சமைத்தல்), மின்சார மீட்டர்.</li>
+                <li><b>தென்மேற்கு (நைருதி மூலை):</b> குடும்பத் தலைவர் படுக்கையறை (Master Bedroom), பீரோ, உயரமான பகுதி.</li>
+                <li><b>வடமேற்கு (வாயு மூலை):</b> விருந்தினர் அறை, கழிப்பறை / செப்டிக் டேங்க், வாகன நிறுத்தம்.</li>
+              </ul>
+            </div>
+          </div>
+        `;
+
+        const key = [st.widthFt, st.lengthFt, st.facing].join("_");
+        st._pendingKey = key;
+        if (_mjIsFriend() && st.unlockedKey !== key) {
+          st.reqCode = (typeof computeMurugesanOtpForSeed === "function")
+            ? computeMurugesanOtpForSeed("VASTHU_" + key + "_" + Date.now())
+            : String(Math.floor(100000 + Math.random() * 900000));
+        }
+        window.mjRenderVasthuTab();
+      };
+
+      // Wire 'porutham' and 'vasthu' into switchMainAppTab cleanly (preserving all args)
+      if (typeof switchMainAppTab === "function") {
+        const _prevSwPV = switchMainAppTab;
+        switchMainAppTab = function(tabKey) {
+          const isPor = (tabKey === "porutham");
+          const isVas = (tabKey === "vasthu");
+          const pEl = document.getElementById("poruthamTabContainer");
+          const vEl = document.getElementById("vasthuTabContainer");
+          if (!isPor && !isVas) {
+            if (pEl) pEl.classList.add("hidden");
+            if (vEl) vEl.classList.add("hidden");
+            return _prevSwPV.apply(this, arguments);
+          }
+          _prevSwPV("book");
+          ["puthagamBookContainer","dasa100TabContainer","userManualTabContainer","padasaramTabContainer","kaiKanakkuTabContainer","addPanchangamTabContainer","fullPanchangamTabContainer","jsonUploadTabContainer","calcStepsTabContainer","masterOtpTabContainer","pageJumpStripWrapper"].forEach(function(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.add("hidden");
+          });
+          if (typeof currentMainAppTab !== "undefined") currentMainAppTab = tabKey;
+          if (pEl) pEl.classList.toggle("hidden", !isPor);
+          if (vEl) vEl.classList.toggle("hidden", !isVas);
+          if (isPor) window.mjRenderPoruthamTab();
+          if (isVas) window.mjRenderVasthuTab();
+          if (typeof window.mjCloseSideMenu === "function") window.mjCloseSideMenu();
         };
       }
     })();
