@@ -601,7 +601,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — நண்பர் ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.4</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.5</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-rose-500 text-white shadow">🔐 ஒவ்வொரு தேதி / நேர மாற்றத்திற்கும் ரகசிய எண் பாதுகாப்பு</span>
           </div>
@@ -5474,6 +5474,7 @@
                 <span>பக்ஷத்து</span>
                 <span class="dotted-fill">${pan.tithi}</span>
                 <span>திதி நாழிகை</span>
+                <span class="dotted-fill">${pe.tithiEndDot || pan.tithiEnd || "நடப்பு"}</span>
               </div>
               <div class="dotted-row">
                 <span class="dotted-fill">நடப்பு திதி சுபம்</span>
@@ -5482,7 +5483,7 @@
               </div>
               <div class="dotted-row">
                 <span>நட்சத்திரம் நாழிகை</span>
-                <span class="dotted-fill">${p.Moon.nakshatra.ta} (${p.Moon.pada}-ம் பாதம்) • ஆதி ${pe.aathiStarDot} / செல் ${pe.selStarDot}</span>
+                <span class="dotted-fill">${p.Moon.nakshatra.ta} (${p.Moon.pada}-ம் பாதம்${pe.currStarDot ? (" • முடிவு " + pe.currStarDot) : ""}) • ஆதி ${pe.aathiStarDot} / செல் ${pe.selStarDot}</span>
                 <span>உபரி</span>
               </div>
               <div class="dotted-row">
@@ -5512,11 +5513,12 @@
                 <span>உபரி</span>
                 <span class="dotted-fill">சுப கரணம் • பகல் பிரமாணம் 30.00</span>
                 <span>அகஸ்து நாழிகை</span>
+                <span class="dotted-fill">${pe.agazhDot || "30.00"}</span>
               </div>
               <div class="dotted-row">
-                <span class="dotted-fill">இல்லை (சுப வேளை)</span>
+                <span class="dotted-fill">${(pe.thyajyamDot && pe.thyajyamDot !== "00.00") ? "தியாட்சியம் உண்டு" : "இல்லை (சுப வேளை)"}</span>
                 <span>தியாட்சியம் நாழிகை</span>
-                <span class="dotted-fill">00.00</span>
+                <span class="dotted-fill">${pe.thyajyamDot || "00.00"}</span>
               </div>
               <div class="dotted-row">
                 <span>அயனம்</span>
@@ -13547,7 +13549,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.4</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.5</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -14623,12 +14625,27 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           const _proofDob = (profile && profile.dob) || document.getElementById("inpDob")?.value || "";
           const jsonHit = (_proofDob && window._mjCloudDailyStarsMap) ? window._mjCloudDailyStarsMap[_proofDob] : null;
           if (jsonHit && calc && calc.panchangam) {
-            if (jsonHit.tithi) calc.panchangam.tithiTa = jsonHit.tithi;
-            if (jsonHit.nithyaYoga) calc.panchangam.yogaTa = jsonHit.nithyaYoga;
-            if (jsonHit.karana) calc.panchangam.karanaTa = jsonHit.karana;
-            if (jsonHit.dayYoga) calc.panchangam.amirthathiTa = jsonHit.dayYoga;
-            if (jsonHit.thyajyam) calc.panchangam.thyajyamDot = String(jsonHit.thyajyam).replace("-", ".");
-            if (jsonHit.agazh) calc.panchangam.agazhDot = String(jsonHit.agazh).replace("-", ".");
+            if (jsonHit.tithi) { calc.panchangam.tithi = jsonHit.tithi; calc.panchangam.tithiTa = jsonHit.tithi; }
+            if (jsonHit.tithiEnd) { calc.panchangam.tithiEnd = String(jsonHit.tithiEnd).replace("-", "."); if (calc.paambuExtras) calc.paambuExtras.tithiEndDot = calc.panchangam.tithiEnd; }
+            if (jsonHit.nithyaYoga) { calc.panchangam.yoga = jsonHit.nithyaYoga; calc.panchangam.yogaTa = jsonHit.nithyaYoga; }
+            if (jsonHit.karana) { calc.panchangam.karana = jsonHit.karana; calc.panchangam.karanaTa = jsonHit.karana; }
+            if (jsonHit.dayYoga) {
+              calc.panchangam.amirthathiTa = jsonHit.dayYoga;
+              if (calc.paambuExtras) calc.paambuExtras.amirthathiYoga = jsonHit.dayYoga;
+            }
+            if (jsonHit.thyajyam) {
+              const tDot = String(jsonHit.thyajyam).replace("-", ".");
+              calc.panchangam.thyajyamDot = tDot;
+              if (calc.paambuExtras) calc.paambuExtras.thyajyamDot = tDot;
+            }
+            if (jsonHit.agazh) {
+              const aDot = String(jsonHit.agazh).replace("-", ".");
+              calc.panchangam.agazhDot = aDot;
+              if (calc.paambuExtras) calc.paambuExtras.agazhDot = aDot;
+            }
+            if (jsonHit.curr && calc.paambuExtras) {
+              calc.paambuExtras.currStarDot = String(jsonHit.curr).replace("-", ".");
+            }
           }
           return calc;
         };
@@ -14760,6 +14777,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                 calc.dasa.balanceMonths = remM;
                 calc.dasa.balanceDays = remD;
                 calc.dasa.balanceTextTa = remY + " வருடம் " + remM + " மாதம் " + remD + " நாள்";
+                calc.dasa.balanceText = (calc.dasa.firstLord && calc.dasa.firstLord.ta ? calc.dasa.firstLord.ta + " தசா இருப்பு: " : "") + remY + " வருடம், " + remM + " மாதம், " + remD + " நாள்";
               }
             }
           } catch (e) {}
@@ -15369,7 +15387,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       };
 
       
-      // 🪐 v26.4: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
+      // 🪐 v26.5: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
       window._mjJsonSubTab = window._mjJsonSubTab || "daily";
       window._mjPadasaramListFilter = window._mjPadasaramListFilter || "all";
 
@@ -15628,7 +15646,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         box.innerHTML = `
           <div class="space-y-4 pb-8">
             <div class="p-4 rounded-2xl bg-gradient-to-r from-[#0f3d3e] via-[#115e59] to-[#0f3d3e] text-white shadow-lg">
-              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.4</span></div>
+              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.5</span></div>
               <div class="text-xs text-teal-100 font-bold mt-1">JSON-இல் உள்ள தேதிகளுக்குத் தானாக 0-நாள் துல்லிய அச்சுப் பஞ்சாங்க தசா இருப்பு வரும்; JSON இல்லாத தேதிகளுக்கு எப்போதும் போல ஆப் தானாகக் கணக்கிடும்!</div>
             </div>
 
@@ -15983,6 +16001,16 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               calc.dasa.balanceMonths = remM;
               calc.dasa.balanceDays = remD;
               calc.dasa.balanceTextTa = remY + " வருடம் " + remM + " மாதம் " + remD + " நாள்";
+              calc.dasa.balanceText = (calc.dasa.firstLord && calc.dasa.firstLord.ta ? calc.dasa.firstLord.ta + " தசா இருப்பு: " : "") + remY + " வருடம், " + remM + " மாதம், " + remD + " நாள்";
+              if (calc.paambuExtras) {
+                const fmtNV = function(v) { const vv = Math.max(0, Math.round(v)); return String(Math.floor(vv / 60)).padStart(2, "0") + "." + String(vv % 60).padStart(2, "0"); };
+                calc.paambuExtras.aathiVinTotal = aathi;
+                calc.paambuExtras.selVinTotal = sel;
+                calc.paambuExtras.iruppuVinTotal = iruppu;
+                calc.paambuExtras.aathiStarDot = fmtNV(aathi);
+                calc.paambuExtras.selStarDot = fmtNV(sel);
+                calc.paambuExtras.iruppuStarDot = fmtNV(iruppu);
+              }
             }
           } catch (e) {}
           return calc;
