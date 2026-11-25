@@ -13506,7 +13506,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v25.7</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v25.8</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -15145,7 +15145,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         box.innerHTML = `
           <div class="space-y-4 pb-8">
             <div class="p-4 rounded-2xl bg-gradient-to-r from-[#0f3d3e] via-[#115e59] to-[#0f3d3e] text-white shadow-lg">
-              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v25.7</span></div>
+              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v25.8</span></div>
               <div class="text-xs text-teal-100 font-bold mt-1">JSON-இல் உள்ள தேதிகளுக்குத் தானாக 0-நாள் துல்லிய அச்சுப் பஞ்சாங்க தசா இருப்பு வரும்; JSON இல்லாத தேதிகளுக்கு எப்போதும் போல ஆப் தானாகக் கணக்கிடும்!</div>
             </div>
 
@@ -15266,6 +15266,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       });
 
       // Automatic Priority Engine: Manual Override -> Cloud JSON -> Normal Auto Calculation
+      // Updates BOTH Dasa Balance AND Moon Pada + Moon Rasi + Moon Navamsam (Amsam) directly from JSON!
       if (typeof calculateFullJathagam === "function") {
         const _prevCalcJsonDasa = calculateFullJathagam;
         calculateFullJathagam = function(profile) {
@@ -15280,35 +15281,58 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             if (jsonHit.sunrise && /^\d{2}:\d{2}/.test(jsonHit.sunrise)) prof.customSunrise = jsonHit.sunrise;
           }
           const calc = _prevCalcJsonDasa(prof);
-          // Also apply JSON Dasa balance in Main App (where Kai-Kanakku manPrevStarDot override doesn't run)
           try {
-            const hasKaiUI = Boolean(document.getElementById("inpManPrevStarDot"));
-            if (!hasKaiUI && jsonHit && calc && calc.dasa) {
-              const pVin = _parseDotToVin(jsonHit.prev);
-              const cVin = _parseDotToVin(jsonHit.curr);
-              if (pVin !== null && cVin !== null) {
-                const tob = prof.tob || document.getElementById("inpTob")?.value || "12:00";
-                const sr = prof.customSunrise || document.getElementById("inpSunrise")?.value || "06:00";
-                const uday = (typeof computeUdayathiNazhigai === "function") ? computeUdayathiNazhigai(dob, tob, sr) : { totalVinazhigai: 0 };
-                const uVin = uday.totalVinazhigai;
-                const aathi = (3600 - pVin) + cVin;
-                let iruppu = (uVin <= cVin) ? (cVin - uVin) : (cVin + 3600 - uVin);
-                iruppu = Math.max(0, Math.min(aathi, iruppu));
-                const sel = Math.max(0, aathi - iruppu);
-                const lordY = calc.dasa.firstLord.years;
-                const totDays = Math.round((iruppu / aathi) * lordY * 360);
-                const remY = Math.floor(totDays / 360);
-                const remM = Math.floor((totDays % 360) / 30);
-                const remD = totDays % 30;
-                calc.dasa.aathiVin = aathi;
-                calc.dasa.paramVin = aathi;
-                calc.dasa.selVin = sel;
-                calc.dasa.iruppuVin = iruppu;
-                calc.dasa.balanceYears = remY;
-                calc.dasa.balanceMonths = remM;
-                calc.dasa.balanceDays = remD;
-                calc.dasa.balanceTextTa = remY + " வருடம் " + remM + " மாதம் " + remD + " நாள்";
+            const effPrev = hasManualPrev ? (prof.manPrevStarDot || document.getElementById("inpManPrevStarDot")?.value || "") : (jsonHit ? jsonHit.prev : "");
+            const effCurr = hasManualCurr ? (prof.manCurrStarDot || document.getElementById("inpManCurrStarDot")?.value || "") : (jsonHit ? jsonHit.curr : "");
+            const pVin = _parseDotToVin(effPrev);
+            const cVin = _parseDotToVin(effCurr);
+            if (pVin !== null && cVin !== null && calc && calc.dasa && calc.planets && calc.planets.Moon) {
+              const tob = prof.tob || document.getElementById("inpTob")?.value || "12:00";
+              const sr = prof.customSunrise || document.getElementById("inpSunrise")?.value || "06:00";
+              const uday = (typeof computeUdayathiNazhigai === "function") ? computeUdayathiNazhigai(dob, tob, sr) : { totalVinazhigai: 0 };
+              const uVin = uday.totalVinazhigai;
+              const aathi = (3600 - pVin) + cVin;
+              let iruppu = (uVin <= cVin) ? (cVin - uVin) : (cVin + 3600 - uVin);
+              iruppu = Math.max(0, Math.min(aathi, iruppu));
+              const sel = Math.max(0, aathi - iruppu);
+
+              // 1. Update Moon Pada, Moon Rasi (for dual-Rasi stars) & Moon Navamsam (Amsam) directly from JSON!
+              const M = calc.planets.Moon;
+              const padaSpanVin = aathi / 4.0;
+              const newMoonPada = Math.max(1, Math.min(4, Math.floor((sel + 0.001) / padaSpanVin) + 1));
+              const gPada = (((M.nakIdx || 0) * 4) + (newMoonPada - 1)) % 108;
+              const newRasiIdx = Math.floor(gPada / 9) % 12;
+              const newNavIdx = gPada % 12;
+              const fracInNak = Math.max(0, Math.min(0.9999, sel / aathi));
+              const newLon = (((M.nakIdx || 0) + fracInNak) * (360.0 / 27.0)) % 360;
+              const degInR = ((newLon % 30) + 30) % 30;
+              const dd = Math.floor(degInR), mm = Math.round((degInR - dd) * 60);
+              M.pada = newMoonPada;
+              M.rasiIdx = newRasiIdx;
+              if (typeof RASIS !== "undefined" && RASIS[newRasiIdx]) M.rasi = RASIS[newRasiIdx];
+              M.navamsaIdx = newNavIdx;
+              if (typeof RASIS !== "undefined" && RASIS[newNavIdx]) {
+                M.navamsa = RASIS[newNavIdx];
+                M.navamsaRasi = RASIS[newNavIdx];
               }
+              M.longitude = newLon;
+              M.degNum = degInR;
+              M.degInRasi = (mm >= 60 ? (dd + 1) + "° 00'" : (dd + "° " + String(mm).padStart(2, "0") + "'"));
+
+              // 2. Update Dasa Balance (for Main App too)
+              const lordY = calc.dasa.firstLord.years;
+              const totDays = Math.round((iruppu / aathi) * lordY * 360);
+              const remY = Math.floor(totDays / 360);
+              const remM = Math.floor((totDays % 360) / 30);
+              const remD = totDays % 30;
+              calc.dasa.aathiVin = aathi;
+              calc.dasa.paramVin = aathi;
+              calc.dasa.selVin = sel;
+              calc.dasa.iruppuVin = iruppu;
+              calc.dasa.balanceYears = remY;
+              calc.dasa.balanceMonths = remM;
+              calc.dasa.balanceDays = remD;
+              calc.dasa.balanceTextTa = remY + " வருடம் " + remM + " மாதம் " + remD + " நாள்";
             }
           } catch (e) {}
           return calc;
