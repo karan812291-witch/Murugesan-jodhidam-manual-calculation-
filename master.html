@@ -13506,7 +13506,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v25.8</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.0</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -14544,6 +14544,14 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           const calc = _prevCalcProof(profile);
           window._mjLastFullCalc = calc;
           window._mjLastFullProfile = profile || {};
+          if (jsonHit && calc && calc.panchangam) {
+            if (jsonHit.tithi) calc.panchangam.tithiTa = jsonHit.tithi;
+            if (jsonHit.nithyaYoga) calc.panchangam.yogaTa = jsonHit.nithyaYoga;
+            if (jsonHit.karana) calc.panchangam.karanaTa = jsonHit.karana;
+            if (jsonHit.dayYoga) calc.panchangam.amirthathiTa = jsonHit.dayYoga;
+            if (jsonHit.thyajyam) calc.panchangam.thyajyamDot = String(jsonHit.thyajyam).replace("-", ".");
+            if (jsonHit.agazh) calc.panchangam.agazhDot = String(jsonHit.agazh).replace("-", ".");
+          }
           return calc;
         };
       }
@@ -14773,7 +14781,9 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           if (_parseDotToVin(prev) === null || _parseDotToVin(curr) === null) return;
           const yKey = k.slice(0, 4);
           if (!grouped[yKey]) grouped[yKey] = {};
-          grouped[yKey][k] = sr ? { prev: prev, curr: curr, sunrise: sr } : { prev: prev, curr: curr };
+          const cleanRow = Object.assign({}, row, { prev: prev, curr: curr });
+          if (sr) cleanRow.sunrise = sr;
+          grouped[yKey][k] = cleanRow;
           totalValid++;
         });
         if (totalValid === 0) throw new Error("சரியான தேதி (YYYY-MM-DD) மற்றும் prev/curr (எ.கா: 41.16) தரவு எதுவும் இல்லை!");
@@ -14837,17 +14847,32 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         } else { doSave(); }
       };
 
-      window.mjHandleDailyJsonFilePicked = function(ev) {
-        const file = ev && ev.target && ev.target.files && ev.target.files[0];
-        if (!file) return;
-        const rd = new FileReader();
-        rd.onload = function() {
-          const txt = String(rd.result || "");
+      window._mjJsonListFilter = window._mjJsonListFilter || "all";
+      window.mjSetJsonListFilter = function(f) {
+        window._mjJsonListFilter = f || "all";
+        window.mjRenderJsonUploadTab();
+      };
+
+      window.mjHandleDailyJsonFilePicked = async function(ev) {
+        const files = ev && ev.target && ev.target.files ? Array.from(ev.target.files) : [];
+        if (!files.length) return;
+        try {
+          const combinedDays = {};
+          for (let i = 0; i < files.length; i++) {
+            const txt = await files[i].text();
+            const parsed = JSON.parse(txt);
+            const src = (parsed && (parsed.dailyStars || parsed.days || parsed)) || {};
+            Object.keys(src).forEach(function(k) {
+              if (/^\d{4}-\d{2}-\d{2}$/.test(k)) combinedDays[k] = src[k];
+            });
+          }
+          const mergedText = JSON.stringify({ dailyStars: combinedDays }, null, 2);
           const ta = document.getElementById("inpJsonPasteArea");
-          if (ta) ta.value = txt;
-          window.mjSaveDailyStarsJsonText(txt);
-        };
-        rd.readAsText(file, "utf-8");
+          if (ta) ta.value = mergedText;
+          window.mjSaveDailyStarsJsonText(mergedText);
+        } catch (err) {
+          if (typeof showToast === "function") showToast("❌ JSON படிப்புப் பிழை: " + (err.message || err), "error");
+        }
       };
 
       window.mjDeleteDailyStarsJsonYear = function(yKey) {
@@ -14893,6 +14918,35 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         try { localStorage.setItem("MJ_GEMINI_API_KEY_LOCAL", k); } catch (e) {}
         if (typeof showToast === "function") showToast("✅ Gemini API Key உங்கள் போனில் மட்டும் பாதுகாப்பாகச் சேமிக்கப்பட்டது!", "success");
         window.mjRenderJsonUploadTab();
+      };
+
+      
+      window.mjTestLocalGeminiKey = async function() {
+        const apiKey = window.mjGetLocalGeminiKey();
+        if (!apiKey) {
+          if (typeof showToast === "function") showToast("❌ முதலில் API Key சேமிக்கவும்!", "error");
+          return;
+        }
+        const st = document.getElementById("mjJsonUploadStatusBox");
+        if (st) { st.textContent = "🔌 Gemini API இணைப்பு சோதிக்கப்படுகிறது..."; st.classList.remove("hidden"); }
+        try {
+          const resp = await fetch("https://generativelanguage.googleapis.com/v1beta/models?key=" + encodeURIComponent(apiKey));
+          if (!resp.ok) {
+            const t = await resp.text();
+            throw new Error("HTTP " + resp.status + ": " + t.slice(0, 120));
+          }
+          const j = await resp.json();
+          const flashList = (j.models || []).filter(function(m) {
+            return (m.supportedGenerationMethods || []).includes("generateContent") && String(m.name || "").toLowerCase().includes("flash");
+          }).map(function(m) { return String(m.name).replace(/^models\//, ""); });
+          const msg = "✅ API Key இணைப்பு 100% சரி! கிடைக்கும் மாடல்கள்: " + (flashList.slice(0, 3).join(", ") || "Gemini Ready");
+          if (st) st.textContent = msg;
+          if (typeof showToast === "function") showToast(msg, "success");
+        } catch (err) {
+          const em = "❌ API இணைப்புப் பிழை: " + (err && err.message ? err.message : err) + " (இணையம் / API Key சரிபார்க்கவும்)";
+          if (st) st.textContent = em;
+          if (typeof showToast === "function") showToast(em, "error");
+        }
       };
 
       window.mjClearLocalGeminiKey = function() {
@@ -14966,7 +15020,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             "Each row in a monthly table has a Tamil date, English date, weekday, Tithi, and Nakshatra with end nazhigai-vinazhigai (printed like 'மக 35-35' or 'விசா 47-06' or 'ரோ 01-19'). " +
             "Extract EVERY day row's English date (YYYY-MM-DD) and its Nakshatra end nazhigai ('curr' as 'NN.VV' replacing '-' with '.'). " +
             "If this page is NOT a daily monthly calendar table (e.g. cover, index, graha padasaram), return {\"days\":{}}. " +
-            "Output ONLY valid JSON: {\"days\":{\"2026-04-14\":\"35.35\",\"2026-04-15\":\"31.43\"}}.";
+            "Also extract tithi, tithiEnd, nak, dayYoga, nithyaYoga, yogaEnd, karana, karanaEnd, thyajyam, sunRem, agazh if visible. Output ONLY valid JSON: {\"days\":{\"2026-04-14\":{\"curr\":\"35.35\",\"nak\":\"மகம்\",\"tithi\":\"ஏகாதசி\",\"tithiEnd\":\"31.09\",\"dayYoga\":\"அ-சி\",\"nithyaYoga\":\"கண்டம்\",\"karana\":\"வணிசை\",\"thyajyam\":\"07.19\",\"sunRem\":\"4.35\",\"agazh\":\"30.36\"}}}.";
 
           let _cachedLiveModels = null;
           async function _getLiveGeminiFlashModels() {
@@ -15006,7 +15060,9 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             for (let mi = 0; mi < models.length; mi++) {
               for (let attempt = 0; attempt < 2; attempt++) {
                 const url = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(models[mi]) + ":generateContent?key=" + encodeURIComponent(apiKey);
-                const resp = await fetch(url, {
+                let resp;
+                try {
+                  resp = await fetch(url, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
@@ -15019,6 +15075,14 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                     generationConfig: { temperature: 0.1, responseMimeType: "application/json" }
                   })
                 });
+                } catch (netErr) {
+                  lastErr = new Error(models[mi] + " இணையப் பிழை: " + (netErr && netErr.message ? netErr.message : netErr));
+                  if (attempt === 0) {
+                    await new Promise(function(r) { setTimeout(r, 3000); });
+                    continue;
+                  }
+                  break;
+                }
                 if (resp.ok) {
                   const j = await resp.json();
                   const txt = j && j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts && j.candidates[0].content.parts[0] && j.candidates[0].content.parts[0].text;
@@ -15046,11 +15110,13 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           for (let p = startP; p <= endP; p++) {
             setSt("🤖 AI படிக்கிறது: பக்கம் " + p + " / " + endP + " (" + Object.keys(rawCurrByDate).length + " நாட்கள்)...", "info", Math.max(5, Math.round(((p - startP) / Math.max(1, endP - startP + 1)) * 90)));
             const page = await pdfDoc.getPage(p);
-            const vp = page.getViewport({ scale: 1.6 });
-            canvas.width = vp.width;
-            canvas.height = vp.height;
+            const baseVp = page.getViewport({ scale: 1.0 });
+            const safeScale = Math.min(1.4, 1150 / Math.max(1, baseVp.width));
+            const vp = page.getViewport({ scale: safeScale });
+            canvas.width = Math.round(vp.width);
+            canvas.height = Math.round(vp.height);
             await page.render({ canvasContext: ctx, viewport: vp }).promise;
-            const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.72);
             const jpegB64 = dataUrl.slice(dataUrl.indexOf(",") + 1);
 
             try {
@@ -15070,9 +15136,10 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                   const pNorm = _normDot(val.prev);
                   const sr = (val.sunrise && /^\d{2}:\d{2}/.test(String(val.sunrise))) ? String(val.sunrise).slice(0, 5) : "";
                   if (cNorm) {
-                    rawCurrByDate[dk] = { curr: cNorm };
-                    if (pNorm) rawCurrByDate[dk].prev = pNorm;
-                    if (sr) rawCurrByDate[dk].sunrise = sr;
+                    const mObj = Object.assign({}, val, { curr: cNorm });
+                    if (pNorm) mObj.prev = pNorm;
+                    if (sr) mObj.sunrise = sr;
+                    rawCurrByDate[dk] = mObj;
                   }
                 }
               });
@@ -15093,9 +15160,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             const entry = rawCurrByDate[dk];
             const prevD = _prevIsoDate(dk);
             const prevVal = entry.prev || (rawCurrByDate[prevD] ? rawCurrByDate[prevD].curr : entry.curr);
-            allDays[dk] = entry.sunrise
-              ? { prev: prevVal, curr: entry.curr, sunrise: entry.sunrise }
-              : { prev: prevVal, curr: entry.curr };
+            allDays[dk] = Object.assign({}, entry, { prev: prevVal, curr: entry.curr });
           });
 
           const foundCount = Object.keys(allDays).length;
@@ -15145,7 +15210,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         box.innerHTML = `
           <div class="space-y-4 pb-8">
             <div class="p-4 rounded-2xl bg-gradient-to-r from-[#0f3d3e] via-[#115e59] to-[#0f3d3e] text-white shadow-lg">
-              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v25.8</span></div>
+              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.0</span></div>
               <div class="text-xs text-teal-100 font-bold mt-1">JSON-இல் உள்ள தேதிகளுக்குத் தானாக 0-நாள் துல்லிய அச்சுப் பஞ்சாங்க தசா இருப்பு வரும்; JSON இல்லாத தேதிகளுக்கு எப்போதும் போல ஆப் தானாகக் கணக்கிடும்!</div>
             </div>
 
@@ -15159,6 +15224,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               <div class="flex flex-wrap items-center gap-2">
                 <input id="inpLocalGeminiApiKey" type="password" value="${window.mjGetLocalGeminiKey()}" placeholder="உங்கள் AIza... Gemini API Key இங்கே ஒட்டவும்" class="flex-1 min-w-[200px] px-3 py-2 rounded-xl border-2 border-indigo-300 bg-white text-xs font-extrabold text-slate-900" />
                 <button type="button" onclick="mjSaveLocalGeminiKey()" class="px-3.5 py-2 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white font-extrabold text-xs shadow cursor-pointer">💾 Key சேமி</button>
+                <button type="button" onclick="mjTestLocalGeminiKey()" class="px-3 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow cursor-pointer">🔌 சோதி</button>
                 ${window.mjGetLocalGeminiKey() ? `<button type="button" onclick="mjClearLocalGeminiKey()" class="px-2.5 py-2 rounded-xl bg-rose-100 text-rose-900 border border-rose-300 font-extrabold text-xs cursor-pointer">🗑️</button>` : ""}
               </div>
               <div class="text-[10px] font-bold text-slate-600">🔒 இந்த Key உங்கள் மொபைலில் மட்டுமே சேமிக்கப்படும் — Cloud அல்லது GitHub-க்குப் போகாது.</div>
@@ -15193,8 +15259,8 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               </div>
               <div class="flex flex-wrap items-center gap-2.5">
                 <label class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-teal-700 to-emerald-700 hover:opacity-95 text-white font-extrabold text-xs sm:text-sm shadow cursor-pointer inline-flex items-center gap-2">
-                  <span>📤 JSON கோப்பு தேர்வு செய் (.json)</span>
-                  <input type="file" accept=".json,application/json" onchange="mjHandleDailyJsonFilePicked(event)" class="hidden" />
+                  <span>📤 ஒன்று / பல JSON கோப்புகள் தேர்வு செய் (.json)</span>
+                  <input type="file" multiple accept=".json,application/json" onchange="mjHandleDailyJsonFilePicked(event)" class="hidden" />
                 </label>
               </div>
               <div>
@@ -15204,11 +15270,51 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               </div>
             </div>
 
-            <div class="p-4 rounded-2xl bg-white border-2 border-emerald-400 shadow-md space-y-3">
+            <div class="p-4 rounded-2xl bg-white border-2 border-emerald-500 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <h3 class="font-extrabold text-sm text-emerald-950">2️⃣ Cloud-இல் சேர்க்கப்பட்டுள்ள JSON ஆண்டுகள் (${yKeys.length} ஆண்டுகள் • ${totalDays} நாட்கள்)</h3>
+                <h3 class="font-extrabold text-sm text-emerald-950">2️⃣ எந்த ஆண்டுகளில் JSON உள்ளது / இல்லை? (1987 – 2026 பட்டியல்)</h3>
+                <div class="flex items-center gap-1.5 text-[11px] font-extrabold">
+                  <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-400">✅ உள்ளது: ${Object.keys(byY).length}</span>
+                  <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-950 border border-amber-400">⏳ இல்லை: ${Math.max(0, 40 - Object.keys(byY).filter(function(k){ const n=Number(k); return n>=1987&&n<=2026; }).length)}</span>
+                </div>
               </div>
-              <div class="space-y-2">${listHtml}</div>
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button type="button" onclick="mjSetJsonListFilter('all')" class="px-2.5 py-1 rounded-xl text-[11px] font-extrabold border cursor-pointer ${(window._mjJsonListFilter||'all')==='all' ? 'bg-[#6b0f22] text-white border-[#6b0f22]' : 'bg-white text-slate-700 border-slate-300'}">📋 அனைத்தும் (1987–2026)</button>
+                <button type="button" onclick="mjSetJsonListFilter('has')" class="px-2.5 py-1 rounded-xl text-[11px] font-extrabold border cursor-pointer ${window._mjJsonListFilter==='has' ? 'bg-emerald-700 text-white border-emerald-700' : 'bg-white text-emerald-900 border-emerald-300'}">✅ JSON உள்ளவை மட்டும் (${yKeys.length})</button>
+                <button type="button" onclick="mjSetJsonListFilter('missing')" class="px-2.5 py-1 rounded-xl text-[11px] font-extrabold border cursor-pointer ${window._mjJsonListFilter==='missing' ? 'bg-amber-600 text-white border-amber-600' : 'bg-white text-amber-950 border-amber-300'}">⏳ JSON இல்லாதவை மட்டும்</button>
+              </div>
+              <div class="space-y-2 max-h-96 overflow-y-auto pr-1">${(function(){
+                const allY = [];
+                for (let y = 2026; y >= 1987; y--) allY.push(String(y));
+                yKeys.forEach(function(k){ if (!allY.includes(k)) allY.unshift(k); });
+                const flt = window._mjJsonListFilter || "all";
+                const shown = allY.filter(function(yk){
+                  const has = Boolean(byY[yk] && byY[yk].days && Object.keys(byY[yk].days).length > 0);
+                  if (flt === "has") return has;
+                  if (flt === "missing") return !has;
+                  return true;
+                });
+                if (!shown.length) return '<div class="p-3 rounded-xl bg-slate-50 text-center text-xs font-bold text-slate-500">இந்தப் பிரிவில் ஆண்டுகள் எதுவும் இல்லை.</div>';
+                return shown.map(function(yk){
+                  const cnt = (byY[yk] && byY[yk].days) ? Object.keys(byY[yk].days).length : 0;
+                  const has = cnt > 0;
+                  return has
+                    ? `<div class="p-2.5 rounded-xl bg-emerald-50/80 border-2 border-emerald-400 flex items-center justify-between gap-2">
+                         <div>
+                           <div class="font-black text-xs sm:text-sm text-emerald-950">✅ ${yk}–${Number(yk)+1} — JSON உள்ளது</div>
+                           <div class="text-[11px] font-bold text-emerald-800">${cnt} நாட்கள் Cloud-இல் சேமிக்கப்பட்டுள்ளன (4 Apps Sync)</div>
+                         </div>
+                         <button type="button" onclick="mjDeleteDailyStarsJsonYear('${yk}')" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-[11px] cursor-pointer">🗑️ நீக்கு</button>
+                       </div>`
+                    : `<div class="p-2.5 rounded-xl bg-amber-50/50 border border-amber-300 flex items-center justify-between gap-2">
+                         <div>
+                           <div class="font-extrabold text-xs text-slate-800">⏳ ${yk}–${Number(yk)+1} — JSON இல்லை</div>
+                           <div class="text-[10px] font-bold text-slate-500">தானியங்கி கணக்கீட்டில் இயங்கும்</div>
+                         </div>
+                         <label class="px-2.5 py-1 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-extrabold text-[11px] cursor-pointer">📤 JSON சேர்<input type="file" accept=".json,application/json" onchange="mjHandleDailyJsonFilePicked(event)" class="hidden" /></label>
+                       </div>`;
+                }).join("");
+              })()}</div>
             </div>
           </div>
         `;
@@ -15279,6 +15385,9 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             prof.manPrevStarDot = jsonHit.prev;
             prof.manCurrStarDot = jsonHit.curr;
             if (jsonHit.sunrise && /^\d{2}:\d{2}/.test(jsonHit.sunrise)) prof.customSunrise = jsonHit.sunrise;
+            if (jsonHit.sunRem && !prof.manSunRemDot && !(document.getElementById("inpManSunRemDot")?.value || "").trim()) {
+              prof.manSunRemDot = String(jsonHit.sunRem).replace("-", ".");
+            }
           }
           const calc = _prevCalcJsonDasa(prof);
           try {
