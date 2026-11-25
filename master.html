@@ -524,7 +524,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — முதன்மை ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.5</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.6</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white shadow">👑 முதன்மைப் பதிப்பு (ரகசிய எண் உருவாக்கி)</span>
           </div>
@@ -647,7 +647,7 @@
         <div>
           <label class="block text-xs font-extrabold text-amber-950 mb-1">பஞ்சாங்க கணித முறை (முதன்மை: 28 நம்பர் பாம்பு பஞ்சாங்கம்)</label>
           <select id="inpMode" onchange="handleDobOrModeChange()" class="w-full px-3 py-2 rounded-xl border-2 border-[#8b1c1c] text-xs sm:text-sm font-extrabold text-[#7f1d1d] bg-amber-50/60">
-            <option value="vakya_paambu_28" selected>🐍 அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (சென்னை மனோன்மணி விலாசம் • காவிரி டெல்டா சுத்த வாக்கியம் - Main)</option>
+            <option value="vakya_paambu_28" selected>🐍 அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (Main)</option>
             <option value="vakya_paambu_arcot">📜 ஆற்காடு ஸ்ரீ பாம்பு வாக்கிய பஞ்சாங்கம்</option>
             <option value="thirukanitham">🔭 சுத்தத் திருக்கணித பஞ்சாங்கம்</option>
           </select>
@@ -4270,7 +4270,7 @@
       return {
         profile,
         mode,
-        modeLabelTa: mode === "vakya_paambu_28" ? "அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (சென்னை மனோன்மணி விலாச அச்சகம் - காவிரி டெல்டா சுத்த வாக்கியம்)" : (mode === "vakya_paambu_arcot" ? "ஆற்காடு ஸ்ரீ பாம்பு வாக்கிய பஞ்சாங்கம்" : "சுத்தத் திருக்கணித பஞ்சாங்கம்"),
+        modeLabelTa: mode === "vakya_paambu_28" ? "அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம்" : (mode === "vakya_paambu_arcot" ? "ஆற்காடு ஸ்ரீ பாம்பு வாக்கிய பஞ்சாங்கம்" : "சுத்தத் திருக்கணித பஞ்சாங்கம்"),
         jd,
         ayanamsa: ayanamsa.toFixed(4),
         ayanamsaDMS: formatFullDeg(ayanamsa),
@@ -5048,7 +5048,7 @@
       const childTerm = meta.gender === "Female" ? "குமாரத்தி" : "குமாரன்";
       const selvaTerm = meta.gender === "Female" ? `நிறைநாட்செல்வி ${meta.name}` : `நிறைநாட்செல்வன் ${meta.name}`;
       const modeNameTa = (meta.mode === "vakya_paambu_28" || meta.mode === "vakya_paambu")
-        ? "அசல் 28 நம்பர் பாம்பு பஞ்சாங்கப்படி (சென்னை மனோன்மணி விலாச அச்சகம் - காவிரி டெல்டா சுத்த வாக்கிய பஞ்சாங்கம்)"
+        ? "அசல் 28 நம்பர் பாம்பு பஞ்சாங்கப்படி"
         : (meta.mode === "vakya_paambu_arcot" ? "ஆற்காடு ஸ்ரீ பாம்பு வாக்கிய பஞ்சாங்கப்படி" : "சுத்தத் திருக்கணித பஞ்சாங்கப்படி");
 
       const activeDeity = getActivePage0Deity();
@@ -5202,7 +5202,7 @@
             <div class="border-2 border-slate-800 rounded-2xl p-5 text-center space-y-2.5 my-2">
               <div class="text-xs font-extrabold text-slate-600">ஜாதகம் கணித்தவர்:</div>
               <div contenteditable="true" class="text-xl font-extrabold text-[#7f1d1d]">${astroLine1}</div>
-              <div class="text-sm font-bold text-blue-950">அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (சென்னை மனோன்மணி விலாச அச்சகம் • காவிரி டெல்டா சுத்த வாக்கியம்), ஆற்காடு பாம்பு & திருக்கணித ஜாதக ஆய்வு மையம்</div>
+              <div class="text-sm font-bold text-blue-950">அசல் 28 நம்பர் பாம்பு பஞ்சாங்க ஜாதக கணிப்பு</div>
               <div contenteditable="true" class="text-sm font-bold text-slate-800">${placeWithDistrict}.</div>
               <div contenteditable="true" class="text-base font-extrabold text-rose-800">${astroLine3}</div>
             </div>
@@ -8449,7 +8449,7 @@
               கிரக பாகை (Degree), ராசி & நவாம்ச கட்ட விளக்கம் மற்றும் ஆப் பயன்பாட்டுக் கையேடு
             </h2>
             <p class="text-xs text-amber-200 mt-0.5">
-              முதன்மை பஞ்சாங்கம்: <strong>அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (சென்னை மனோன்மணி விலாச அச்சகம் • காவிரி டெல்டா சுத்த வாக்கியம்)</strong> | நடப்பு ஜாதகர்: <strong>${meta.name}</strong>
+              முதன்மை பஞ்சாங்கம்: <strong>அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம்</strong> | நடப்பு ஜாதகர்: <strong>${meta.name}</strong>
             </p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
@@ -8471,7 +8471,7 @@
           <div class="puthagam-frame-red">
             <div class="puthagam-inner space-y-2.5">
               <div class="text-center border-b-2 border-[#8b1c1c] pb-2">
-                <div class="text-xs font-extrabold text-[#8b1c1c]">உ • சுபமஸ்து • ஸ்ரீ முருகன் துணை • அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (சென்னை மனோன்மணி விலாச அச்சகம்)</div>
+                <div class="text-xs font-extrabold text-[#8b1c1c]">உ • சுபமஸ்து • ஸ்ரீ முருகன் துணை • அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம்</div>
                 <h2 class="text-lg sm:text-xl font-extrabold text-[#7f1d1d] serif-ta mt-0.5">
                   📘 பாகம் 1: கிரக பாகை (Degree) மற்றும் ராசி & நவாம்ச கட்ட கணித விளக்கம்
                 </h2>
@@ -8541,7 +8541,7 @@
                   📘 பாகம் 2: 3 பஞ்சாங்க கணித முறைகள் & ஏன் நமது ஆப் 100% துல்லியமானது?
                 </h2>
                 <div class="text-xs font-bold text-slate-700">
-                  அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (சென்னை மனோன்மணி விலாச அச்சகம்) + ஆற்காடு பாம்பு பஞ்சாங்கம் + திருக்கணிதம்
+                  அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் + ஆற்காடு பாம்பு பஞ்சாங்கம் + திருக்கணிதம்
                 </div>
               </div>
 
@@ -8551,7 +8551,7 @@
                     🐍 நமது ஆப்பின் 3 பஞ்சாங்க கணித முறைகள் (முதன்மை: அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம்):
                   </div>
                   <p class="text-slate-800">
-                    1. <strong>அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (முதன்மை / Main Default):</strong> சென்னை <strong>மனோன்மணி விலாச அச்சகத்தால்</strong> வெளியிடப்பட்டு, <strong>காவிரி டெல்டா</strong> மற்றும் தமிழகம் முழுவதும் பிரபலமாக உள்ள பாரம்பரிய <strong>சுத்த வாக்கிய பஞ்சாங்கம்</strong> ஆகும் (குரோதி வருட 12 மாத கிரகபாத சார அட்டவணை முழுமையாக இணைக்கப்பட்டுள்ளது).<br/>
+                    1. <strong>அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (முதன்மை / Main Default):</strong> <strong>சுத்த வாக்கிய பஞ்சாங்கம்</strong> ஆகும் (குரோதி வருட 12 மாத கிரகபாத சார அட்டவணை முழுமையாக இணைக்கப்பட்டுள்ளது).<br/>
                     2. <strong>ஆற்காடு ஸ்ரீ பாம்பு வாக்கிய பஞ்சாங்கம்:</strong> வட தமிழகப் பகுதிகளில் பயன்படுத்தப்படும் ஆற்காடு வாக்கிய பஞ்சாங்க முறை.<br/>
                     3. <strong>சுத்தத் திருக்கணித பஞ்சாங்கம்:</strong> நவீன வானியல் (Chitrapaksha Lahiri Ayanamsa / Drik Ganitha) முறை.
                   </p>
@@ -8631,7 +8631,7 @@
                   <div class="font-extrabold text-[#8b1c1c] mb-1">⚡ ஆப்பைப் பயன்படுத்தும் 5 எளிய படிகள்:</div>
                   <ul class="space-y-1 list-disc pl-4">
                     <li><strong>படி 1 (விவரம் உள்ளீடு):</strong> ஜாதகர் பெயர், தந்தை/தாய் பெயர், பிறந்த தேதி, நேரம் மற்றும் ஊரைத் தேர்வு செய்யவும் (சூரிய உதயம் தானாக மாறும்).</li>
-                    <li><strong>படி 2 (பஞ்சாங்க முறை):</strong> முதன்மையாக <em>"🐍 அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (சென்னை மனோன்மணி விலாசம் • காவிரி டெல்டா சுத்த வாக்கியம்)"</em> தேர்வு செய்யப்பட்டுள்ளது; விரும்பினால் ஆற்காடு பாம்பு பஞ்சாங்கம் அல்லது திருக்கணிதம் மாற்றலாம்.</li>
+                    <li><strong>படி 2 (பஞ்சாங்க முறை):</strong> முதன்மையாக <em>"🐍 அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (சென்னை மனோன்மணி விலாசம் )"</em> தேர்வு செய்யப்பட்டுள்ளது; விரும்பினால் ஆற்காடு பாம்பு பஞ்சாங்கம் அல்லது திருக்கணிதம் மாற்றலாம்.</li>
                     <li><strong>படி 3 (கைக்கணக்கு மாற்றம்):</strong> தேவைப்பட்டால் <em>"🛠️ கைக்கணக்கு"</em> பெட்டியை டிக் செய்து நட்சத்திரம், பாதம், ராசி/நவாம்ச கட்டம், தசா இருப்பை நேரடியாக மாற்றலாம்.</li>
                   </ul>
                 </div>
@@ -8737,7 +8737,7 @@
     window.openUserManualTabAndScroll = openUserManualTabAndScroll;
 
     // ============================================================================
-    // 🐍 அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (சென்னை மனோன்மணி விலாச அச்சகம் • காவிரி டெல்டா சுத்த வாக்கியம்)
+    // 🐍 அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம்
     // (Master App & Friend App இரண்டிற்கும் பொதுவான துல்லிய அப்டேட்)
     // ============================================================================
     const PAAMBU_STARS = [
@@ -8823,7 +8823,7 @@
       bar.className = "p-3 rounded-xl bg-gradient-to-r from-amber-100 via-orange-50 to-amber-100 border-2 border-[#8b1c1c] flex flex-wrap items-center justify-between gap-2 mb-3";
       bar.innerHTML = `
         <div class="text-xs font-extrabold text-[#7f1d1d]">
-          🐍 அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (சென்னை மனோன்மணி விலாச அச்சகம் • குரோதி ௵ கிரகபாத சாரங்கள்)
+          🐍 அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (குரோதி ௵ கிரகபாத சாரங்கள்)
         </div>
         <div class="flex flex-wrap gap-2">
           <button type="button" onclick="applyKrodhiAbhinaya2024Preset(false)" class="px-3 py-1.5 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-extrabold text-xs shadow cursor-pointer">
@@ -10333,7 +10333,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           const rpMode = profile.rasiPramanamType || (document.getElementById("inpRasiPramanamType")?.value) || "tn_exact";
           const prevStarVin = _parseDotToVin(profile.manPrevStarDot ?? document.getElementById("inpManPrevStarDot")?.value);
           const currStarVin = _parseDotToVin(profile.manCurrStarDot ?? document.getElementById("inpManCurrStarDot")?.value);
-          const sunRemOverrideVin = _parseDotToVin(profile.manSunRemDot ?? document.getElementById("inpManSunRemDot","inpManUdayathiDot","inpManLagnaStarPada","inpPadaAdjLagnam","inpPadaAdjSun","inpPadaAdjMoon","inpPadaAdjRahu","inpPadaAdjKetu")?.value);
+          const sunRemOverrideVin = _parseDotToVin(profile.manSunRemDot ?? document.getElementById("inpManSunRemDot")?.value);
 
           const RASI_VIN_ARR = (rpMode === "classic_notebook")
             ? CLASSIC_NOTEBOOK_VIN
@@ -11573,7 +11573,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               <div class="p-3 rounded-xl bg-rose-50/80 border-2 border-[#8b1c1c]/40 space-y-1">
                 <h3 class="text-xs font-extrabold text-[#8b1c1c]">🏆 ஏன் முருகேசன் ஜோதிடம் ஆப் 100% துல்லியமானது?</h3>
                 <ul class="list-disc pl-4 space-y-1 text-[11px] font-semibold text-slate-800 leading-snug">
-                  <li><strong>அசல் 28 நம்பர் பாம்பு பஞ்சாங்க PDF தரவுகள்:</strong> வெறும் தோராய கணிப்பு அல்ல — சென்னை மனோன்மணி விலாசம் அசல் 28 நம்பர் பாம்பு பஞ்சாங்க கிரகபாத சார புள்ளிகள் (Exact PDF Pins) நேரடியாக உள்ளே இணைக்கப்பட்டுள்ளன.</li>
+                  <li><strong>அசல் 28 நம்பர் பாம்பு பஞ்சாங்க PDF தரவுகள்:</strong> வெறும் தோராய கணிப்பு அல்ல — அசல் 28 நம்பர் பாம்பு பஞ்சாங்க கிரகபாத சார புள்ளிகள் (Exact PDF Pins) நேரடியாக உள்ளே இணைக்கப்பட்டுள்ளன.</li>
                   <li><strong>வாக்கியம் + திருக்கணிதம் இரட்டை ஆதரவு:</strong> தமிழ்நாட்டின் பாரம்பரிய வாக்கிய ஜோதிடர்கள் மற்றும் திருக்கணித ஜோதிடர்கள் இருவருக்கும் பொருந்தும் 3 கணித முறைகள் ஒரே ஆப்பில் உள்ளன.</li>
                   <li><strong>கைக்கணக்கு சரிபார்ப்பு (Manual Override):</strong> பழைய ஓலைச்சுவடி அல்லது கைக்கணக்கு குறிப்புகளுடன் ஒப்பிட்டுத் திருத்த விரும்பினால் கிரகப் பாதம், நட்சத்திர இருப்பு, தசா இருப்பு ஆகியவற்றை நேரடியாகவும் சரிசெய்யலாம்.</li>
                   <li><strong>ஆஃப்லைன் + கிளவுட் பாதுகாப்பு:</strong> இணையம் இல்லாதபோதும் ஜாதகம் கணிக்கலாம்; இணையம் இருக்கும்போது வாடிக்கையாளர்கள், OTP மற்றும் புதிய பஞ்சாங்கங்கள் Firebase Cloud-ல் பாதுகாப்பாகச் சேமிக்கப்படும்.</li>
@@ -12050,7 +12050,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         <div class="mt-3 pt-3 border-t border-amber-200 space-y-3">
           <div id="paambu28QuickPresetBar" style="display:none !important;" class="hidden p-3 rounded-xl bg-gradient-to-r from-amber-100 via-orange-50 to-amber-100 border-2 border-[#8b1c1c] flex-wrap items-center justify-between gap-2 mb-2">
             <div class="text-xs font-extrabold text-[#7f1d1d]">
-              🐍 அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (சென்னை மனோன்மணி விலாச அச்சகம் • 1989–2027 [சுக்ல ௵ முதல் பராபவ ௵ வரை 38 வருட] கிரகபாத சாரங்கள் இணைக்கப்பட்டுள்ளது)
+              🐍 அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் (1989–2027 [சுக்ல ௵ முதல் பராபவ ௵ வரை 38 வருட] கிரகபாத சாரங்கள் இணைக்கப்பட்டுள்ளது)
             </div>
             <div class="flex flex-wrap gap-2">
               <button id="btnOpenPaambu1989To2027Table" type="button" onclick="openPaambu1989To2027Modal()" class="px-3 py-1.5 rounded-lg bg-indigo-900 hover:bg-indigo-800 text-amber-200 border border-amber-400 font-extrabold text-xs shadow cursor-pointer">
@@ -13524,7 +13524,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.5</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.6</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -15362,7 +15362,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       };
 
       
-      // 🪐 v26.5: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
+      // 🪐 v26.6: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
       window._mjJsonSubTab = window._mjJsonSubTab || "daily";
       window._mjPadasaramListFilter = window._mjPadasaramListFilter || "all";
 
@@ -15621,7 +15621,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         box.innerHTML = `
           <div class="space-y-4 pb-8">
             <div class="p-4 rounded-2xl bg-gradient-to-r from-[#0f3d3e] via-[#115e59] to-[#0f3d3e] text-white shadow-lg">
-              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.5</span></div>
+              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.6</span></div>
               <div class="text-xs text-teal-100 font-bold mt-1">JSON-இல் உள்ள தேதிகளுக்குத் தானாக 0-நாள் துல்லிய அச்சுப் பஞ்சாங்க தசா இருப்பு வரும்; JSON இல்லாத தேதிகளுக்கு எப்போதும் போல ஆப் தானாகக் கணக்கிடும்!</div>
             </div>
 
