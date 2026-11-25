@@ -13506,7 +13506,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v25.6</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v25.7</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -14968,12 +14968,44 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             "If this page is NOT a daily monthly calendar table (e.g. cover, index, graha padasaram), return {\"days\":{}}. " +
             "Output ONLY valid JSON: {\"days\":{\"2026-04-14\":\"35.35\",\"2026-04-15\":\"31.43\"}}.";
 
+          let _cachedLiveModels = null;
+          async function _getLiveGeminiFlashModels() {
+            if (_cachedLiveModels && _cachedLiveModels.length) return _cachedLiveModels;
+            try {
+              const listResp = await fetch("https://generativelanguage.googleapis.com/v1beta/models?key=" + encodeURIComponent(apiKey));
+              if (listResp.ok) {
+                const listData = await listResp.json();
+                const rawList = (listData && Array.isArray(listData.models)) ? listData.models : [];
+                const supported = rawList.filter(function(m) {
+                  const methods = m.supportedGenerationMethods || [];
+                  const nm = String(m.name || "").toLowerCase();
+                  return methods.includes("generateContent") && nm.includes("gemini") && !nm.includes("embedding") && !nm.includes("tts") && !nm.includes("imagen");
+                }).map(function(m) {
+                  return String(m.name || "").replace(/^models\//, "");
+                });
+                // Prefer newest flash models first, then any flash, then pro
+                const flashModels = supported.filter(function(n) { return n.includes("flash") && !n.includes("thinking"); });
+                const otherModels = supported.filter(function(n) { return !flashModels.includes(n); });
+                flashModels.sort().reverse();
+                const combined = flashModels.concat(otherModels);
+                if (combined.length > 0) {
+                  _cachedLiveModels = combined.slice(0, 6);
+                  return _cachedLiveModels;
+                }
+              }
+            } catch (listErr) {
+              console.warn("Live model list fetch warning:", listErr);
+            }
+            _cachedLiveModels = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-3.0-flash", "gemini-3-flash-preview"];
+            return _cachedLiveModels;
+          }
+
           async function callGeminiVision(jpegB64) {
-            const models = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash"];
+            const models = await _getLiveGeminiFlashModels();
             let lastErr = null;
             for (let mi = 0; mi < models.length; mi++) {
               for (let attempt = 0; attempt < 2; attempt++) {
-                const url = "https://generativelanguage.googleapis.com/v1beta/models/" + models[mi] + ":generateContent?key=" + encodeURIComponent(apiKey);
+                const url = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(models[mi]) + ":generateContent?key=" + encodeURIComponent(apiKey);
                 const resp = await fetch(url, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
@@ -14995,14 +15027,14 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                 const errTxt = await resp.text();
                 lastErr = new Error(models[mi] + " HTTP " + resp.status + ": " + errTxt.slice(0, 160));
                 if (resp.status === 429 && attempt === 0) {
-                  setSt("⏳ API வேக வரம்பு (429) — 10 விநாடி காத்திருந்து தொடர்கிறது...");
+                  setSt("⏳ API வேக வரம்பு (429) — 10 விநாடி காத்திருந்து தொடர்கிறது...", "info");
                   await new Promise(function(r) { setTimeout(r, 10000); });
                   continue;
                 }
                 if (resp.status === 400 || resp.status === 401 || resp.status === 403) {
                   throw lastErr;
                 }
-                break; // Try next model on 404/500/429
+                break;
               }
             }
             throw lastErr || new Error("Gemini API அழைப்பு தோல்வி");
@@ -15113,7 +15145,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         box.innerHTML = `
           <div class="space-y-4 pb-8">
             <div class="p-4 rounded-2xl bg-gradient-to-r from-[#0f3d3e] via-[#115e59] to-[#0f3d3e] text-white shadow-lg">
-              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v25.6</span></div>
+              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v25.7</span></div>
               <div class="text-xs text-teal-100 font-bold mt-1">JSON-இல் உள்ள தேதிகளுக்குத் தானாக 0-நாள் துல்லிய அச்சுப் பஞ்சாங்க தசா இருப்பு வரும்; JSON இல்லாத தேதிகளுக்கு எப்போதும் போல ஆப் தானாகக் கணக்கிடும்!</div>
             </div>
 
