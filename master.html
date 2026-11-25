@@ -524,7 +524,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — முதன்மை ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.7</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.8</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white shadow">👑 முதன்மைப் பதிப்பு (ரகசிய எண் உருவாக்கி)</span>
           </div>
@@ -976,6 +976,23 @@
 
   </div>
   </main>
+
+  <!-- 📜 Master App Terms & Conditions -->
+  <footer class="no-print max-w-7xl w-full mx-auto px-4 pb-8 pt-2">
+    <div class="rounded-2xl bg-gradient-to-br from-slate-50 to-amber-50/60 border-2 border-amber-300/80 p-4 sm:p-5 shadow-xs space-y-2 text-xs text-slate-700">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-200 pb-2">
+        <div class="font-black text-sm text-[#6b0f22]">📜 விதிமுறைகள் &amp; நிபந்தனைகள் (Master App — Terms &amp; Conditions)</div>
+        <span class="text-[11px] font-extrabold text-slate-600">© முருகேசன் ஜோதிடம் — ஜெ. கரண் BE, DA. | 7418609681</span>
+      </div>
+      <ul class="list-disc pl-5 space-y-1 font-semibold text-[11px] sm:text-xs leading-relaxed">
+        <li><b>நிர்வாக உரிமை &amp; பாதுகாப்பு:</b> இந்த முதன்மை ஆப் (Master App) முருகேசன் ஜோதிட உரிமையாளரின் பிரத்யேக நிர்வாகப் பயன்பாட்டிற்கானது. JSON, பஞ்சாங்கப் பதிவேற்றம், நீக்கம் மற்றும் நண்பர் ஆப் OTP கடவுச்சொற்களை ரகசியமாகப் பாதுகாக்கவும்.</li>
+        <li><b>வாடிக்கையாளர் தரவுப் பொறுப்பு:</b> Firebase Cloud-இல் சேமிக்கப்படும் வாடிக்கையாளர் பெயர், பிறந்த தேதி, நேரம் மற்றும் கைபேசி எண்கள் ஜாதக சேவைக்காக மட்டுமே பயன்படுத்தப்படும்.</li>
+        <li><b>ஜோதிட ஆலோசனைத் தெளிவு:</b> இந்த ஆப் அசல் 28 நம்பர் பாம்பு பஞ்சாங்கம் மற்றும் பாரம்பரிய வாக்கிய கணித விதிகளின்படி கணித்து வழங்குகிறது. ஜாதகப் பலன்கள் பாரம்பரிய நம்பிக்கை மற்றும் ஆலோசனை நோக்கத்திற்காக மட்டுமே; மருத்துவம், சட்டம் அல்லது நிதி முடிவுகளுக்கு மாற்றல்ல.</li>
+        <li><b>மென்பொருள் காப்புரிமை:</b> ஆப்பின் வடிவமைப்பு, அட்டவணைகள் மற்றும் கணித அமைப்புகள் © முருகேசன் ஜோதிடம் (சங்கராபுரம், கள்ளக்குறிச்சி) நிறுவனத்திற்குச் சொந்தமானவை.</li>
+      </ul>
+    </div>
+  </footer>
+
   <script id="customBakedPaambuDataScript">window.CUSTOM_BAKED_PAAMBU_DATA = window.CUSTOM_BAKED_PAAMBU_DATA || {};</script>
 
   <script>
@@ -12155,6 +12172,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <span>JSON தரவு சேர்க்க (தசா இருப்பு)</span>
           </button>
       <button id="btnTabMasterOtpView" type="button" onclick="mjOpenLockedMasterOtpTab()" class="px-4 py-2.5 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-950 border-2 border-rose-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition"><span>🔐</span><span>நண்பர் ஆப் OTP</span></button>
+      <button id="btnOpenPwdMgrView" type="button" onclick="mjOpenPasswordManagerModal()" class="px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 border-2 border-amber-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition"><span>🔑</span><span>கடவுச்சொல் அமைப்பு (Change/Reset)</span></button>
         </div>
         <div class="text-xs font-extrabold text-[#7f1d1d] bg-rose-50 px-3 py-1.5 rounded-lg border border-rose-200">
           ✨ பிறந்தது முதல் 100+ வயது வரை தேதி & நிறைவடையும் வயதுடன் முழு தசா புத்தி!
@@ -12220,7 +12238,8 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
     <div class="w-full max-w-md rounded-2xl bg-white border-2 border-amber-400 shadow-2xl overflow-hidden">
       <div id="mjPwdModalHeader" class="bg-gradient-to-r from-[#2e050d] via-[#6b0f22] to-[#2e050d] text-amber-50 px-4 py-3 flex items-center justify-between">
         <div id="mjPwdModalTitle" class="font-extrabold text-sm">🔐 பஞ்சாங்கம் கடவுச்சொல் சரிபார்ப்பு</div>
-        <button type="button" onclick="mjClosePanchangamPwdModal()" class="text-amber-200 hover:text-white font-extrabold text-base cursor-pointer">✕</button>
+        <button type="button" onclick="mjClosePanchangamPwdModal(); mjOpenPasswordManagerModal();" class="mr-auto text-[11px] font-extrabold text-indigo-700 hover:underline cursor-pointer">🔑 மறந்துவிட்டதா / மாற்ற?</button>
+          <button type="button" onclick="mjClosePanchangamPwdModal()" class="text-amber-200 hover:text-white font-extrabold text-base cursor-pointer">✕</button>
       </div>
       <div class="p-4 space-y-3">
         <p id="mjPwdModalDesc" class="text-xs font-bold text-slate-700 leading-relaxed"></p>
@@ -12240,17 +12259,162 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
     </div>
   </div>
 
+  
+  <!-- 🔐 Password Manager / Forgot & Change Modal -->
+  <div id="mjPwdManagerModal" class="no-print hidden fixed inset-0 z-[110] bg-black/70 backdrop-blur-[2px] flex items-center justify-center p-4">
+    <div class="w-full max-w-lg rounded-2xl bg-white border-2 border-amber-400 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+      <div class="bg-gradient-to-r from-[#2e050d] via-[#6b0f22] to-[#2e050d] text-amber-50 px-4 py-3 flex items-center justify-between">
+        <div class="font-extrabold text-sm">🔐 கடவுச்சொல் மேலாண்மை (மாற்றம் &amp; மீட்டமைப்பு)</div>
+        <button type="button" onclick="mjClosePwdManagerModal()" class="text-amber-200 hover:text-white font-black text-base cursor-pointer">✕</button>
+      </div>
+      <div class="p-4 space-y-3 overflow-y-auto text-xs">
+        <div class="p-3 rounded-xl bg-amber-50 border border-amber-300 space-y-2">
+          <div class="font-extrabold text-amber-950">🔑 1. மாஸ்டர் மீட்டமைப்பு எண் (Forgot Password Recovery)</div>
+          <div class="text-[11px] font-semibold text-slate-700">ஏதேனும் கடவுச்சொல் மறந்துவிட்டால், உங்கள் பதிவு செய்யப்பட்ட மொபைல் எண் (<b>7418609681</b>) உள்ளிட்டு அனைத்துக் கடவுச்சொற்களையும் பார்க்கலாம் அல்லது மாற்றலாம்.</div>
+          <div class="flex items-center gap-2">
+            <input id="inpMasterRecoveryPin" type="password" placeholder="Master Recovery எண் (7418609681)" class="flex-1 px-3 py-2 rounded-xl border border-amber-400 font-bold text-slate-900" />
+            <button type="button" onclick="mjUnlockPwdManagerWithPin()" class="px-3.5 py-2 rounded-xl bg-[#6b0f22] text-white font-extrabold cursor-pointer">🔓 திற</button>
+          </div>
+          <div id="mjPwdMgrPinErr" class="hidden text-[11px] font-extrabold text-rose-700"></div>
+        </div>
+        <div id="mjPwdMgrUnlockedArea" class="hidden space-y-2.5">
+          <div class="text-[11px] font-extrabold text-emerald-800 bg-emerald-50 border border-emerald-300 p-2 rounded-lg">✅ சரிபார்க்கப்பட்டது! கீழே உள்ள எந்தக் கடவுச்சொல்லையும் மாற்றலாம் (Local + Cloud-இல் சேமிக்கப்படும்).</div>
+          <div class="grid grid-cols-1 gap-2">
+            <div><label class="font-bold text-slate-700">➕ பஞ்சாங்கம் சேர்க்க (Add)</label><input id="inpMgrPwd_add" type="text" class="w-full mt-0.5 px-2.5 py-1.5 rounded-lg border border-slate-300 font-mono font-bold" /></div>
+            <div><label class="font-bold text-slate-700">🗑️ பஞ்சாங்கம் / JSON நீக்க (Remove)</label><input id="inpMgrPwd_remove" type="text" class="w-full mt-0.5 px-2.5 py-1.5 rounded-lg border border-slate-300 font-mono font-bold" /></div>
+            <div><label class="font-bold text-slate-700">📖 முழு பஞ்சாங்கம் திறக்க (Open)</label><input id="inpMgrPwd_open" type="text" class="w-full mt-0.5 px-2.5 py-1.5 rounded-lg border border-slate-300 font-mono font-bold" /></div>
+            <div><label class="font-bold text-slate-700">📦 JSON தரவு சேர்க்க (JSON)</label><input id="inpMgrPwd_json" type="text" class="w-full mt-0.5 px-2.5 py-1.5 rounded-lg border border-slate-300 font-mono font-bold" /></div>
+            <div><label class="font-bold text-slate-700">🔐 நண்பர் ஆப் OTP பகுதி (OTP)</label><input id="inpMgrPwd_otp" type="text" class="w-full mt-0.5 px-2.5 py-1.5 rounded-lg border border-slate-300 font-mono font-bold" /></div>
+          </div>
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200">
+            <button type="button" onclick="mjResetAllPasswordsToDefault()" class="px-3 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 border border-amber-400 font-extrabold cursor-pointer">↺ இயல்புநிலைக்கு மீட்டமை (Default)</button>
+            <button type="button" onclick="mjSaveCustomPasswords()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold shadow cursor-pointer">💾 கடவுச்சொற்களைச் சேமி</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <script id="mjPanchangamProManagerScript">
     (function() {
       const ADD_PANJAGAM_PWD = "81229102@Addpanjagam";
       const REMOVE_PANJAGAM_PWD = "81229102@Removepanjagam";
       const OPEN_PANJAGAM_PWD = "81229102@Openpanjagam";
+
+      const MJ_DEFAULT_PWDS = {
+        add: "81229102@Addpanjagam",
+        remove: "81229102@Removepanjagam",
+        open: "81229102@Openpanjagam",
+        json: "81229102@Json",
+        otp: "81229102@Otp"
+      };
+      const MJ_MASTER_RECOVERY_PIN = "7418609681";
+
+      window.mjGetAppPassword = function(mode) {
+        const m = (mode === "remove" || mode === "open" || mode === "json" || mode === "otp") ? mode : "add";
+        try {
+          const raw = localStorage.getItem("MJ_CUSTOM_PASSWORDS_V1");
+          if (raw) {
+            const obj = JSON.parse(raw);
+            if (obj && typeof obj[m] === "string" && obj[m].trim()) return obj[m].trim();
+          }
+        } catch (e) {}
+        return MJ_DEFAULT_PWDS[m];
+      };
+
+      window.mjOpenPasswordManagerModal = function() {
+        const m = document.getElementById("mjPwdManagerModal");
+        const area = document.getElementById("mjPwdMgrUnlockedArea");
+        const pin = document.getElementById("inpMasterRecoveryPin");
+        const err = document.getElementById("mjPwdMgrPinErr");
+        if (pin) pin.value = "";
+        if (err) { err.textContent = ""; err.classList.add("hidden"); }
+        if (area) area.classList.add("hidden");
+        if (m) m.classList.remove("hidden");
+        if (typeof window.mjCloseSideMenu === "function") window.mjCloseSideMenu();
+      };
+
+      window.mjClosePwdManagerModal = function() {
+        const m = document.getElementById("mjPwdManagerModal");
+        if (m) m.classList.add("hidden");
+      };
+
+      window.mjUnlockPwdManagerWithPin = function() {
+        const pin = (document.getElementById("inpMasterRecoveryPin")?.value || "").trim();
+        const err = document.getElementById("mjPwdMgrPinErr");
+        const area = document.getElementById("mjPwdMgrUnlockedArea");
+        if (pin !== MJ_MASTER_RECOVERY_PIN) {
+          if (err) { err.textContent = "❌ தவறான மாஸ்டர் மீட்டமைப்பு எண்! (உரிமையாளர் எண்: 7418609681)"; err.classList.remove("hidden"); }
+          return;
+        }
+        if (err) err.classList.add("hidden");
+        ["add","remove","open","json","otp"].forEach(function(k) {
+          const el = document.getElementById("inpMgrPwd_" + k);
+          if (el) el.value = window.mjGetAppPassword(k);
+        });
+        if (area) area.classList.remove("hidden");
+      };
+
+      window.mjSaveCustomPasswords = async function() {
+        const nextObj = {};
+        ["add","remove","open","json","otp"].forEach(function(k) {
+          const v = (document.getElementById("inpMgrPwd_" + k)?.value || "").trim();
+          nextObj[k] = v || MJ_DEFAULT_PWDS[k];
+        });
+        try { localStorage.setItem("MJ_CUSTOM_PASSWORDS_V1", JSON.stringify(nextObj)); } catch (e) {}
+        if (typeof mjDb !== "undefined" && mjDb) {
+          try {
+            await mjDb.collection("panchangam_years").doc("app_passwords_config").set({
+              isPasswordConfig: true,
+              passwords: nextObj,
+              updatedAt: new Date().toISOString()
+            }, { merge: true });
+          } catch (e) {}
+        }
+        if (typeof showToast === "function") showToast("✅ புதிய கடவுச்சொற்கள் சேமிக்கப்பட்டன!", "success");
+        window.mjClosePwdManagerModal();
+      };
+
+      window.mjResetAllPasswordsToDefault = async function() {
+        try { localStorage.removeItem("MJ_CUSTOM_PASSWORDS_V1"); } catch (e) {}
+        ["add","remove","open","json","otp"].forEach(function(k) {
+          const el = document.getElementById("inpMgrPwd_" + k);
+          if (el) el.value = MJ_DEFAULT_PWDS[k];
+        });
+        if (typeof mjDb !== "undefined" && mjDb) {
+          try {
+            await mjDb.collection("panchangam_years").doc("app_passwords_config").set({
+              isPasswordConfig: true,
+              passwords: MJ_DEFAULT_PWDS,
+              updatedAt: new Date().toISOString()
+            }, { merge: true });
+          } catch (e) {}
+        }
+        if (typeof showToast === "function") showToast("↺ அனைத்து கடவுச்சொற்களும் இயல்புநிலைக்கு மாற்றப்பட்டன!", "success");
+      };
+
+      document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+          if (typeof mjDb !== "undefined" && mjDb) {
+            mjDb.collection("panchangam_years").doc("app_passwords_config").onSnapshot(function(doc) {
+              if (doc && doc.exists) {
+                const d = doc.data();
+                if (d && d.passwords) {
+                  try { localStorage.setItem("MJ_CUSTOM_PASSWORDS_V1", JSON.stringify(d.passwords)); } catch (e) {}
+                }
+              }
+            }, function() {});
+          }
+        }, 1200);
+      });
+
       let _pendingAction = null;
       let _pendingRequiredPwd = "";
 
       window.mjRequestPanchangamPassword = function(mode, titleText, descText, onSuccess) {
         _pendingAction = onSuccess;
-        _pendingRequiredPwd = (mode === "remove") ? REMOVE_PANJAGAM_PWD : (mode === "open" ? OPEN_PANJAGAM_PWD : (mode === "json" ? "81229102@Json" : (mode === "otp" ? "81229102@Otp" : ADD_PANJAGAM_PWD)));
+        _pendingRequiredPwd = window.mjGetAppPassword(mode);
         const modal = document.getElementById("mjPanchangamPwdModal");
         const titleEl = document.getElementById("mjPwdModalTitle");
         const descEl = document.getElementById("mjPwdModalDesc");
@@ -12299,7 +12463,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
 
       // Expose direct programmatic validator for tests & helpers
       window.mjVerifyPanchangamPwd = function(mode, pwd) {
-        return String(pwd || "").trim() === (mode === "remove" ? REMOVE_PANJAGAM_PWD : (mode === "open" ? OPEN_PANJAGAM_PWD : ADD_PANJAGAM_PWD));
+        return String(pwd || "").trim() === window.mjGetAppPassword(mode);
       };
 
       // Wrap saveCurrentYearInAddPanchangamTab (Add / Replace requires ADD password + records live status)
@@ -13526,7 +13690,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.7</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.8</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -13575,7 +13739,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         const _prevSw = switchMainAppTab;
         switchMainAppTab = function(tabKey, bypassOpenPwd) {
           const isFullPan = (tabKey === "fullpanchangam");
-          if (isFullPan && bypassOpenPwd !== "81229102@Openpanjagam") {
+          if (isFullPan && bypassOpenPwd !== "__UNLOCKED__" && bypassOpenPwd !== (typeof window.mjGetAppPassword === "function" ? window.mjGetAppPassword("open") : "81229102@Openpanjagam")) {
             if (typeof window.mjCloseSideMenu === "function") window.mjCloseSideMenu();
             if (typeof window.mjRequestPanchangamPassword === "function") {
               window.mjRequestPanchangamPassword(
@@ -13583,7 +13747,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                 "🔐 முழு பஞ்சாங்கம் பார்க்க கடவுச்சொல்",
                 "12 மாத தினசரி பஞ்சாங்கம் (ஆங்கில தேதியுடன்) & பதிவேற்றிய PDF-களைத் திறந்து பார்க்க Open கடவுச்சொல்லை உள்ளிடவும்:",
                 function() {
-                  switchMainAppTab("fullpanchangam", "81229102@Openpanjagam");
+                  switchMainAppTab("fullpanchangam", "__UNLOCKED__");
                 }
               );
               return;
@@ -15364,7 +15528,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       };
 
       
-      // 🪐 v26.7: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
+      // 🪐 v26.8: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
       window._mjJsonSubTab = window._mjJsonSubTab || "daily";
       window._mjPadasaramListFilter = window._mjPadasaramListFilter || "all";
 
@@ -15623,7 +15787,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         box.innerHTML = `
           <div class="space-y-4 pb-8">
             <div class="p-4 rounded-2xl bg-gradient-to-r from-[#0f3d3e] via-[#115e59] to-[#0f3d3e] text-white shadow-lg">
-              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.7</span></div>
+              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.8</span></div>
               <div class="text-xs text-teal-100 font-bold mt-1">JSON-இல் உள்ள தேதிகளுக்குத் தானாக 0-நாள் துல்லிய அச்சுப் பஞ்சாங்க தசா இருப்பு வரும்; JSON இல்லாத தேதிகளுக்கு எப்போதும் போல ஆப் தானாகக் கணக்கிடும்!</div>
             </div>
 
@@ -15910,7 +16074,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           if (isJson && typeof IS_FRIEND_APP_MODE !== "undefined" && IS_FRIEND_APP_MODE) {
             return _prevSwJson("book");
           }
-          _prevSwJson(isJson ? "book" : tabKey);
+          _prevSwJson.apply(this, isJson ? ["book"] : arguments);
           const jEl = document.getElementById("jsonUploadTabContainer");
           const jBtn = document.getElementById("btnTabJsonUploadView");
           const bookEl = document.getElementById("puthagamBookContainer");
