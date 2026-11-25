@@ -524,7 +524,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — முதன்மை ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.10</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.11</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white shadow">👑 முதன்மைப் பதிப்பு (ரகசிய எண் உருவாக்கி)</span>
           </div>
@@ -12265,7 +12265,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
   </div>
 
   
-  <!-- 🔐 Password Manager / Email OTP + Private Master Key Modal -->
+  <!-- 🔐 Password Manager (Email OTP Only) -->
   <div id="mjPwdManagerModal" class="no-print hidden fixed inset-0 z-[110] bg-black/70 backdrop-blur-[2px] flex items-center justify-center p-4">
     <div class="w-full max-w-lg rounded-2xl bg-white border-2 border-amber-400 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
       <div class="bg-gradient-to-r from-[#2e050d] via-[#6b0f22] to-[#2e050d] text-amber-50 px-4 py-3 flex items-center justify-between">
@@ -12273,48 +12273,27 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         <button type="button" onclick="mjClosePwdManagerModal()" class="text-amber-200 hover:text-white font-black text-base cursor-pointer">✕</button>
       </div>
       <div class="p-4 space-y-3 overflow-y-auto text-xs">
-        <div class="p-3 rounded-xl bg-indigo-50 border border-indigo-300 space-y-2">
-          <div class="font-extrabold text-indigo-950">📧 1. உங்கள் Email-க்கு OTP அனுப்பித் திறக்க (EmailJS)</div>
-          <div id="mjEmailOtpSendRow" class="space-y-2">
-            <div class="text-[11px] font-semibold text-slate-700">உங்கள் பதிவு செய்த Email முகவரிக்கு 5 நிமிடம் செல்லுபடியாகும் 6-இலக்க OTP வரும்.</div>
-            <div class="flex flex-wrap items-center gap-2">
-              <button type="button" onclick="mjSendEmailOtpForPwdMgr()" class="px-3.5 py-2 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white font-extrabold cursor-pointer">📧 Email-க்கு OTP அனுப்பு</button>
-              <button type="button" onclick="document.getElementById('mjEmailJsSetupBox')?.classList.toggle('hidden')" class="px-3 py-2 rounded-xl bg-white border border-indigo-300 text-indigo-900 font-bold cursor-pointer">⚙️ EmailJS அமைப்பு</button>
-            </div>
-            <div id="mjEmailOtpVerifyRow" class="hidden flex items-center gap-2 pt-1">
-              <input id="inpPwdMgrEmailOtp" type="tel" maxlength="6" placeholder="Email-இல் வந்த 6-இலக்க OTP" class="flex-1 px-3 py-2 rounded-xl border border-indigo-400 font-black tracking-widest text-center" />
-              <button type="button" onclick="mjVerifyEmailOtpForPwdMgr()" class="px-3.5 py-2 rounded-xl bg-emerald-700 text-white font-extrabold cursor-pointer">🔓 சரிபார்</button>
-            </div>
+        <div class="p-3.5 rounded-xl bg-indigo-50 border border-indigo-300 space-y-2.5">
+          <div class="font-extrabold text-indigo-950">📧 உங்கள் பதிவு செய்த Email-க்கு OTP அனுப்பித் திறக்கவும்</div>
+          <div class="text-[11px] font-semibold text-slate-700">உங்கள் Email முகவரிக்கு 5 நிமிடம் செல்லுபடியாகும் 6-இலக்க OTP வரும். அந்த OTP-ஐ உள்ளிட்டுக் கடவுச்சொற்களைப் பார்க்கலாம் / மாற்றலாம்.</div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" onclick="mjSendEmailOtpForPwdMgr()" class="px-4 py-2.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white font-extrabold shadow cursor-pointer">📧 Email-க்கு OTP அனுப்பு</button>
           </div>
-          <div id="mjEmailJsSetupBox" class="hidden p-2.5 rounded-xl bg-white border border-indigo-200 space-y-1.5 text-[11px]">
-            <div class="font-extrabold text-indigo-950">இலவச EmailJS விவரங்கள் (ஒரு முறை மட்டும் சேமிக்கவும்):</div>
-            <input id="inpEjsEmail" type="email" placeholder="உங்கள் Email (எ.கா: karan...@gmail.com)" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 font-bold" />
-            <input id="inpEjsService" type="text" placeholder="EmailJS Service ID (எ.கா: service_xxx)" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 font-mono" />
-            <input id="inpEjsTemplate" type="text" placeholder="EmailJS Template ID ({{otp_code}} உள்ள template)" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 font-mono" />
-            <input id="inpEjsPublicKey" type="text" placeholder="EmailJS Public Key" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 font-mono" />
-            <button type="button" onclick="mjSaveEmailJsConfig()" class="px-3 py-1.5 rounded-lg bg-indigo-700 text-white font-extrabold cursor-pointer">💾 EmailJS சேமி</button>
+          <div id="mjEmailOtpVerifyRow" class="hidden flex items-center gap-2 pt-1">
+            <input id="inpPwdMgrEmailOtp" type="tel" maxlength="6" placeholder="Email-இல் வந்த 6-இலக்க OTP" class="flex-1 px-3 py-2 rounded-xl border-2 border-indigo-400 font-black tracking-widest text-center" />
+            <button type="button" onclick="mjVerifyEmailOtpForPwdMgr()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold cursor-pointer">🔓 சரிபார்</button>
           </div>
           <div id="mjEmailOtpStatus" class="hidden text-[11px] font-extrabold text-indigo-900"></div>
         </div>
 
-        <div class="p-3 rounded-xl bg-amber-50 border border-amber-300 space-y-2">
-          <div class="font-extrabold text-amber-950">🔑 2. அல்லது ரகசிய Master Recovery Key மூலம் திறக்க</div>
-          <div class="flex items-center gap-2">
-            <input id="inpMasterRecoveryPin" type="password" placeholder="ரகசிய Master Recovery Key உள்ளிடவும்" class="flex-1 px-3 py-2 rounded-xl border border-amber-400 font-bold text-slate-900" />
-            <button type="button" onclick="mjUnlockPwdManagerWithPin()" class="px-3.5 py-2 rounded-xl bg-[#6b0f22] text-white font-extrabold cursor-pointer">🔓 திற</button>
-          </div>
-          <div id="mjPwdMgrPinErr" class="hidden text-[11px] font-extrabold text-rose-700"></div>
-        </div>
-
         <div id="mjPwdMgrUnlockedArea" class="hidden space-y-2.5">
-          <div class="text-[11px] font-extrabold text-emerald-800 bg-emerald-50 border border-emerald-300 p-2 rounded-lg">✅ சரிபார்க்கப்பட்டது! கீழே உள்ள கடவுச்சொற்களை மாற்றலாம் (Local + Cloud-இல் சேமிக்கப்படும்).</div>
+          <div class="text-[11px] font-extrabold text-emerald-800 bg-emerald-50 border border-emerald-300 p-2 rounded-lg">✅ Email OTP சரிபார்க்கப்பட்டது! கீழே உள்ள கடவுச்சொற்களை மாற்றலாம் (Local + Cloud-இல் சேமிக்கப்படும்).</div>
           <div class="grid grid-cols-1 gap-2">
             <div><label class="font-bold text-slate-700">➕ பஞ்சாங்கம் சேர்க்க (Add)</label><input id="inpMgrPwd_add" type="text" class="w-full mt-0.5 px-2.5 py-1.5 rounded-lg border border-slate-300 font-mono font-bold" /></div>
             <div><label class="font-bold text-slate-700">🗑️ பஞ்சாங்கம் / JSON நீக்க (Remove)</label><input id="inpMgrPwd_remove" type="text" class="w-full mt-0.5 px-2.5 py-1.5 rounded-lg border border-slate-300 font-mono font-bold" /></div>
             <div><label class="font-bold text-slate-700">📖 முழு பஞ்சாங்கம் திறக்க (Open)</label><input id="inpMgrPwd_open" type="text" class="w-full mt-0.5 px-2.5 py-1.5 rounded-lg border border-slate-300 font-mono font-bold" /></div>
             <div><label class="font-bold text-slate-700">📦 JSON தரவு சேர்க்க (JSON)</label><input id="inpMgrPwd_json" type="text" class="w-full mt-0.5 px-2.5 py-1.5 rounded-lg border border-slate-300 font-mono font-bold" /></div>
             <div><label class="font-bold text-slate-700">🔐 நண்பர் ஆப் OTP பகுதி (OTP)</label><input id="inpMgrPwd_otp" type="text" class="w-full mt-0.5 px-2.5 py-1.5 rounded-lg border border-slate-300 font-mono font-bold" /></div>
-            <div><label class="font-bold text-rose-800">🛡️ ரகசிய Master Recovery Key (மாற்றலாம்)</label><input id="inpMgrPwd_recovery" type="password" placeholder="புதிய Master Recovery Key" class="w-full mt-0.5 px-2.5 py-1.5 rounded-lg border border-rose-300 font-mono font-bold" /></div>
           </div>
           <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200">
             <button type="button" onclick="mjResetAllPasswordsToDefault()" class="px-3 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 border border-amber-400 font-extrabold cursor-pointer">↺ இயல்புநிலைக்கு மீட்டமை</button>
@@ -12379,9 +12358,17 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         const setSt = function(m) { if (stEl) { stEl.textContent = m; stEl.classList.remove("hidden"); } };
         let cfg = null;
         try { cfg = JSON.parse(localStorage.getItem("MJ_EMAILJS_CFG_V1") || "null"); } catch (e) {}
+        if ((!cfg || !cfg.serviceId || !cfg.templateId || !cfg.publicKey || !cfg.email) && typeof mjDb !== "undefined" && mjDb) {
+          try {
+            const snap = await mjDb.collection("panchangam_years").doc("app_passwords_config").get();
+            if (snap && snap.exists && snap.data() && snap.data().emailJsConfig) {
+              cfg = snap.data().emailJsConfig;
+              try { localStorage.setItem("MJ_EMAILJS_CFG_V1", JSON.stringify(cfg)); } catch (e) {}
+            }
+          } catch (e) {}
+        }
         if (!cfg || !cfg.serviceId || !cfg.templateId || !cfg.publicKey || !cfg.email) {
-          document.getElementById("mjEmailJsSetupBox")?.classList.remove("hidden");
-          setSt("⚠️ முதலில் '⚙️ EmailJS அமைப்பு' பகுதியில் உங்கள் Email மற்றும் EmailJS Key விவரங்களைச் சேமிக்கவும்.");
+          setSt("❌ EmailJS விவரங்கள் Cloud-இல் சேமிக்கப்படவில்லை.");
           return;
         }
         const otp = String(Math.floor(100000 + Math.random() * 900000));
@@ -13819,7 +13806,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.10</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.11</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -15657,7 +15644,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       };
 
       
-      // 🪐 v26.10: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
+      // 🪐 v26.11: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
       window._mjJsonSubTab = window._mjJsonSubTab || "daily";
       window._mjPadasaramListFilter = window._mjPadasaramListFilter || "all";
 
@@ -15916,7 +15903,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         box.innerHTML = `
           <div class="space-y-4 pb-8">
             <div class="p-4 rounded-2xl bg-gradient-to-r from-[#0f3d3e] via-[#115e59] to-[#0f3d3e] text-white shadow-lg">
-              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.10</span></div>
+              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.11</span></div>
               <div class="text-xs text-teal-100 font-bold mt-1">JSON-இல் உள்ள தேதிகளுக்குத் தானாக 0-நாள் துல்லிய அச்சுப் பஞ்சாங்க தசா இருப்பு வரும்; JSON இல்லாத தேதிகளுக்கு எப்போதும் போல ஆப் தானாகக் கணக்கிடும்!</div>
             </div>
 
