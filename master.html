@@ -524,7 +524,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — முதன்மை ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.11</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.12</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white shadow">👑 முதன்மைப் பதிப்பு (ரகசிய எண் உருவாக்கி)</span>
           </div>
@@ -976,6 +976,30 @@
       </div>
     </div>
 
+
+
+    <!-- 💰 Master App: Friend App Payment Fee Settings (Cloud Sync) -->
+    <div class="bg-white rounded-2xl shadow-md border-2 border-amber-400 p-4 space-y-3 mt-4">
+      <div class="border-b border-amber-200 pb-2">
+        <div class="text-sm sm:text-base font-black text-[#6b0f22]">💰 நண்பர் ஆப் கட்டண அமைப்பு (Friend App Fees — Cloud Sync)</div>
+        <div class="text-[11px] font-semibold text-slate-600">இங்கே கட்டணம் (₹) அமைத்தால், நண்பர் ஆப் QR Code-இல் அந்தத் தொகை தானாகக் காட்டும் (<b>0</b> என வைத்தால் தொகை கட்டாயமின்றி QR மட்டும் காட்டும்).</div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+        <div>
+          <label class="block font-extrabold text-slate-800 mb-1">📜 ஜாதகம் கணிக்க (₹)</label>
+          <input id="inpMasterFee_jathagam" type="number" min="0" value="0" class="w-full px-3 py-2 rounded-xl border-2 border-amber-300 font-black text-slate-900" />
+        </div>
+        <div>
+          <label class="block font-extrabold text-slate-800 mb-1">💍 திருமண பொருத்தம் (₹)</label>
+          <input id="inpMasterFee_porutham" type="number" min="0" value="0" class="w-full px-3 py-2 rounded-xl border-2 border-amber-300 font-black text-slate-900" />
+        </div>
+        <div>
+          <label class="block font-extrabold text-slate-800 mb-1">🏠 வாஸ்து சாஸ்திரம் (₹)</label>
+          <input id="inpMasterFee_vasthu" type="number" min="0" value="0" class="w-full px-3 py-2 rounded-xl border-2 border-amber-300 font-black text-slate-900" />
+        </div>
+      </div>
+      <button type="button" onclick="mjSaveMasterPaymentFees()" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs sm:text-sm shadow cursor-pointer">💾 கட்டணங்களைச் சேமி (Cloud Sync)</button>
+    </div>
 
   </div>
   </main>
@@ -13806,7 +13830,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.11</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.12</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -15644,7 +15668,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       };
 
       
-      // 🪐 v26.11: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
+      // 🪐 v26.12: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
       window._mjJsonSubTab = window._mjJsonSubTab || "daily";
       window._mjPadasaramListFilter = window._mjPadasaramListFilter || "all";
 
@@ -15903,7 +15927,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         box.innerHTML = `
           <div class="space-y-4 pb-8">
             <div class="p-4 rounded-2xl bg-gradient-to-r from-[#0f3d3e] via-[#115e59] to-[#0f3d3e] text-white shadow-lg">
-              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.11</span></div>
+              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.12</span></div>
               <div class="text-xs text-teal-100 font-bold mt-1">JSON-இல் உள்ள தேதிகளுக்குத் தானாக 0-நாள் துல்லிய அச்சுப் பஞ்சாங்க தசா இருப்பு வரும்; JSON இல்லாத தேதிகளுக்கு எப்போதும் போல ஆப் தானாகக் கணக்கிடும்!</div>
             </div>
 
@@ -16466,6 +16490,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         const friendOtpGateHtml = (_mjIsFriend() && st.reqCode && st.unlockedKey !== st._pendingKey) ? `
           <div class="p-4 rounded-2xl bg-gradient-to-br from-[#2e050d] via-[#5c0b1b] to-[#2e050d] text-amber-50 border-2 border-amber-400 shadow-xl space-y-3">
             <div class="font-black text-sm sm:text-base text-amber-300">🔐 திருமண பொருத்தம் முடிவுகளைக் காண ரகசிய எண் (OTP) தேவை</div>
+            ${typeof window.mjGetUpiPaymentBoxHtml === "function" ? window.mjGetUpiPaymentBoxHtml("porutham", "திருமண பொருத்தம்") : ""}
             <div class="text-xs text-amber-100">கீழே உள்ள 6-இலக்க குறியீட்டை <b>ஜெ. கரண் BE, DA. (7418609681)</b> அவர்களுக்கு அனுப்பி ரகசிய எண்ணைப் பெற்று உள்ளிடவும்.</div>
             <div class="flex flex-wrap items-center gap-3 bg-black/30 p-3 rounded-xl border border-amber-400/50">
               <div>
@@ -16617,6 +16642,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         const friendOtpGateHtml = (_mjIsFriend() && st.reqCode && st.unlockedKey !== st._pendingKey) ? `
           <div class="p-4 rounded-2xl bg-gradient-to-br from-[#2e050d] via-[#5c0b1b] to-[#2e050d] text-amber-50 border-2 border-amber-400 shadow-xl space-y-3">
             <div class="font-black text-sm sm:text-base text-amber-300">🔐 வாஸ்து சாஸ்திர முடிவுகளைக் காண ரகசிய எண் (OTP) தேவை</div>
+            ${typeof window.mjGetUpiPaymentBoxHtml === "function" ? window.mjGetUpiPaymentBoxHtml("vasthu", "வாஸ்து சாஸ்திரம்") : ""}
             <div class="text-xs text-amber-100">கீழே உள்ள 6-இலக்க குறியீட்டை <b>ஜெ. கரண் BE, DA. (7418609681)</b> அவர்களுக்கு அனுப்பி ரகசிய எண்ணைப் பெற்று உள்ளிடவும்.</div>
             <div class="flex flex-wrap items-center gap-3 bg-black/30 p-3 rounded-xl border border-amber-400/50">
               <div>
@@ -16761,6 +16787,100 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           if (typeof window.mjCloseSideMenu === "function") window.mjCloseSideMenu();
         };
       }
+    })();
+  </script>
+
+
+  <script id="mjUpiPaymentSyncScript">
+    (function() {
+      window.MJ_OWNER_UPI_ID = "karan812291@okaxis";
+      window.MJ_OWNER_UPI_PHONE = "7418609681";
+      window.MJ_OWNER_UPI_QR_URI = "data:image/webp;base64,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";
+
+      window._mjAppPaymentFees = (function() {
+        try {
+          const s = localStorage.getItem("MJ_APP_PAYMENT_FEES_V1");
+          if (s) return Object.assign({ jathagam: 0, porutham: 0, vasthu: 0 }, JSON.parse(s));
+        } catch (e) {}
+        return { jathagam: 0, porutham: 0, vasthu: 0 };
+      })();
+
+      window.mjGetUpiPaymentBoxHtml = function(serviceKey, labelTa) {
+        const fees = window._mjAppPaymentFees || {};
+        const amt = Number(fees[serviceKey] || 0) || 0;
+        const amtHtml = amt > 0
+          ? '<div class="inline-block px-3 py-1 rounded-full bg-amber-400 text-stone-950 font-black text-xs shadow">💰 கட்டணம்: ₹' + amt + ' (' + labelTa + ')</div>'
+          : '<div class="inline-block px-3 py-1 rounded-full bg-amber-100 text-amber-950 border border-amber-400 font-extrabold text-[11px]">💳 கட்டணம் செலுத்திய பிறகு OTP கேட்கவும்</div>';
+        const upiUrl = "upi://pay?pa=karan812291%40okaxis&pn=Karan%20J&cu=INR" + (amt > 0 ? ("&am=" + amt) : "") + "&tn=" + encodeURIComponent("Murugesan Jodhidam - " + labelTa);
+        return `
+          <div class="p-3 rounded-2xl bg-white text-slate-900 border-2 border-amber-400 shadow-sm space-y-2 text-center">
+            <div class="font-black text-xs sm:text-sm text-[#6b0f22]">📲 GPay / PhonePe / UPI மூலம் கட்டணம் செலுத்த</div>
+            ${amtHtml}
+            <div class="flex justify-center">
+              <img src="${window.MJ_OWNER_UPI_QR_URI}" alt="UPI QR karan812291@okaxis" class="w-40 sm:w-44 h-auto rounded-xl border border-slate-300 shadow-xs" />
+            </div>
+            <div class="text-[11px] font-extrabold text-slate-800">
+              UPI ID: <span class="font-mono text-indigo-900">karan812291@okaxis</span>
+              <button type="button" onclick="try{navigator.clipboard.writeText('karan812291@okaxis');if(typeof showToast==='function')showToast('📋 UPI ID நகலெடுக்கப்பட்டது!','success');}catch(e){}" class="ml-1 px-2 py-0.5 rounded bg-amber-200 hover:bg-amber-300 text-stone-950 text-[10px] font-black cursor-pointer">📋 நகலெடு</button>
+            </div>
+            <div class="text-[11px] font-bold text-slate-700">📞 GPay / PhonePe எண்: <b>7418609681</b></div>
+            <div class="text-[11px] font-black text-emerald-800 bg-emerald-50 border border-emerald-300 rounded-lg px-2 py-1">
+              ✅ பணம் அனுப்பிய பிறகு கீழே உள்ள குறியீட்டை அனுப்பி 6-இலக்க OTP கேட்கவும்
+            </div>
+            <a href="${upiUrl}" class="inline-block px-4 py-1.5 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white font-black text-xs shadow">📲 UPI App-இல் நேரடியாகச் செலுத்து</a>
+          </div>
+        `;
+      };
+
+      window.mjRefreshFriendFeeBoxes = function() {
+        const slot = document.getElementById("mjFriendHoroscopeUpiBox");
+        if (slot) slot.innerHTML = window.mjGetUpiPaymentBoxHtml("jathagam", "ஜாதகம் கணிக்க");
+        if (typeof currentMainAppTab !== "undefined") {
+          if (currentMainAppTab === "porutham" && typeof window.mjRenderPoruthamTab === "function") window.mjRenderPoruthamTab();
+          if (currentMainAppTab === "vasthu" && typeof window.mjRenderVasthuTab === "function") window.mjRenderVasthuTab();
+        }
+        ["jathagam","porutham","vasthu"].forEach(function(k) {
+          const inp = document.getElementById("inpMasterFee_" + k);
+          if (inp && document.activeElement !== inp) {
+            inp.value = String(Number((window._mjAppPaymentFees && window._mjAppPaymentFees[k]) || 0) || 0);
+          }
+        });
+      };
+
+      window.mjSaveMasterPaymentFees = async function() {
+        const fees = {
+          jathagam: Math.max(0, Number(document.getElementById("inpMasterFee_jathagam")?.value || 0) || 0),
+          porutham: Math.max(0, Number(document.getElementById("inpMasterFee_porutham")?.value || 0) || 0),
+          vasthu: Math.max(0, Number(document.getElementById("inpMasterFee_vasthu")?.value || 0) || 0)
+        };
+        window._mjAppPaymentFees = fees;
+        try { localStorage.setItem("MJ_APP_PAYMENT_FEES_V1", JSON.stringify(fees)); } catch (e) {}
+        if (typeof mjDb !== "undefined" && mjDb) {
+          try {
+            await mjDb.collection("panchangam_years").doc("app_payment_config").set({
+              isPaymentConfig: true,
+              fees: fees,
+              updatedAt: new Date().toISOString()
+            }, { merge: true });
+          } catch (e) {}
+        }
+        if (typeof showToast === "function") showToast("✅ கட்டணங்கள் Cloud-இல் சேமிக்கப்பட்டு நண்பர் ஆப்பில் ஒத்திசைக்கப்பட்டது!", "success");
+      };
+
+      document.addEventListener("DOMContentLoaded", function() {
+        window.mjRefreshFriendFeeBoxes();
+        setTimeout(function() {
+          if (typeof mjDb !== "undefined" && mjDb) {
+            mjDb.collection("panchangam_years").doc("app_payment_config").onSnapshot(function(doc) {
+              if (doc && doc.exists && doc.data() && doc.data().fees) {
+                window._mjAppPaymentFees = Object.assign({ jathagam: 0, porutham: 0, vasthu: 0 }, doc.data().fees);
+                try { localStorage.setItem("MJ_APP_PAYMENT_FEES_V1", JSON.stringify(window._mjAppPaymentFees)); } catch (e) {}
+                window.mjRefreshFriendFeeBoxes();
+              }
+            }, function() {});
+          }
+        }, 1100);
+      });
     })();
   </script>
 
