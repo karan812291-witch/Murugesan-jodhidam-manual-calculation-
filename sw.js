@@ -1,4 +1,4 @@
-const MJ_CACHE_NAME = "murugesan-jodhidam-v26-24";
+const MJ_CACHE_NAME = "murugesan-jodhidam-v26-26";
 const MJ_PRECACHE_URLS = [
   "./",
   "./index.html",
@@ -7,6 +7,8 @@ const MJ_PRECACHE_URLS = [
   "./manifest-master.json",
   "./icon-192.png",
   "./icon-512.png",
+  "./icon-round-192.png",
+  "./icon-round-512.png",
   "./screenshot-mobile.png",
   "./screenshot-wide.png"
 ];

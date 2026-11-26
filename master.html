@@ -620,7 +620,7 @@
         var sp = document.getElementById("mjProSplash");
         if (!sp || sp.classList.contains("mj-splash-hide")) return;
         var elapsed = Date.now() - startTs;
-        var wait = Math.max(0, 1100 - elapsed);
+        var wait = Math.max(0, 2000 - elapsed);
         setTimeout(function() {
           sp.classList.add("mj-splash-hide");
           setTimeout(function() {
@@ -17315,7 +17315,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           setTimeout(function() {
             overlay.classList.remove("hidden");
             overlay.classList.add("flex");
-          }, 950);
+          }, 2150);
         }
       }
 
