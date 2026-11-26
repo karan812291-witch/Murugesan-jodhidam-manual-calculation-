@@ -1,25 +1,175 @@
 {
+  "id": "/Murugesan-jodhidam-manual-calculation-/master.html",
   "name": "முருகேசன் ஜோதிடம் — கைக்கணக்கு Master",
   "short_name": "கைக்கணக்கு Master",
   "description": "முருகேசன் ஜோதிடம் முதன்மை ஆப்",
+  "lang": "ta",
+  "dir": "ltr",
   "start_url": "./master.html",
   "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "tabbed",
+    "standalone",
+    "minimal-ui"
+  ],
+  "tab_strip": {
+    "home_tab": {
+      "url": "./master.html"
+    },
+    "new_tab_button": {
+      "url": "./master.html"
+    }
+  },
   "orientation": "portrait",
-  "background_color": "#fffbeb",
-  "theme_color": "#3b0711",
+  "background_color": "#eef4fb",
+  "theme_color": "#091224",
+  "categories": [
+    "lifestyle",
+    "utilities"
+  ],
+  "prefer_related_applications": false,
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "note_taking": {
+    "new_note_url": "./master.html?action=note"
+  },
   "icons": [
     {
       "src": "./icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "./icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "./screenshot-mobile.png",
+      "sizes": "540x960",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile Horoscope View"
+    },
+    {
+      "src": "./screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Desktop Horoscope View"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "ஜாதகம் கணி",
+      "short_name": "ஜாதகம்",
+      "description": "புதிய ஜாதகம் கணிக்க",
+      "url": "./master.html?tab=horoscope",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "திருமண பொருத்தம்",
+      "short_name": "பொருத்தம்",
+      "description": "10 பொருத்தம் பார்க்க",
+      "url": "./master.html?tab=porutham",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "வாஸ்து சாஸ்திரம்",
+      "short_name": "வாஸ்து",
+      "description": "ஆயாதி & திசை பலன்",
+      "url": "./master.html?tab=vasthu",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "./master.html",
+      "accept": {
+        "application/json": [
+          ".json"
+        ]
+      }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+murugesan",
+      "url": "./master.html?q=%s"
+    }
+  ],
+  "share_target": {
+    "action": "./master.html",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "widgets": [
+    {
+      "name": "கைக்கணக்கு Master",
+      "short_name": "கைக்கணக்கு Master",
+      "description": "முருகேசன் ஜோதிடம் முதன்மை ஆப்",
+      "tag": "mj-widget",
+      "ms_ac_template": "./master.html",
+      "data": "./manifest.json",
+      "type": "application/json",
+      "screenshots": [
+        {
+          "src": "./screenshot-wide.png",
+          "sizes": "1280x720",
+          "label": "Widget Preview"
+        }
+      ],
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }
