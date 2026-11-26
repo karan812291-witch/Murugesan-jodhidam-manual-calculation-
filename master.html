@@ -11618,6 +11618,15 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                 </ol>
               </div>
 
+              <div class="p-3 rounded-xl bg-sky-50/90 border border-sky-300 space-y-1.5">
+                <h3 class="text-xs font-extrabold text-sky-900">🌐 Online &amp; Offline பயன்பாட்டு வழிமுறை (Internet Guide)</h3>
+                <ul class="list-disc pl-5 space-y-1 text-[11.5px] font-semibold text-slate-800 leading-relaxed">
+                  <li><strong>முதல் முறை (Internet அவசியம்):</strong> ஆப்பை Install செய்த பிறகு முதல் முறை Internet-உடன் open செய்யும்போது ஆப்பின் முக்கிய files போனில் Offline Cache செய்யப்படும்.</li>
+                  <li><strong>Offline-ல் (Internet இல்லாமல்):</strong> அடிப்படை ஜாதகக் கணிப்பு, Built-in பஞ்சாங்க/கைக்கணக்கு விவரங்கள், 10 திருமணப் பொருத்தம், வாஸ்து சாஸ்திரம் மற்றும் போனில் உள்ள Local Client தரவுகள் வேலை செய்யும்.</li>
+                  <li><strong>Online-ல் (Internet தேவை):</strong> Cloud பஞ்சாங்கம் (<code>panchangam_years</code>), Cloud Client Save/Search, Friend OTP &amp; Fee Sync, மற்றும் Gemini PDF → JSON மாற்றம் ஆகியவற்றுக்கு Internet கட்டாயம் தேவை.</li>
+                </ul>
+              </div>
+
               <div class="grid grid-cols-2 gap-2.5">
                 <div class="p-3 rounded-xl bg-emerald-50/80 border border-emerald-300 space-y-1">
                   <h3 class="text-xs font-extrabold text-emerald-950">👑 முதன்மை ஆப் &amp; 🔐 நண்பர் ஆப் (Live OTP)</h3>
@@ -17095,6 +17104,99 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         navigator.serviceWorker.register("./sw.js").catch(function() {});
       });
     }
+  </script>
+
+
+  <!-- Fresh Open Welcome & First-Time Install Guide -->
+  <div id="mjFreshWelcomeOverlay" class="no-print fixed inset-0 z-[9999] bg-black/65 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div id="mjFreshWelcomeCard" class="w-full max-w-md rounded-3xl shadow-2xl border-4 double p-5 text-center space-y-3 bg-[#fffdf9]">
+      <div class="w-16 h-16 mx-auto rounded-full border-2 p-0.5 shadow-md overflow-hidden flex items-center justify-center bg-amber-50" id="mjWelcomeLogoWrap">
+        <img id="mjWelcomeLogoImg" src="./icon-192.png" alt="Logo" class="w-full h-full object-cover rounded-full" />
+      </div>
+      <div class="space-y-1">
+        <h2 class="text-lg sm:text-xl font-extrabold leading-snug serif-ta" id="mjWelcomeHeading">🙏 முருகேசன் ஜோதிடம் தங்களை அன்புடன் வரவேற்கிறது</h2>
+        <p class="text-xs sm:text-sm font-extrabold" id="mjWelcomeSign">இப்படிக்கு, ஜெ. கரண் BE, DA.</p>
+      </div>
+      <div id="mjFirstInstallGuideBox" class="hidden text-left p-3.5 rounded-2xl bg-sky-50 border border-sky-300 space-y-1.5 text-xs text-slate-800">
+        <div class="font-extrabold text-sky-900 text-center border-b border-sky-200 pb-1">📘 முதல் முறை பயன்பாட்டு வழிமுறை (1st-Time Guide)</div>
+        <ul class="list-disc pl-4 space-y-1 font-semibold leading-relaxed text-[11.5px]">
+          <li><strong>முதல் முறை (Internet அவசியம்):</strong> ஆப்பை முதல் முறை Internet-உடன் open செய்யும்போது Offline Cache தானாக சேமிக்கப்படும்.</li>
+          <li><strong>Offline-ல்:</strong> அடிப்படை ஜாதகக் கணிப்பு, திருமண பொருத்தம், வாஸ்து மற்றும் போனில் உள்ள Local Records வேலை செய்யும்.</li>
+          <li><strong>Online-ல்:</strong> Cloud பஞ்சாங்கம், Cloud Client Save/Search, Friend OTP &amp; Fee Sync-க்கு Internet தேவை.</li>
+        </ul>
+      </div>
+      <button type="button" onclick="mjCloseFreshWelcome()" id="mjWelcomeCloseBtn" class="w-full py-2.5 px-4 rounded-xl font-extrabold text-sm text-white shadow cursor-pointer">
+        ✅ தொடர்க (Continue)
+      </button>
+    </div>
+  </div>
+  <script id="mjFreshWelcomeScript">
+    (function() {
+      function initWelcome() {
+        var overlay = document.getElementById("mjFreshWelcomeOverlay");
+        var card = document.getElementById("mjFreshWelcomeCard");
+        var heading = document.getElementById("mjWelcomeHeading");
+        var sign = document.getElementById("mjWelcomeSign");
+        var btn = document.getElementById("mjWelcomeCloseBtn");
+        var wrap = document.getElementById("mjWelcomeLogoWrap");
+        var guideBox = document.getElementById("mjFirstInstallGuideBox");
+        if (!overlay || !card) return;
+
+        var isKai = document.body.innerHTML.indexOf("mjKaiKanakkuUiBadge") !== -1;
+        if (isKai) {
+          card.style.borderColor = "#13294b";
+          wrap.style.borderColor = "#38bdf8";
+          heading.style.color = "#0f172a";
+          sign.style.color = "#1e3a8a";
+          btn.style.backgroundColor = "#0f172a";
+        } else {
+          card.style.borderColor = "#8b1c1c";
+          wrap.style.borderColor = "#d97706";
+          heading.style.color = "#6b0f22";
+          sign.style.color = "#92400e";
+          btn.style.backgroundColor = "#6b0f22";
+        }
+
+        var seenKey = "mj_first_install_guide_seen_v1";
+        var isFirstTime = false;
+        try {
+          isFirstTime = !localStorage.getItem(seenKey);
+        } catch (e) {}
+
+        if (isFirstTime && guideBox) {
+          guideBox.classList.remove("hidden");
+          btn.textContent = "✅ புரிந்தது, ஆப்பைத் தொடங்கு";
+        } else {
+          if (guideBox) guideBox.classList.add("hidden");
+          btn.textContent = "✅ தொடர்க (Continue)";
+          setTimeout(function() {
+            if (overlay && !overlay.classList.contains("hidden")) {
+              window.mjCloseFreshWelcome();
+            }
+          }, 3200);
+        }
+
+        overlay.classList.remove("hidden");
+        overlay.classList.add("flex");
+      }
+
+      window.mjCloseFreshWelcome = function() {
+        var overlay = document.getElementById("mjFreshWelcomeOverlay");
+        if (overlay) {
+          overlay.classList.add("hidden");
+          overlay.classList.remove("flex");
+        }
+        try {
+          localStorage.setItem("mj_first_install_guide_seen_v1", "1");
+        } catch (e) {}
+      };
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initWelcome);
+      } else {
+        initWelcome();
+      }
+    })();
   </script>
 
 </body>
