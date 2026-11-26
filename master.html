@@ -620,7 +620,7 @@
         var sp = document.getElementById("mjProSplash");
         if (!sp || sp.classList.contains("mj-splash-hide")) return;
         var elapsed = Date.now() - startTs;
-        var wait = Math.max(0, 750 - elapsed);
+        var wait = Math.max(0, 1100 - elapsed);
         setTimeout(function() {
           sp.classList.add("mj-splash-hide");
           setTimeout(function() {
