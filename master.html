@@ -524,7 +524,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — முதன்மை ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.15</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.16</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white shadow">👑 முதன்மைப் பதிப்பு (ரகசிய எண் உருவாக்கி)</span>
           </div>
@@ -13839,7 +13839,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.15</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.16</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -15678,7 +15678,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       };
 
       
-      // 🪐 v26.15: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
+      // 🪐 v26.16: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
       window._mjJsonSubTab = window._mjJsonSubTab || "daily";
       window._mjPadasaramListFilter = window._mjPadasaramListFilter || "all";
 
@@ -15937,7 +15937,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         box.innerHTML = `
           <div class="space-y-4 pb-8">
             <div class="p-4 rounded-2xl bg-gradient-to-r from-[#0f3d3e] via-[#115e59] to-[#0f3d3e] text-white shadow-lg">
-              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.15</span></div>
+              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.16</span></div>
               <div class="text-xs text-teal-100 font-bold mt-1">JSON-இல் உள்ள தேதிகளுக்குத் தானாக 0-நாள் துல்லிய அச்சுப் பஞ்சாங்க தசா இருப்பு வரும்; JSON இல்லாத தேதிகளுக்கு எப்போதும் போல ஆப் தானாகக் கணக்கிடும்!</div>
             </div>
 
@@ -16916,5 +16916,65 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         }
       })();
 </script>
+
+  <script id="mjUniversalTabEnsureAndScrollScript">
+    (function() {
+      if (typeof switchMainAppTab === "function") {
+        const _prevSwFinal = switchMainAppTab;
+        switchMainAppTab = function(tabKey) {
+          if (tabKey === "calcsteps") {
+            const cEl = document.getElementById("calcStepsTabContainer");
+            if (cEl && !cEl.innerHTML.trim()) {
+              const dobV = (document.getElementById("inpDob")?.value || "").trim();
+              const tobV = (document.getElementById("inpTob")?.value || "").trim();
+              if (dobV && tobV && typeof window.mjClickCalculateHoroscopeNow === "function") {
+                window._mjManualCalcTriggered = true;
+                if (typeof calculateAndFillBook === "function") calculateAndFillBook();
+              } else if (typeof window.mjEnsureCalcStepsReady === "function") {
+                window.mjEnsureCalcStepsReady();
+              }
+            }
+          } else if (tabKey === "kaikanakku") {
+            const kEl = document.getElementById("kaiKanakkuTabContainer");
+            if (kEl && !kEl.innerHTML.trim()) {
+              const dobV = (document.getElementById("inpDob")?.value || "").trim();
+              const tobV = (document.getElementById("inpTob")?.value || "").trim();
+              if (dobV && tobV && typeof calculateAndFillBook === "function") {
+                window._mjManualCalcTriggered = true;
+                calculateAndFillBook();
+              } else if (typeof window.mjEnsureKaiKanakkuReady === "function") {
+                window.mjEnsureKaiKanakkuReady();
+              }
+            }
+          }
+          const res = _prevSwFinal.apply(this, arguments);
+          const scrollMap = {
+            calcsteps: "calcStepsTabContainer",
+            kaikanakku: "kaiKanakkuTabContainer",
+            porutham: "poruthamTabContainer",
+            vasthu: "vasthuTabContainer",
+            jsonupload: "jsonUploadTabContainer",
+            fullpanchangam: "fullPanchangamTabContainer",
+            masterotp: "masterOtpTabContainer",
+            addpanchangam: "addPanchangamTabContainer",
+            padasaram: "padasaramTabContainer",
+            manual: "userManualTabContainer",
+            dasa100: "dasa100TabContainer"
+          };
+          const targetId = scrollMap[tabKey];
+          if (targetId) {
+            setTimeout(function() {
+              const el = document.getElementById(targetId);
+              if (el && !el.classList.contains("hidden") && typeof el.scrollIntoView === "function") {
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            }, 90);
+          }
+          return res;
+        };
+      }
+    })();
+  </script>
+
 </body>
 </html>
