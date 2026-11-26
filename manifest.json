@@ -1,9 +1,25 @@
 {
-  "name": "முருகேசன் ஜோதிடம் — கைக்கணக்கு பதிப்பு",
+  "name": "முருகேசன் ஜோதிடம் — கைக்கணக்கு நண்பர்",
   "short_name": "கைக்கணக்கு ஆப்",
+  "description": "அசல் 28 நம்பர் பாம்பு பஞ்சாங்க ஜாதகக் கணிப்பு",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#fffdf9",
-  "theme_color": "#6b0f22",
-  "description": "முருகேசன் ஜோதிடம் - 6-படி பாரம்பரிய கைக்கணக்கு & 26-பக்க ஜாதகப் புத்தகம் (Firebase Cloud App)"
+  "orientation": "portrait",
+  "background_color": "#fffbeb",
+  "theme_color": "#3b0711",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
