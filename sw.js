@@ -1,4 +1,4 @@
-const MJ_CACHE_NAME = "murugesan-jodhidam-v26-21";
+const MJ_CACHE_NAME = "murugesan-jodhidam-v26-22";
 const MJ_PRECACHE_URLS = [
   "./",
   "./index.html",
@@ -41,16 +41,20 @@ self.addEventListener("fetch", function(event) {
   if (event.request.method !== "GET") return;
   const url = event.request.url || "";
   if (url.includes("firestore.googleapis.com") || url.includes("generativelanguage.googleapis.com") || url.includes("emailjs.com")) return;
+
+  // Stale-While-Revalidate: Instant open from cache + silent background update
   event.respondWith(
-    fetch(event.request).then(function(resp) {
-      if (resp && resp.status === 200 && resp.type === "basic") {
-        const clone = resp.clone();
-        caches.open(MJ_CACHE_NAME).then(function(cache) { cache.put(event.request, clone); });
-      }
-      return resp;
-    }).catch(function() {
-      return caches.match(event.request).then(function(cached) {
-        return cached || caches.match("./index.html");
+    caches.open(MJ_CACHE_NAME).then(function(cache) {
+      return cache.match(event.request).then(function(cached) {
+        const networkPromise = fetch(event.request).then(function(resp) {
+          if (resp && resp.status === 200 && (resp.type === "basic" || resp.type === "cors")) {
+            cache.put(event.request, resp.clone()).catch(function() {});
+          }
+          return resp;
+        }).catch(function() {
+          return cached || caches.match("./index.html");
+        });
+        return cached || networkPromise;
       });
     })
   );
