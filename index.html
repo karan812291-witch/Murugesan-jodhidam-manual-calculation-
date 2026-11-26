@@ -603,7 +603,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — நண்பர் ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.16</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.18</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-rose-500 text-white shadow">🔐 ஒவ்வொரு தேதி / நேர மாற்றத்திற்கும் ரகசிய எண் பாதுகாப்பு</span>
           </div>
@@ -977,6 +977,19 @@
   </section>
 
   <!-- Main Content Container (Tab 1: 26-Page Book | Tab 2: 100-Year Dasa Bhukti) -->
+  
+  <!-- 🔙 Dedicated Sub-Page Sticky Top Back Bar (Native App Feel) -->
+  <div id="mjSubPageTopBar" class="no-print hidden sticky top-0 z-40 bg-gradient-to-r from-[#2e050d] via-[#6b0f22] to-[#2e050d] text-white border-b-2 border-amber-400 shadow-md px-3 sm:px-6 py-2.5">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+      <button type="button" onclick="mjGoBackFromSubPage()" class="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-black text-xs sm:text-sm shadow cursor-pointer flex items-center gap-1.5 shrink-0">
+        <span>←</span>
+        <span>பின்செல் (Back)</span>
+      </button>
+      <div id="mjSubPageTopTitle" class="font-extrabold text-xs sm:text-sm text-amber-100 truncate text-center flex-1"></div>
+      <button type="button" onclick="mjGoHomeBookPage()" class="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/25 font-extrabold text-xs cursor-pointer shrink-0">🏠 முகப்பு</button>
+    </div>
+  </div>
+
   <main class="flex-1 w-full px-2 sm:px-4 pb-12">
     <div id="puthagamBookContainer" class="max-w-[210mm] mx-auto"></div>
     <div id="dasa100TabContainer" class="hidden max-w-6xl mx-auto"></div>
@@ -12215,7 +12228,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           </button>
           <button id="btnTabKaiKanakkuView" type="button" onclick="switchMainAppTab('kaikanakku')" class="px-4 py-2.5 rounded-xl bg-violet-100 hover:bg-violet-200 text-violet-950 border-2 border-violet-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
             <span>🧮</span>
-            <span>5. கைக்கணக்கு விளக்கம் (Step 1–6 &amp; A4 PDF)</span>
+            <span>5. 6-படி நோட்டுக் கைக்கணக்கு விளக்கம் (&amp; PDF)</span>
             <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-700 text-white font-bold">AUTO</span>
           </button>
           <button id="btnTabAddPanchangamView" type="button" onclick="switchMainAppTab('addpanchangam')" class="hidden px-4 py-2.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-950 border-2 border-purple-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
@@ -12258,7 +12271,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         padasaram: "🐍 4. 1987–2027 கிரகபாத சார அட்டவணை",
         kaikanakku: "🧮 5. கைக்கணக்கு விளக்கம் (Step 1–6 & PDF)",
         addpanchangam: "➕ புதிய பஞ்சாங்கம் சேர்க்க (Cloud Sync)",
-        calcsteps: "🧮 6. கணக்கீட்டு விளக்கம் (1–12 படிகள் & PDF)"
+        kaikanakku: "🧮 5. 6-படி நோட்டுக் கைக்கணக்கு விளக்கம் (& PDF)"
       };
       if (typeof switchMainAppTab === "function") {
         const _origSwitchForDrawer = switchMainAppTab;
@@ -13593,7 +13606,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.16</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.18</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -15432,7 +15445,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       };
 
       
-      // 🪐 v26.16: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
+      // 🪐 v26.18: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
       window._mjJsonSubTab = window._mjJsonSubTab || "daily";
       window._mjPadasaramListFilter = window._mjPadasaramListFilter || "all";
 
@@ -15691,7 +15704,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         box.innerHTML = `
           <div class="space-y-4 pb-8">
             <div class="p-4 rounded-2xl bg-gradient-to-r from-[#0f3d3e] via-[#115e59] to-[#0f3d3e] text-white shadow-lg">
-              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.16</span></div>
+              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.18</span></div>
               <div class="text-xs text-teal-100 font-bold mt-1">JSON-இல் உள்ள தேதிகளுக்குத் தானாக 0-நாள் துல்லிய அச்சுப் பஞ்சாங்க தசா இருப்பு வரும்; JSON இல்லாத தேதிகளுக்கு எப்போதும் போல ஆப் தானாகக் கணக்கிடும்!</div>
             </div>
 
@@ -16677,6 +16690,103 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                 el.scrollIntoView({ behavior: "smooth", block: "start" });
               }
             }, 90);
+          }
+          return res;
+        };
+      }
+    })();
+  </script>
+
+
+  <script id="mjDedicatedSubPageNavScript">
+    (function() {
+      const SUBPAGE_TITLES = {
+        book: "📚 1. ஜாதகப் புத்தகம் (26 பக்கங்கள்)",
+        porutham: "💍 திருமண பொருத்தம் (10 பொருத்தம்)",
+        vasthu: "🏠 வாஸ்து சாஸ்திரம் (ஆயாதி)",
+        dasa100: "📅 2. தசா புத்தி விபரம் (100+ வயது)",
+        manual: "📘 3. கிரக பாகை & பயனர் கையேடு",
+        padasaram: "🐍 4. 1987–2027 கிரகபாத சார அட்டவணை",
+        kaikanakku: "🧮 5. 6-படி நோட்டுக் கைக்கணக்கு விளக்கம் (& PDF)",
+        fullpanchangam: "📖 முழு பஞ்சாங்கம் (அனைத்து ஆண்டுகள் & Cloud)",
+        addpanchangam: "➕ புதிய பஞ்சாங்கம் சேர்க்க",
+        jsonupload: "📦 JSON தரவு சேர்க்க (தசா இருப்பு & பாதசாரம்)",
+        masterotp: "🔐 நண்பர் ஆப் OTP & கட்டண அமைப்பு",
+        calcsteps: "🧮 6. கணக்கீட்டு விளக்கம் (1–12 படிகள் & PDF)"
+      };
+
+      window._mjNavStack = [];
+      window._mjIsHandlingPop = false;
+      window._mjActiveSubPageKey = "book";
+
+      function _mjSetHomeChromeVisible(showHome) {
+        document.querySelectorAll("body > section").forEach(function(sec) {
+          sec.classList.toggle("hidden", !showHome);
+        });
+        document.querySelectorAll("body > footer").forEach(function(ft) {
+          ft.classList.toggle("hidden", !showHome);
+        });
+        const bar = document.getElementById("mjSubPageTopBar");
+        if (bar) bar.classList.toggle("hidden", showHome);
+      }
+
+      window.mjGoHomeBookPage = function() {
+        window._mjNavStack = [];
+        if (typeof switchMainAppTab === "function") switchMainAppTab("book");
+      };
+
+      window.mjGoBackFromSubPage = function() {
+        if (window._mjNavStack.length > 0) {
+          const prev = window._mjNavStack.pop();
+          window._mjIsHandlingPop = true;
+          try {
+            if (typeof switchMainAppTab === "function") switchMainAppTab(prev.tab || "book");
+            setTimeout(function() {
+              try { window.scrollTo(0, prev.scrollY || 0); } catch (e) {}
+            }, 60);
+          } finally {
+            window._mjIsHandlingPop = false;
+          }
+          return;
+        }
+        window.mjGoHomeBookPage();
+      };
+
+      window.addEventListener("popstate", function() {
+        if (window._mjActiveSubPageKey && window._mjActiveSubPageKey !== "book") {
+          window.mjGoBackFromSubPage();
+        }
+      });
+
+      if (typeof switchMainAppTab === "function") {
+        const _prevSwSubPage = switchMainAppTab;
+        switchMainAppTab = function(tabKey, bypassArg) {
+          const prevKey = window._mjActiveSubPageKey || "book";
+          const prevScroll = (typeof window.scrollY === "number") ? window.scrollY : 0;
+
+          const res = _prevSwSubPage.apply(this, arguments);
+
+          // Determine what tab actually became active (e.g. if fullpanchangam/masterotp blocked on pwd modal, stay on prev)
+          const isFullPanBlocked = (tabKey === "fullpanchangam" && bypassArg !== "__UNLOCKED__" && bypassArg !== (typeof window.mjGetAppPassword === "function" ? window.mjGetAppPassword("open") : "81229102@Openpanjagam"));
+          const isOtpBlocked = (tabKey === "masterotp" && !window._mjOtpTabUnlocked);
+          if (isFullPanBlocked || isOtpBlocked) return res;
+
+          const nextKey = tabKey || "book";
+          if (!window._mjIsHandlingPop && nextKey !== prevKey && nextKey !== "book") {
+            window._mjNavStack.push({ tab: prevKey, scrollY: prevScroll });
+            try { window.history.pushState({ mjSubTab: nextKey }, "", "#page-" + nextKey); } catch (e) {}
+          }
+          window._mjActiveSubPageKey = nextKey;
+
+          if (nextKey === "book") {
+            _mjSetHomeChromeVisible(true);
+          } else {
+            _mjSetHomeChromeVisible(false);
+            const tEl = document.getElementById("mjSubPageTopTitle");
+            if (tEl) tEl.textContent = SUBPAGE_TITLES[nextKey] || nextKey;
+            setTimeout(function() {
+              try { window.scrollTo({ top: 0, behavior: "instant" }); } catch (e) { try { window.scrollTo(0, 0); } catch (e2) {} }
+            }, 20);
           }
           return res;
         };
