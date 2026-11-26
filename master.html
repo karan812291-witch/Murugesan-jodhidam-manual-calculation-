@@ -524,7 +524,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — முதன்மை ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.12</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.13</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white shadow">👑 முதன்மைப் பதிப்பு (ரகசிய எண் உருவாக்கி)</span>
           </div>
@@ -909,6 +909,31 @@
     <div id="poruthamTabContainer" class="hidden max-w-5xl mx-auto px-3 sm:px-6 pb-8"></div>
     <div id="vasthuTabContainer" class="hidden max-w-5xl mx-auto px-3 sm:px-6 pb-8"></div>
   <div id="masterOtpTabContainer" class="hidden max-w-5xl mx-auto px-3 sm:px-6 py-4 space-y-4">
+<!-- 💰 Master App: Friend App Payment Fee Settings (Cloud Sync) -->
+    <div class="bg-white rounded-2xl shadow-md border-2 border-amber-400 p-4 space-y-3 mt-4">
+      <div class="border-b border-amber-200 pb-2">
+        <div class="text-sm sm:text-base font-black text-[#6b0f22]">💰 நண்பர் ஆப் கட்டண அமைப்பு (Friend App Fees — Cloud Sync)</div>
+        <div class="text-[11px] font-semibold text-slate-600">இங்கே கட்டணம் (₹) அமைத்தால், நண்பர் ஆப் QR Code-இல் அந்தத் தொகை தானாகக் காட்டும் (<b>0</b> என வைத்தால் தொகை கட்டாயமின்றி QR மட்டும் காட்டும்).</div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+        <div>
+          <label class="block font-extrabold text-slate-800 mb-1">📜 ஜாதகம் கணிக்க (₹)</label>
+          <input id="inpMasterFee_jathagam" type="number" min="0" value="0" class="w-full px-3 py-2 rounded-xl border-2 border-amber-300 font-black text-slate-900" />
+        </div>
+        <div>
+          <label class="block font-extrabold text-slate-800 mb-1">💍 திருமண பொருத்தம் (₹)</label>
+          <input id="inpMasterFee_porutham" type="number" min="0" value="0" class="w-full px-3 py-2 rounded-xl border-2 border-amber-300 font-black text-slate-900" />
+        </div>
+        <div>
+          <label class="block font-extrabold text-slate-800 mb-1">🏠 வாஸ்து சாஸ்திரம் (₹)</label>
+          <input id="inpMasterFee_vasthu" type="number" min="0" value="0" class="w-full px-3 py-2 rounded-xl border-2 border-amber-300 font-black text-slate-900" />
+        </div>
+      </div>
+      <button type="button" onclick="mjSaveMasterPaymentFees()" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs sm:text-sm shadow cursor-pointer">💾 கட்டணங்களைச் சேமி (Cloud Sync)</button>
+    </div>
+
+
+
 <!-- முதன்மை ஆப் — ஒரே ஒரு ரகசிய எண் உருவாக்கும் பெட்டி மட்டும் -->
     <div class="bg-gradient-to-r from-[#3b0711] via-[#5c0b1b] to-[#3b0711] text-amber-50 rounded-2xl shadow-lg border-2 border-amber-400 p-4 space-y-3">
       <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-400/30 pb-2.5">
@@ -978,30 +1003,7 @@
 
 
 
-    <!-- 💰 Master App: Friend App Payment Fee Settings (Cloud Sync) -->
-    <div class="bg-white rounded-2xl shadow-md border-2 border-amber-400 p-4 space-y-3 mt-4">
-      <div class="border-b border-amber-200 pb-2">
-        <div class="text-sm sm:text-base font-black text-[#6b0f22]">💰 நண்பர் ஆப் கட்டண அமைப்பு (Friend App Fees — Cloud Sync)</div>
-        <div class="text-[11px] font-semibold text-slate-600">இங்கே கட்டணம் (₹) அமைத்தால், நண்பர் ஆப் QR Code-இல் அந்தத் தொகை தானாகக் காட்டும் (<b>0</b> என வைத்தால் தொகை கட்டாயமின்றி QR மட்டும் காட்டும்).</div>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-        <div>
-          <label class="block font-extrabold text-slate-800 mb-1">📜 ஜாதகம் கணிக்க (₹)</label>
-          <input id="inpMasterFee_jathagam" type="number" min="0" value="0" class="w-full px-3 py-2 rounded-xl border-2 border-amber-300 font-black text-slate-900" />
-        </div>
-        <div>
-          <label class="block font-extrabold text-slate-800 mb-1">💍 திருமண பொருத்தம் (₹)</label>
-          <input id="inpMasterFee_porutham" type="number" min="0" value="0" class="w-full px-3 py-2 rounded-xl border-2 border-amber-300 font-black text-slate-900" />
-        </div>
-        <div>
-          <label class="block font-extrabold text-slate-800 mb-1">🏠 வாஸ்து சாஸ்திரம் (₹)</label>
-          <input id="inpMasterFee_vasthu" type="number" min="0" value="0" class="w-full px-3 py-2 rounded-xl border-2 border-amber-300 font-black text-slate-900" />
-        </div>
-      </div>
-      <button type="button" onclick="mjSaveMasterPaymentFees()" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs sm:text-sm shadow cursor-pointer">💾 கட்டணங்களைச் சேமி (Cloud Sync)</button>
-    </div>
-
-  </div>
   </main>
 
   <!-- 📜 Master App Terms & Conditions -->
@@ -4866,10 +4868,11 @@
       return `${periodTa} ${String(h12).padStart(2, "0")}:${String(m || 0).padStart(2, "0")} மணி`;
     }
 
+    window._mjManualCalcTriggered = window._mjManualCalcTriggered || false;
     function calculateAndFillBook() {
       const rawDobVal = (_byId("inpDob")?.value || "").trim();
       const rawTobVal = (_byId("inpTob")?.value || "").trim();
-      if (!rawDobVal || !rawTobVal) {
+      if (!rawDobVal || !rawTobVal || !window._mjManualCalcTriggered) {
         const emptyPromptHtml = `<div class="max-w-2xl mx-auto my-8 p-6 sm:p-8 rounded-3xl bg-white border-2 border-amber-300 shadow-md text-center space-y-2.5"><div class="text-4xl">🧮</div><h3 class="text-base sm:text-lg font-extrabold text-[#7f1d1d]">புதிய ஜாதக விவரங்களை உள்ளிடவும்</h3><p class="text-xs sm:text-sm font-semibold text-slate-600">மேலே உள்ள படிவத்தில் <strong>பிறந்த தேதி</strong> மற்றும் <strong>பிறந்த நேரம்</strong> மட்டும் உள்ளிட்டு <strong>🔮 ஜாதகம் கணி</strong> பொத்தானை அழுத்தியவுடன் 26-பக்க ஜாதகப் புத்தகம், 100-வயது தசா புத்தி மற்றும் <strong>6-படி கைக்கணக்கு விளக்கம்</strong> தானாக உருவாகும்.</p></div>`;
         const bc = _byId("puthagamBookContainer");
         if (bc) bc.innerHTML = emptyPromptHtml;
@@ -6539,6 +6542,7 @@
     }
 
     function loadBookPreset(key) {
+      window._mjManualCalcTriggered = true;
       _byId("chkUseManualOverride").checked = false;
       if (key === "abinaya_2004") {
         _byId("inpName").value = "D. அபிநயா";
@@ -11038,6 +11042,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           onFriendDateTimeInputChanged("📂 சேமித்த வாடிக்கையாளர் (" + c.name + ") ஏற்றப்பட்டது! புதிய குறியீட்டை அனுப்பி ரகசிய எண் பெறவும்.");
         }
       } else {
+        window._mjManualCalcTriggered = true;
         if (typeof calculateAndFillBook === "function") calculateAndFillBook();
         if (typeof showToast === "function") {
           showToast("📂 " + c.name + " (" + c.phone + ") விவரங்கள் ஏற்றப்பட்டன!", "success");
@@ -11901,6 +11906,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
 
   <script id="mjTopResetRefreshScript">
     window.mjResetNewHoroscopeForm = function() {
+      window._mjManualCalcTriggered = false;
       try {
         ["inpName","inpFather","inpMother","inpDob","inpDobManualText","inpTob","inpTobManualText","inpTobAmPm","inpTown","inpDistrict","inpTownSelect","mjClientPhoneSearch","mjClientPhoneInput","inpManPrevStarDot","inpManCurrStarDot","inpManSunRemDot","inpManUdayathiDot","inpManLagnaStarPada","inpPadaAdjLagnam","inpPadaAdjSun","inpPadaAdjMoon","inpPadaAdjRahu","inpPadaAdjKetu"].forEach(function(id) {
           const el = document.getElementById(id);
@@ -13830,7 +13836,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="mjOneTap1987To2026PdfSection" class="p-4 rounded-2xl bg-white border-2 border-purple-400 shadow-md space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-200 pb-2">
                 <div>
-                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.12</span></h3>
+                  <h3 class="font-extrabold text-sm sm:text-base text-purple-950">2️⃣ 1987 – 2026 விடுபட்ட பஞ்சாங்க PDF-கள் (1-Tap பதிவேற்றம்) <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">v26.13</span></h3>
                   <p class="text-[11px] font-bold text-slate-600">எந்த ஆண்டின் பக்கத்திலும் உள்ள <strong>"📤 PDF சேர்"</strong> button-ஐ ஒருமுறை தட்டினால் நேரடியாக Cloud-இல் சேமித்துவிடும் (மேலே திரும்ப ஆண்டு போட்டு சேர்க்கத் தேவையில்லை)!</p>
 
               <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 flex flex-wrap items-center justify-between gap-2">
@@ -14181,6 +14187,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       
       window.mjClickCalculateHoroscopeNow = function() {
         try {
+          window._mjManualCalcTriggered = true;
           const dobTxt = document.getElementById("inpDobManualText");
           if (dobTxt && dobTxt.value && typeof window.mjFormatAndSyncDob === "function") {
             window.mjFormatAndSyncDob(dobTxt);
@@ -15668,7 +15675,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       };
 
       
-      // 🪐 v26.12: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
+      // 🪐 v26.13: கிரக பாதசாரம் JSON பதிவேற்றம் & மேலாண்மை (Tier 1 Priority — 4 Apps Sync)
       window._mjJsonSubTab = window._mjJsonSubTab || "daily";
       window._mjPadasaramListFilter = window._mjPadasaramListFilter || "all";
 
@@ -15927,7 +15934,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         box.innerHTML = `
           <div class="space-y-4 pb-8">
             <div class="p-4 rounded-2xl bg-gradient-to-r from-[#0f3d3e] via-[#115e59] to-[#0f3d3e] text-white shadow-lg">
-              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.12</span></div>
+              <div class="text-base sm:text-lg font-black">📦 JSON தரவு சேர்க்க — தானியங்கி துல்லிய தசா இருப்பு <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/20">v26.13</span></div>
               <div class="text-xs text-teal-100 font-bold mt-1">JSON-இல் உள்ள தேதிகளுக்குத் தானாக 0-நாள் துல்லிய அச்சுப் பஞ்சாங்க தசா இருப்பு வரும்; JSON இல்லாத தேதிகளுக்கு எப்போதும் போல ஆப் தானாகக் கணக்கிடும்!</div>
             </div>
 
