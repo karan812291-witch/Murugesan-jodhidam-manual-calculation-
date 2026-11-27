@@ -740,7 +740,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — நண்பர் ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.39</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.41</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-rose-500 text-white shadow">🔐 ஒவ்வொரு தேதி / நேர மாற்றத்திற்கும் ரகசிய எண் பாதுகாப்பு</span>
           </div>
@@ -16156,19 +16156,42 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           }
           const calc = _prevCalcJsonDasa(prof);
           try {
-            const effPrev = hasManualPrev ? (prof.manPrevStarDot || document.getElementById("inpManPrevStarDot")?.value || "") : (jsonHit ? jsonHit.prev : "");
-            const effCurr = hasManualCurr ? (prof.manCurrStarDot || document.getElementById("inpManCurrStarDot")?.value || "") : (jsonHit ? jsonHit.curr : "");
-            const pVin = _parseDotToVin(effPrev);
-            const cVin = _parseDotToVin(effCurr);
+            let effPrev = hasManualPrev ? (prof.manPrevStarDot || document.getElementById("inpManPrevStarDot")?.value || "") : (jsonHit ? jsonHit.prev : "");
+            let effCurr = hasManualCurr ? (prof.manCurrStarDot || document.getElementById("inpManCurrStarDot")?.value || "") : (jsonHit ? jsonHit.curr : "");
+            let pVin = _parseDotToVin(effPrev);
+            let cVin = _parseDotToVin(effCurr);
             if (pVin !== null && cVin !== null && calc && calc.dasa && calc.planets && calc.planets.Moon) {
               const tob = prof.tob || document.getElementById("inpTob")?.value || "12:00";
               const sr = prof.customSunrise || document.getElementById("inpSunrise")?.value || "06:00";
               const uday = (typeof computeUdayathiNazhigai === "function") ? computeUdayathiNazhigai(dob, tob, sr) : { totalVinazhigai: 0 };
               const uVin = uday.totalVinazhigai;
+              // CRITICAL FIX: If birth Udayathi is AFTER today's Panchangam star end (uVin > cVin),
+              // the active birth star started at today's curr and ends at TOMORROW'S curr!
+              let starShiftedToNext = false;
+              if (!hasManualPrev && !hasManualCurr && uVin > cVin && dob && window._mjCloudDailyStarsMap) {
+                const dtObj = new Date(dob + "T12:00:00Z");
+                dtObj.setUTCDate(dtObj.getUTCDate() + 1);
+                const nextIso = dtObj.toISOString().slice(0, 10);
+                const nextHit = window._mjCloudDailyStarsMap[nextIso];
+                if (nextHit && _parseDotToVin(nextHit.curr) !== null) {
+                  effPrev = jsonHit.curr;
+                  effCurr = nextHit.curr;
+                  pVin = _parseDotToVin(effPrev);
+                  cVin = _parseDotToVin(effCurr);
+                  starShiftedToNext = true;
+                  if (calc.paambuExtras) calc.paambuExtras.currStarDot = effCurr;
+                }
+              }
               const aathi = (3600 - pVin) + cVin;
-              let iruppu = (uVin <= cVin) ? (cVin - uVin) : (cVin + 3600 - uVin);
-              iruppu = Math.max(0, Math.min(aathi, iruppu));
-              const sel = Math.max(0, aathi - iruppu);
+              let iruppu, sel;
+              if (starShiftedToNext) {
+                sel = Math.max(0, Math.min(aathi, uVin - pVin));
+                iruppu = Math.max(0, aathi - sel);
+              } else {
+                iruppu = (uVin <= cVin) ? (cVin - uVin) : (cVin + 3600 - uVin);
+                iruppu = Math.max(0, Math.min(aathi, iruppu));
+                sel = Math.max(0, aathi - iruppu);
+              }
 
               // 1. Update Moon Pada, Moon Rasi (for dual-Rasi stars) & Moon Navamsam (Amsam) directly from JSON!
               const M = calc.planets.Moon;

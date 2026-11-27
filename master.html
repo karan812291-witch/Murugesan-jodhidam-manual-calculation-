@@ -661,7 +661,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — முதன்மை ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.39</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.41</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white shadow">👑 முதன்மைப் பதிப்பு (ரகசிய எண் உருவாக்கி)</span>
           </div>
@@ -16450,19 +16450,42 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           }
           const calc = _prevCalcJsonDasa(prof);
           try {
-            const effPrev = hasManualPrev ? (prof.manPrevStarDot || document.getElementById("inpManPrevStarDot")?.value || "") : (jsonHit ? jsonHit.prev : "");
-            const effCurr = hasManualCurr ? (prof.manCurrStarDot || document.getElementById("inpManCurrStarDot")?.value || "") : (jsonHit ? jsonHit.curr : "");
-            const pVin = _parseDotToVin(effPrev);
-            const cVin = _parseDotToVin(effCurr);
+            let effPrev = hasManualPrev ? (prof.manPrevStarDot || document.getElementById("inpManPrevStarDot")?.value || "") : (jsonHit ? jsonHit.prev : "");
+            let effCurr = hasManualCurr ? (prof.manCurrStarDot || document.getElementById("inpManCurrStarDot")?.value || "") : (jsonHit ? jsonHit.curr : "");
+            let pVin = _parseDotToVin(effPrev);
+            let cVin = _parseDotToVin(effCurr);
             if (pVin !== null && cVin !== null && calc && calc.dasa && calc.planets && calc.planets.Moon) {
               const tob = prof.tob || document.getElementById("inpTob")?.value || "12:00";
               const sr = prof.customSunrise || document.getElementById("inpSunrise")?.value || "06:00";
               const uday = (typeof computeUdayathiNazhigai === "function") ? computeUdayathiNazhigai(dob, tob, sr) : { totalVinazhigai: 0 };
               const uVin = uday.totalVinazhigai;
+              // CRITICAL FIX: If birth Udayathi is AFTER today's Panchangam star end (uVin > cVin),
+              // the active birth star started at today's curr and ends at TOMORROW'S curr!
+              let starShiftedToNext = false;
+              if (!hasManualPrev && !hasManualCurr && uVin > cVin && dob && window._mjCloudDailyStarsMap) {
+                const dtObj = new Date(dob + "T12:00:00Z");
+                dtObj.setUTCDate(dtObj.getUTCDate() + 1);
+                const nextIso = dtObj.toISOString().slice(0, 10);
+                const nextHit = window._mjCloudDailyStarsMap[nextIso];
+                if (nextHit && _parseDotToVin(nextHit.curr) !== null) {
+                  effPrev = jsonHit.curr;
+                  effCurr = nextHit.curr;
+                  pVin = _parseDotToVin(effPrev);
+                  cVin = _parseDotToVin(effCurr);
+                  starShiftedToNext = true;
+                  if (calc.paambuExtras) calc.paambuExtras.currStarDot = effCurr;
+                }
+              }
               const aathi = (3600 - pVin) + cVin;
-              let iruppu = (uVin <= cVin) ? (cVin - uVin) : (cVin + 3600 - uVin);
-              iruppu = Math.max(0, Math.min(aathi, iruppu));
-              const sel = Math.max(0, aathi - iruppu);
+              let iruppu, sel;
+              if (starShiftedToNext) {
+                sel = Math.max(0, Math.min(aathi, uVin - pVin));
+                iruppu = Math.max(0, aathi - sel);
+              } else {
+                iruppu = (uVin <= cVin) ? (cVin - uVin) : (cVin + 3600 - uVin);
+                iruppu = Math.max(0, Math.min(aathi, iruppu));
+                sel = Math.max(0, aathi - iruppu);
+              }
 
               // 1. Update Moon Pada, Moon Rasi (for dual-Rasi stars) & Moon Navamsam (Amsam) directly from JSON!
               const M = calc.planets.Moon;
@@ -18267,10 +18290,12 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             "3. நட்சத்திர ஆதியந்தம் (பரம் = (60.00 - நேற்றைய நட்சத்திர முடிவு) + இன்றைய நட்சத்திர முடிவு; செல் = உதயாதி - நேற்றைய முடிவு; இருப்பு = பரம் - செல்) — அடிப்படை-60 (Base-60) கழித்தலில் ஏதேனும் தவறு உள்ளதா? (உதாரணம்: 35.10 - 20.28 = 14.42-க்கு பதிலாக 34.42 எனத் தவறாக எழுதியிருந்தால் சுட்டிக்காட்டவும்).",
             "4. உடுமகாதிசை இருப்பு = (இருப்பு விநாடி × திசை வருடம்) / ஆதி விநாடி கணக்கு மற்றும் தசா-புத்தி தேதிகள் சரியா?",
             "5. இராசி கட்டம், நவாம்ச கட்டம், பாதசார அட்டவணை மற்றும் பக்கங்களுக்கு இடையே (பக்கம் 1, 7, 8, 10, 11, 12, 18, 19, 25, 26) ஏதேனும் முரண்பாடு அல்லது தவறு உள்ளதா?",
+            "6. நோட்புக் மற்றும் PDF இரண்டும் கொடுக்கப்பட்டிருந்தால், இரண்டிலும் உள்ள லக்னம், நட்சத்திரம், திசை இருப்பு மற்றும் 9 கிரகங்களின் இராசி–நவாம்ச கட்டங்களை ஒப்பிட்டு எங்கே வித்தியாசம் உள்ளது என்பதைத் தெளிவாகக் காட்டவும்.",
+            "முக்கிய விதி: LaTeX குறியீடுகள் ($, \\mathbf, \\frac, \\times) எதுவும் பயன்படுத்தாதீர்கள். சாதாரணத் தமிழ் மற்றும் எண்களில் மட்டும் தெளிவாக எழுதுங்கள்.",
             "பதிலை கீழே உள்ள வடிவத்தில் தெளிவான தமிழில் மட்டும் தரவும்:",
             "### ✅ சரியாக உள்ளவை",
             "### ❌ கண்டுபிடிக்கப்பட்ட பிழைகள் & சரியான கணக்கு (இருந்தால்)",
-            "### 📋 பக்க வாரியான / இறுதிப் பரிந்துரை"
+            "### 📊 நோட்புக் vs ஜாதக PDF ஒப்பீடு & இறுதிப் பரிந்துரை"
           ].join("\n");
 
           let models = ["gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3.0-flash", "gemini-2.5-flash"];
@@ -18349,7 +18374,13 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           try { localStorage.setItem("mj_gemini_api_key_verified_v1", "1"); } catch (e) {}
           st.forceShowKeyInput = false;
 
-          const formatted = escapeHtml(replyText)
+          const cleanText = String(replyText || "")
+            .replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, "($1 ÷ $2)")
+            .replace(/\\mathbf\{([^}]*)\}/g, "$1")
+            .replace(/\\text\{([^}]*)\}/g, "$1")
+            .replace(/\\times/g, "×")
+            .replace(/\$/g, "");
+          const formatted = escapeHtml(cleanText)
             .replace(/^### (.*)$/gm, '<div class="font-black text-sm text-[#6b0f22] mt-3 mb-1 border-b border-amber-300 pb-1">$1</div>')
             .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
             .replace(/\n/g, '<br/>');
