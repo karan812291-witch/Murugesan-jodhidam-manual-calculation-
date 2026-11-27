@@ -740,7 +740,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — நண்பர் ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.33</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.34</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-rose-500 text-white shadow">🔐 ஒவ்வொரு தேதி / நேர மாற்றத்திற்கும் ரகசிய எண் பாதுகாப்பு</span>
           </div>
@@ -1140,7 +1140,6 @@
     <div id="poruthamTabContainer" class="hidden max-w-5xl mx-auto px-3 sm:px-6 pb-8"></div>
     <div id="vasthuTabContainer" class="hidden max-w-5xl mx-auto px-3 sm:px-6 pb-8"></div>
     <div id="calendarTabContainer" class="hidden max-w-6xl mx-auto px-3 sm:px-6 pb-8"></div>
-    <div id="auditTabContainer" class="hidden max-w-5xl mx-auto px-3 sm:px-6 pb-8"></div>
   </main>
 
   <!-- 📞 Friend App Support Contact + Terms & Conditions -->
@@ -12359,7 +12358,6 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       <button id="btnTabPoruthamView" type="button" onclick="switchMainAppTab('porutham')" class="px-4 py-2.5 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-950 border-2 border-pink-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition"><span>💍</span><span>திருமண பொருத்தம் (10 பொருத்தம்)</span></button>
       <button id="btnTabVasthuView" type="button" onclick="switchMainAppTab('vasthu')" class="px-4 py-2.5 rounded-xl bg-teal-100 hover:bg-teal-200 text-teal-950 border-2 border-teal-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition"><span>🏠</span><span>வாஸ்து சாஸ்திரம் (ஆயாதி)</span></button>
       <button id="btnTabCalendarView" type="button" onclick="switchMainAppTab('calendar')" class="px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 border-2 border-amber-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition"><span>📅</span><span>நல்ல நாள் காலண்டர் (Full Year)</span></button>
-      <button id="btnTabAuditView" type="button" onclick="switchMainAppTab('audit')" class="px-4 py-2.5 rounded-xl bg-indigo-100 hover:bg-indigo-200 text-indigo-950 border-2 border-indigo-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition"><span>🔍</span><span>நோட்புக் &amp; PDF சரிபார்ப்பு</span></button>
           <button id="btnTabDasa100View" type="button" onclick="switchMainAppTab('dasa100')" class="px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 border-2 border-amber-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
             <span>📅</span>
             <span>2. தசா புத்தி விபரம் (பிறந்தது முதல் 100 வயது வரை)</span>
@@ -17806,221 +17804,6 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             if (topTitle) topTitle.textContent = "📅 முழு வருட நல்ல நாள் காலண்டர்";
           }
           if (typeof window.mjCloseSideMenu === "function") window.mjCloseSideMenu();
-        };
-      }
-    })();
-  </script>
-
-
-  <script id="mjNotebookPdfAuditScript">
-    (function() {
-      window._mjAuditState = window._mjAuditState || {
-        reportHtml: "",
-        busy: false,
-        statusText: ""
-      };
-
-      function fileToBase64(file) {
-        return new Promise(function(resolve, reject) {
-          const r = new FileReader();
-          r.onload = function() {
-            const res = String(r.result || "");
-            const idx = res.indexOf(",");
-            resolve({ mime: file.type || "image/jpeg", data: idx !== -1 ? res.slice(idx + 1) : res });
-          };
-          r.onerror = reject;
-          r.readAsDataURL(file);
-        });
-      }
-
-      async function pdfToPageParts(file, maxPages) {
-        if (typeof pdfjsLib === "undefined") {
-          return [await fileToBase64(file)];
-        }
-        const buf = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-        const total = pdf.numPages;
-        // Pick key calculation & chart pages if > maxPages (e.g. 1,2,8,9,11,12,13,14,19,20,26,27)
-        const priority = [1, 2, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19, 20, 26, 27];
-        let pages = [];
-        if (total <= maxPages) {
-          for (let p = 1; p <= total; p++) pages.push(p);
-        } else {
-          priority.forEach(function(p) { if (p <= total && pages.length < maxPages) pages.push(p); });
-        }
-        const parts = [];
-        for (let i = 0; i < pages.length; i++) {
-          const pg = await pdf.getPage(pages[i]);
-          const vp = pg.getViewport({ scale: 1.35 });
-          const cv = document.createElement("canvas");
-          cv.width = vp.width; cv.height = vp.height;
-          await pg.render({ canvasContext: cv.getContext("2d"), viewport: vp }).promise;
-          const url = cv.toDataURL("image/jpeg", 0.82);
-          parts.push({ mime: "image/jpeg", data: url.split(",")[1] });
-        }
-        return parts;
-      }
-
-      function escapeHtml(s) {
-        return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-      }
-
-      window.mjRunNotebookPdfAudit = async function() {
-        const st = window._mjAuditState;
-        if (st.busy) return;
-        const nbInput = document.getElementById("inpAuditNotebookFile");
-        const pdfInput = document.getElementById("inpAuditPdfFile");
-        const nbFile = nbInput && nbInput.files ? nbInput.files[0] : null;
-        const pdfFile = pdfInput && pdfInput.files ? pdfInput.files[0] : null;
-        if (!nbFile && !pdfFile) {
-          if (typeof showToast === "function") showToast("⚠️ முதலில் நோட்புக் படம் அல்லது ஜாதக PDF-ஐ தேர்வு செய்யவும்!", "error");
-          return;
-        }
-
-        let apiKey = (typeof window.mjGetLocalGeminiKey === "function") ? window.mjGetLocalGeminiKey() : "";
-        const customKey = (document.getElementById("inpAuditGeminiKey")?.value || "").trim();
-        if (customKey) {
-          apiKey = customKey;
-          try { localStorage.setItem("mj_gemini_api_key_v1", customKey); } catch (e) {}
-        }
-        if (!apiKey) {
-          if (typeof showToast === "function") showToast("🔑 Gemini API Key உள்ளிடவும்!", "error");
-          return;
-        }
-
-        st.busy = true;
-        st.statusText = "⏳ கோப்புகள் தயார் செய்யப்பட்டு AI சரிபார்ப்பு நடக்கிறது...";
-        window.mjRenderAuditTab();
-
-        try {
-          const inlineParts = [];
-          if (nbFile) {
-            if (nbFile.type === "application/pdf") {
-              const p1 = await pdfToPageParts(nbFile, 4);
-              p1.forEach(function(x) { inlineParts.push({ inline_data: { mime_type: x.mime, data: x.data } }); });
-            } else {
-              const b1 = await fileToBase64(nbFile);
-              inlineParts.push({ inline_data: { mime_type: b1.mime, data: b1.data } });
-            }
-          }
-          if (pdfFile) {
-            const p2 = await pdfToPageParts(pdfFile, 14);
-            p2.forEach(function(x) { inlineParts.push({ inline_data: { mime_type: x.mime, data: x.data } }); });
-          }
-
-          const prompt = [
-            "நீங்கள் ஒரு அனுபவமிக்க தமிழ் வாக்கிய / பாம்பு பஞ்சாங்க ஜோதிடக் கணித ஆய்வாளர்.",
-            "கீழே இணைக்கப்பட்டுள்ள கைக்கணக்கு நோட்புக் படம் மற்றும்/அல்லது ஜாதகப் புத்தகம் PDF பக்கங்களை மிகத் துல்லியமாகச் சரிபார்க்கவும்:",
-            "1. சூரிய உதயம் மற்றும் உதயாதி நாழிகை = (பிறந்த நேரம் - சூரிய உதயம்) × 2.5 சரியா?",
-            "2. இராசி பிரமாணக் கூட்டுத்தொகை மற்றும் லக்ன இருப்பு / செல்லா நாழிகை சரியா?",
-            "3. நட்சத்திர ஆதியந்தம் (பரம் = (60.00 - நேற்றைய நட்சத்திர முடிவு) + இன்றைய நட்சத்திர முடிவு; செல் = உதயாதி - நேற்றைய முடிவு; இருப்பு = பரம் - செல்) — அடிப்படை-60 (Base-60) கழித்தலில் ஏதேனும் தவறு உள்ளதா? (உதாரணம்: 35.10 - 20.28 = 14.42-க்கு பதிலாக 34.42 எனத் தவறாக எழுதியிருந்தால் சுட்டிக்காட்டவும்).",
-            "4. உடுமகாதிசை இருப்பு = (இருப்பு விநாடி × திசை வருடம்) / ஆதி விநாடி கணக்கு மற்றும் தசா-புத்தி தேதிகள் சரியா?",
-            "5. இராசி கட்டம், நவாம்ச கட்டம், பாதசார அட்டவணை மற்றும் பக்கங்களுக்கு இடையே (பக்கம் 1, 7, 8, 10, 11, 12, 18, 19, 25, 26) ஏதேனும் முரண்பாடு அல்லது தவறு உள்ளதா?",
-            "பதிலை கீழே உள்ள வடிவத்தில் தெளிவான தமிழில் மட்டும் தரவும்:",
-            "### ✅ சரியாக உள்ளவை",
-            "### ❌ கண்டுபிடிக்கப்பட்ட பிழைகள் & சரியான கணக்கு (இருந்தால்)",
-            "### 📋 பக்க வாரியான / இறுதிப் பரிந்துரை"
-          ].join("\n");
-
-          const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-flash-lite"];
-          let replyText = "";
-          let lastErr = "";
-          for (let m = 0; m < models.length; m++) {
-            try {
-              const url = "https://generativelanguage.googleapis.com/v1beta/models/" + models[m] + ":generateContent?key=" + encodeURIComponent(apiKey);
-              const resp = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  contents: [{ parts: [{ text: prompt }].concat(inlineParts) }]
-                })
-              });
-              const data = await resp.json();
-              if (!resp.ok) {
-                lastErr = (data && data.error && data.error.message) ? data.error.message : ("HTTP " + resp.status);
-                continue;
-              }
-              replyText = data?.candidates?.[0]?.content?.parts?.map(function(pt){ return pt.text || ""; }).join("\n") || "";
-              if (replyText) break;
-            } catch (err) {
-              lastErr = err.message || String(err);
-            }
-          }
-
-          if (!replyText) throw new Error(lastErr || "AI பதில் கிடைக்கவில்லை.");
-
-          const formatted = escapeHtml(replyText)
-            .replace(/^### (.*)$/gm, '<div class="font-black text-sm text-[#6b0f22] mt-3 mb-1 border-b border-amber-300 pb-1">$1</div>')
-            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-            .replace(/\n/g, '<br/>');
-
-          st.reportHtml = '<div class="p-4 rounded-2xl bg-white border-2 border-indigo-400 shadow-md text-xs leading-relaxed text-slate-800 space-y-1">' + formatted + '</div>';
-          st.statusText = "✅ சரிபார்ப்பு முடிந்தது!";
-        } catch (e) {
-          st.statusText = "❌ பிழை: " + (e.message || e);
-        } finally {
-          st.busy = false;
-          window.mjRenderAuditTab();
-        }
-      };
-
-      window.mjRenderAuditTab = function() {
-        const box = document.getElementById("auditTabContainer");
-        if (!box) return;
-        const st = window._mjAuditState;
-        const savedKey = (typeof window.mjGetLocalGeminiKey === "function") ? window.mjGetLocalGeminiKey() : "";
-
-        box.innerHTML = `
-          <div class="space-y-4">
-            <div class="p-4 rounded-2xl bg-gradient-to-r from-[#1e1b4b] via-[#3730a3] to-[#1e1b4b] text-white shadow-lg border-2 border-amber-400">
-              <div class="text-base sm:text-lg font-black">🔍 கைக்கணக்கு நோட்புக் &amp; ஜாதக PDF சரிபார்ப்பு (AI Audit)</div>
-              <div class="text-xs text-indigo-100 font-bold mt-0.5">கைக்கணக்கு நோட்புக் படம் அல்லது முழு ஜாதக PDF-ஐ upload செய்தால், எந்தப் பக்கத்தில் அல்லது கணக்கில் தவறு உள்ளது என்பதைக் கண்டுபிடித்துக் காட்டும்.</div>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-white border-2 border-indigo-300 shadow-sm space-y-3">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div class="p-3 rounded-xl bg-amber-50/70 border border-amber-300">
-                  <label class="block text-xs font-black text-amber-950 mb-1">📓 1. கைக்கணக்கு நோட்புக் படம் / PDF</label>
-                  <input id="inpAuditNotebookFile" type="file" accept="image/*,application/pdf" class="w-full text-xs font-bold" />
-                </div>
-                <div class="p-3 rounded-xl bg-indigo-50/70 border border-indigo-300">
-                  <label class="block text-xs font-black text-indigo-950 mb-1">📄 2. முழு ஜாதகப் புத்தகம் PDF (விருப்பம்)</label>
-                  <input id="inpAuditPdfFile" type="file" accept="application/pdf" class="w-full text-xs font-bold" />
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-[11px] font-extrabold text-slate-700 mb-1">🔑 Gemini API Key ${savedKey ? '<span class="text-emerald-700">(✅ சேமிக்கப்பட்டுள்ளது — மாற்ற வேண்டுமானால் மட்டும் உள்ளிடவும்)</span>' : '(முதல் முறை மட்டும் உள்ளிடவும்)'}</label>
-                <input id="inpAuditGeminiKey" type="password" value="" placeholder="${savedKey ? '•••••••••••• (ஏற்கனவே சேமிப்பில் உள்ளது)' : 'AIza... API Key இங்கே ஒட்டவும்'}" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-slate-50" />
-              </div>
-
-              <div class="flex flex-wrap items-center gap-3">
-                <button type="button" onclick="mjRunNotebookPdfAudit()" ${st.busy ? 'disabled' : ''} class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-600 hover:to-violet-600 text-white font-black text-xs sm:text-sm shadow cursor-pointer disabled:opacity-60">
-                  ${st.busy ? '⏳ சரிபார்க்கிறது...' : '🔍 கணிப்புகளைச் சரிபார் (Find Errors)'}
-                </button>
-                ${st.reportHtml ? '<button type="button" onclick="window.print()" class="px-4 py-2 rounded-xl bg-slate-800 text-white font-extrabold text-xs shadow cursor-pointer">🖨️ அச்சு / PDF</button>' : ''}
-              </div>
-
-              ${st.statusText ? '<div class="text-xs font-black text-indigo-900 bg-indigo-50 px-3 py-2 rounded-xl border border-indigo-200">' + st.statusText + '</div>' : ''}
-            </div>
-
-            ${st.reportHtml}
-          </div>
-        `;
-      };
-
-      if (typeof switchMainAppTab === "function") {
-        const _prevSwitchAudit = switchMainAppTab;
-        window.switchMainAppTab = function(tabName) {
-          _prevSwitchAudit(tabName);
-          const aEl = document.getElementById("auditTabContainer");
-          const isAud = (tabName === "audit");
-          if (aEl) aEl.classList.toggle("hidden", !isAud);
-          if (isAud) {
-            window.mjRenderAuditTab();
-            const topTitle = document.getElementById("mjSubPageTopTitle");
-            if (topTitle) topTitle.textContent = "🔍 நோட்புக் & PDF சரிபார்ப்பு";
-          }
         };
       }
     })();

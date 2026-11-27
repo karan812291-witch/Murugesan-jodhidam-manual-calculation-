@@ -661,7 +661,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — முதன்மை ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.33</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.34</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white shadow">👑 முதன்மைப் பதிப்பு (ரகசிய எண் உருவாக்கி)</span>
           </div>
@@ -18214,7 +18214,34 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             "### 📋 பக்க வாரியான / இறுதிப் பரிந்துரை"
           ].join("\n");
 
-          const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-flash-lite"];
+          // Live-discover available Gemini models for this API key (avoids deprecated 2.5-flash-lite errors)
+          let models = ["gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3.0-flash", "gemini-2.5-flash"];
+          try {
+            const mResp = await fetch("https://generativelanguage.googleapis.com/v1beta/models?key=" + encodeURIComponent(apiKey));
+            if (mResp.ok) {
+              const mJson = await mResp.json();
+              const live = (mJson.models || [])
+                .filter(function(m) {
+                  const methods = m.supportedGenerationMethods || [];
+                  const n = (m.name || "").toLowerCase();
+                  return methods.indexOf("generateContent") !== -1 && n.indexOf("gemini") !== -1 && n.indexOf("embedding") === -1 && n.indexOf("imagen") === -1;
+                })
+                .map(function(m) { return String(m.name || "").replace(/^models\//, ""); })
+                .sort(function(a, b) {
+                  const score = function(s) {
+                    let sc = 0;
+                    if (s.indexOf("3.5") !== -1) sc += 50;
+                    else if (s.indexOf("3.0") !== -1 || s.indexOf("gemini-3") !== -1) sc += 40;
+                    else if (s.indexOf("2.5") !== -1) sc += 20;
+                    if (s.indexOf("flash") !== -1) sc += 10;
+                    if (s.indexOf("lite") !== -1) sc -= 2;
+                    return sc;
+                  };
+                  return score(b) - score(a);
+                });
+              if (live.length > 0) models = live;
+            }
+          } catch (e) {}
           let replyText = "";
           let lastErr = "";
           for (let m = 0; m < models.length; m++) {
