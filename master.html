@@ -661,7 +661,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — முதன்மை ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.45</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.46</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white shadow">👑 முதன்மைப் பதிப்பு (ரகசிய எண் உருவாக்கி)</span>
           </div>
@@ -14745,7 +14745,8 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               </button>
             `;
           }
-          /* Borderline alert pill removed per user request */
+          wrap.innerHTML = '<div class="no-print px-3 py-1 rounded-full bg-slate-100 border border-slate-300 text-slate-700 font-bold text-[10.5px] sm:text-xs text-center">💡 குறிப்பு: எந்தக் கிரகத்தின் / லக்னத்தின் மீதும் தட்டினால் முழு விளக்கம் &amp; அடுத்த மாற்றத் தேதி தெரியும்</div>';
+          if (grid.parentNode) grid.parentNode.insertBefore(wrap, grid);
         });
       }
 

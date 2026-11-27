@@ -1,4 +1,4 @@
-const MJ_CACHE_NAME = "murugesan-jodhidam-v26-45";
+const MJ_CACHE_NAME = "murugesan-jodhidam-v26-46";
 const MJ_PRECACHE_URLS = [
   "./",
   "./index.html",
