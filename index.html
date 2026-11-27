@@ -740,7 +740,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — நண்பர் ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.38</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.39</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-rose-500 text-white shadow">🔐 ஒவ்வொரு தேதி / நேர மாற்றத்திற்கும் ரகசிய எண் பாதுகாப்பு</span>
           </div>
@@ -17806,6 +17806,84 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           if (typeof window.mjCloseSideMenu === "function") window.mjCloseSideMenu();
         };
       }
+    })();
+  </script>
+
+
+  <!-- Global Confirmation Popup for Delete / Update Actions -->
+  <div id="mjGlobalConfirmModal" class="no-print fixed inset-0 z-[99999] bg-black/65 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="w-full max-w-sm rounded-3xl bg-[#fffdf9] border-4 double border-[#8b1c1c] shadow-2xl p-5 text-center space-y-3">
+      <div class="text-3xl">⚠️</div>
+      <h3 id="mjConfirmTitle" class="text-base font-black text-[#6b0f22]">உறுதிப்படுத்தவும்</h3>
+      <p id="mjConfirmMsg" class="text-xs font-bold text-slate-700 leading-relaxed">இந்த மாற்றத்தை / நீக்கத்தைச் செய்ய வேண்டுமா?</p>
+      <div class="flex gap-2.5 pt-1">
+        <button type="button" id="mjConfirmNoBtn" onclick="mjCloseGlobalConfirm(false)" class="flex-1 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-900 font-black text-xs cursor-pointer">❌ வேண்டாம்</button>
+        <button type="button" id="mjConfirmYesBtn" onclick="mjCloseGlobalConfirm(true)" class="flex-1 py-2.5 rounded-xl bg-[#6b0f22] hover:bg-[#8b1c1c] text-white font-black text-xs shadow cursor-pointer">✅ ஆம், செய்</button>
+      </div>
+    </div>
+  </div>
+  <script id="mjGlobalConfirmGuardScript">
+    (function() {
+      let _pendingYes = null;
+      window.mjConfirmAction = function(title, msg, onYes) {
+        const m = document.getElementById("mjGlobalConfirmModal");
+        const t = document.getElementById("mjConfirmTitle");
+        const p = document.getElementById("mjConfirmMsg");
+        if (!m) { if (onYes) onYes(); return; }
+        if (t) t.textContent = title || "உறுதிப்படுத்தவும்";
+        if (p) p.textContent = msg || "இந்தச் செயலைச் செய்ய வேண்டுமா?";
+        _pendingYes = onYes;
+        m.classList.remove("hidden");
+        m.classList.add("flex");
+      };
+
+      window.mjCloseGlobalConfirm = function(confirmed) {
+        const m = document.getElementById("mjGlobalConfirmModal");
+        if (m) {
+          m.classList.add("hidden");
+          m.classList.remove("flex");
+        }
+        const cb = _pendingYes;
+        _pendingYes = null;
+        if (confirmed && typeof cb === "function") cb();
+      };
+
+      function wrapConfirm(fnName, title, msg) {
+        const orig = window[fnName];
+        if (typeof orig !== "function" || orig._mjConfirmWrapped) return;
+        const wrapped = function() {
+          const ctx = this;
+          const args = arguments;
+          window.mjConfirmAction(title, msg, function() {
+            orig.apply(ctx, args);
+          });
+        };
+        wrapped._mjConfirmWrapped = true;
+        window[fnName] = wrapped;
+      }
+
+      function installGuards() {
+        wrapConfirm("mjResetAuditKey", "🔑 API Key மாற்ற / நீக்க வேண்டுமா?", "சேமிக்கப்பட்ட Gemini API Key நீக்கப்பட்டு, புதிய Key உள்ளிடத் திரை திறக்கும். தொடரலாமா?");
+        wrapConfirm("mjClearLocalGeminiKey", "🔑 Gemini API Key நீக்க வேண்டுமா?", "சேமிக்கப்பட்ட Gemini API Key-ஐ நிரந்தரமாக நீக்க வேண்டுமா?");
+        wrapConfirm("mjDeleteDailyStarsJsonYear", "🗑️ பஞ்சாங்க JSON நீக்க வேண்டுமா?", "தேர்ந்தெடுக்கப்பட்ட வருட பஞ்சாங்க JSON தரவை நீக்க வேண்டுமா?");
+        wrapConfirm("mjDeletePadasaramJsonYear", "🗑️ பாதசார JSON நீக்க வேண்டுமா?", "தேர்ந்தெடுக்கப்பட்ட வருட பாதசார JSON தரவை நீக்க வேண்டுமா?");
+        wrapConfirm("mjDeleteCloudPdfForYear", "🗑️ Cloud PDF நீக்க வேண்டுமா?", "இந்த வருடப் பஞ்சாங்க PDF கோப்பை Cloud-லிருந்து நீக்க வேண்டுமா?");
+        wrapConfirm("mjDeleteSelectedPanchangamYear", "🗑️ பஞ்சாங்க வருடம் நீக்க வேண்டுமா?", "தேர்ந்தெடுக்கப்பட்ட பஞ்சாங்க வருடத்தை நீக்க வேண்டுமா?");
+        wrapConfirm("deleteCustomYearFromStore", "🗑️ பஞ்சாங்க வருடம் நீக்க வேண்டுமா?", "இந்த வருடப் பஞ்சாங்கத் தரவை நீக்க வேண்டுமா?");
+        wrapConfirm("deleteRowFromAddPanchangamPlanet", "🗑️ வரியை நீக்க வேண்டுமா?", "இந்தப் பஞ்சாங்க வரிசையை நீக்க வேண்டுமா?");
+        wrapConfirm("saveCurrentYearInAddPanchangamTab", "💾 பஞ்சாங்கம் Update செய்ய வேண்டுமா?", "இந்த வருடப் பஞ்சாங்கத் தரவைச் சேமிக்க / Update செய்ய வேண்டுமா?");
+        wrapConfirm("mjSaveCustomPasswords", "💾 கடவுச்சொல் Update செய்ய வேண்டுமா?", "புதிய கடவுச்சொல் மாற்றங்களைச் சேமிக்க வேண்டுமா?");
+        wrapConfirm("mjResetAllPasswordsToDefault", "⚠️ கடவுச்சொற்களை Reset செய்ய வேண்டுமா?", "எல்லா கடவுச்சொற்களையும் பழைய Default நிலைக்கு மாற்ற வேண்டுமா?");
+        wrapConfirm("mjSaveMasterPaymentFees", "💾 கட்டண விவரம் Update செய்ய வேண்டுமா?", "நண்பர் ஆப் கட்டண விவரங்களை Cloud-ல் Update செய்ய வேண்டுமா?");
+        wrapConfirm("mjResetNewHoroscopeForm", "🔄 படிவத்தை Reset செய்ய வேண்டுமா?", "தற்போது உள்ளிடப்பட்டுள்ள ஜாதக விவரங்களை அழித்துப் புதியதாகத் தொடங்க வேண்டுமா?");
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", installGuards);
+      } else {
+        installGuards();
+      }
+      setTimeout(installGuards, 800);
     })();
   </script>
 
