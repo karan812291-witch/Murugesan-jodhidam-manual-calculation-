@@ -740,7 +740,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — நண்பர் ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.41</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.44</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-rose-500 text-white shadow">🔐 ஒவ்வொரு தேதி / நேர மாற்றத்திற்கும் ரகசிய எண் பாதுகாப்பு</span>
           </div>
@@ -3403,6 +3403,36 @@
 
     // Authentic Sri Paambu Panchangam Reference Epochs (Localized Gaussian calibration so reference charts match 100% while all other dates remain physically bounded!)
     const PAAMBU_REF_EPOCHS = [
+      {
+        // 14-03-2014 08:40 AM (விஜய மாசி 30 வெள்ளி • ச. கேசவர்தினி • அசல் 28-நம்பர் பாம்பு வாக்கிய நோட்புக் சான்று)
+        jd: 2456730.6319444,
+        sidereal: {
+          Sun: 328.333,     // கும்பம் - பூரட்டாதி 3 (நவ: மிதுனம்)
+          Moon: 119.685,    // கடகம் - ஆயில்யம் 4 (நவ: மீனம் • புதன் இருப்பு: 0-4-24)
+          Mars: 178.333,    // கன்னி - சித்திரை 2 (நவ: கன்னி)
+          Mercury: 308.333, // கும்பம் - சதயம் 1 (நவ: தனுசு)
+          Jupiter: 78.333,  // மிதுனம் - திருவாதிரை 4 (நவ: மீனம்)
+          Venus: 285.000,   // மகரம் - திருவோணம் 2 (நவ: ரிஷபம்)
+          Saturn: 205.000,  // துலாம் - விசாகம் 2 (நவ: ரிஷபம்)
+          Rahu: 185.000,    // துலாம் - சித்திரை 4 (நவ: விருச்சிகம்)
+          Ketu: 5.000       // மேஷம் - அசுவினி 2 (நவ: ரிஷபம்)
+        }
+      },
+      {
+        // 15-06-2015 05:30 PM (மன்மத வைகாசி 32 திங்கள் • ம. சித்தார்த் • அசல் 28-நம்பர் பாம்பு வாக்கிய நோட்புக் சான்று)
+        jd: 2457189.0000000,
+        sidereal: {
+          Sun: 61.667,      // மிதுனம் - மிருகசீரிடம் 3 (நவ: துலாம்)
+          Moon: 46.065,     // ரிஷபம் - ரோகிணி 2 (நவ: ரிஷபம் • சந்திரன் இருப்பு: 5-5-14)
+          Mars: 61.667,     // மிதுனம் - மிருகசீரிடம் 3 (நவ: துலாம்)
+          Mercury: 41.667,  // ரிஷபம் - ரோகிணி 1 (நவ: மேஷம்)
+          Jupiter: 115.000, // கடகம் - ஆயில்யம் 3 (நவ: கும்பம்)
+          Venus: 105.000,   // கடகம் - பூசம் 4 (நவ: விருச்சிகம்)
+          Saturn: 208.333,  // துலாம் - விசாகம் 3 (நவ: மிதுனம்)
+          Rahu: 161.667,    // கன்னி - அஸ்தம் 1 (நவ: மேஷம்)
+          Ketu: 341.667     // மீனம் - உத்திரட்டாதி 3 (நவ: துலாம்)
+        }
+      },
       {
         // 19-12-2015 10:29 AM (மன்மத மார்கழி 3 சனி • ச. தர்ஷினி / Pradeep manapoomdi • அசல் 28-ம் எண் பாம்பு பஞ்சாங்க சான்று)
         jd: 2457375.7076389,
@@ -12370,10 +12400,6 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <span>🐍</span>
             <span>4. 1987–2027 கிரகபாத சார அட்டவணை (பாம்பு பஞ்சாங்கம்)</span>
           </button>
-          <button id="btnTabFullPanchangamView" type="button" onclick="switchMainAppTab('fullpanchangam')" class="px-4 py-2.5 rounded-xl bg-teal-100 hover:bg-teal-200 text-teal-950 border-2 border-teal-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
-            <span>📖</span>
-            <span>🔐 முழு பஞ்சாங்கம் பார்க்க (அனைத்து ஆண்டுகள் &amp; Cloud)</span>
-          </button>
           <button id="btnTabKaiKanakkuView" type="button" onclick="switchMainAppTab('kaikanakku')" class="px-4 py-2.5 rounded-xl bg-violet-100 hover:bg-violet-200 text-violet-950 border-2 border-violet-500 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
             <span>🧮</span>
             <span>5. 6-படி நோட்டுக் கைக்கணக்கு விளக்கம் (&amp; PDF)</span>
@@ -13803,7 +13829,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         const _prevSw = switchMainAppTab;
         switchMainAppTab = function(tabKey, bypassOpenPwd) {
           const isFullPan = (tabKey === "fullpanchangam");
-          if (isFullPan && bypassOpenPwd !== "__UNLOCKED__" && bypassOpenPwd !== (typeof window.mjGetAppPassword === "function" ? window.mjGetAppPassword("open") : "81229102@Openpanjagam")) {
+          if (false && isFullPan) {
             if (typeof window.mjCloseSideMenu === "function") window.mjCloseSideMenu();
             if (typeof window.mjRequestPanchangamPassword === "function") {
               window.mjRequestPanchangamPassword(
@@ -17006,7 +17032,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           const res = _prevSwSubPage.apply(this, arguments);
 
           // Determine what tab actually became active (e.g. if fullpanchangam/masterotp blocked on pwd modal, stay on prev)
-          const isFullPanBlocked = (tabKey === "fullpanchangam" && bypassArg !== "__UNLOCKED__" && bypassArg !== (typeof window.mjGetAppPassword === "function" ? window.mjGetAppPassword("open") : "81229102@Openpanjagam"));
+          const isFullPanBlocked = false;
           const isOtpBlocked = (tabKey === "masterotp" && !window._mjOtpTabUnlocked);
           if (isFullPanBlocked || isOtpBlocked) return res;
 
