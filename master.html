@@ -661,7 +661,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — முதன்மை ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.37</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.38</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white shadow">👑 முதன்மைப் பதிப்பு (ரகசிய எண் உருவாக்கி)</span>
           </div>
@@ -18141,7 +18141,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             throw new Error((errJson && errJson.error && errJson.error.message) ? errJson.error.message : ("HTTP " + resp.status));
           }
           try {
-            localStorage.setItem("mj_gemini_api_key_v1", key);
+            localStorage.setItem("MJ_GEMINI_API_KEY_LOCAL", key);
             localStorage.setItem("mj_gemini_api_key_verified_v1", "1");
           } catch (e) {}
           st.forceShowKeyInput = false;
@@ -18159,7 +18159,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
 
       window.mjResetAuditKey = function() {
         try {
-          localStorage.removeItem("mj_gemini_api_key_v1");
+          localStorage.removeItem("MJ_GEMINI_API_KEY_LOCAL");
           localStorage.removeItem("mj_gemini_api_key_verified_v1");
         } catch (e) {}
         window._mjAuditState.forceShowKeyInput = true;
@@ -18228,7 +18228,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         if (customKey) {
           apiKey = customKey;
           try {
-            localStorage.setItem("mj_gemini_api_key_v1", customKey);
+            localStorage.setItem("MJ_GEMINI_API_KEY_LOCAL", customKey);
             localStorage.setItem("mj_gemini_api_key_verified_v1", "1");
           } catch (e) {}
         }
