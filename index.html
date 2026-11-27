@@ -16498,6 +16498,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                 </tbody>
               </table>
             </div>
+            ${typeof window.mjBuildPoruthamDetailedHtml === 'function' ? window.mjBuildPoruthamDetailedHtml(res) : ''}
           </div>
         `;
 
@@ -16555,6 +16556,38 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               </div>
             </div>
 
+            <details id="mjVasthuCustomizeDetails" class="rounded-2xl bg-teal-50/70 border border-teal-300 p-3 text-xs">
+              <summary class="font-black text-[#0f3d3e] cursor-pointer select-none flex items-center justify-between">
+                <span>⚙️ வீடு அமைப்பு மாற்று (Customize: Rooms • Car Parking • 1st Floor)</span>
+                <span class="text-[11px] font-bold text-teal-700">Default: 2 BHK • Parking • Ground</span>
+              </summary>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-3 pt-2.5 border-t border-teal-200">
+                <div>
+                  <label class="block text-[11px] font-extrabold text-slate-800 mb-1">🛏️ படுக்கையறைகள் (Rooms)</label>
+                  <select id="inpVasthuBedrooms" class="w-full px-2.5 py-2 rounded-xl border border-teal-400 bg-white text-xs font-black">
+                    <option value="1" ${Number(st.bedrooms||2)===1?"selected":""}>1 BHK (1 Bedroom)</option>
+                    <option value="2" ${Number(st.bedrooms||2)===2?"selected":""}>2 BHK (2 Bedrooms - Default)</option>
+                    <option value="3" ${Number(st.bedrooms||2)===3?"selected":""}>3 BHK (3 Bedrooms)</option>
+                    <option value="4" ${Number(st.bedrooms||2)===4?"selected":""}>4 BHK (4 Bedrooms)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-extrabold text-slate-800 mb-1">🏢 மாடிகள் (Floors)</label>
+                  <select id="inpVasthuFloors" class="w-full px-2.5 py-2 rounded-xl border border-teal-400 bg-white text-xs font-black">
+                    <option value="g" ${(st.floors||"g")==="g"?"selected":""}>Ground Floor மட்டும் (Default)</option>
+                    <option value="g1" ${(st.floors||"g")==="g1"?"selected":""}>Ground + 1st Floor (G+1)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-extrabold text-slate-800 mb-1">🚗 கார் பார்க்கிங் (Car Parking)</label>
+                  <select id="inpVasthuParking" class="w-full px-2.5 py-2 rounded-xl border border-teal-400 bg-white text-xs font-black">
+                    <option value="yes" ${(st.parking!==false)?"selected":""}>✅ ஆம் (Car Parking வேணும்)</option>
+                    <option value="no" ${(st.parking===false)?"selected":""}>❌ இல்லை (வேண்டாம்)</option>
+                  </select>
+                </div>
+              </div>
+            </details>
+
             <div class="flex flex-wrap items-center justify-center gap-3">
               <button type="button" onclick="mjCalculateVasthuNow()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-stone-950 font-black text-sm shadow-lg border-2 border-teal-900 cursor-pointer">🏠 வாஸ்து கணிப்பு பார்</button>
               ${st.resultHtml ? `<button type="button" onclick="window.print()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-white font-extrabold text-xs shadow cursor-pointer">🖨️ அச்சு / PDF</button>` : ""}
@@ -16564,6 +16597,10 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             <div id="vasthuResultArea">${(!_mjIsFriend() || st.unlockedKey === st._pendingKey) ? st.resultHtml : ""}</div>
           </div>
         `;
+      
+        if (typeof window.mjDrawVasthu3dBlueprint === "function" && (!(_mjIsFriend()) || st.unlockedKey === st._pendingKey) && st.resultHtml) {
+          setTimeout(function() { window.mjDrawVasthu3dBlueprint(st.widthFt, st.lengthFt, st.facing, { bedrooms: st.bedrooms || 2, floors: st.floors || "g", parking: st.parking !== false }); }, 60);
+        }
       };
 
       window.mjVerifyVasthuOtp = function() {
@@ -16586,6 +16623,9 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         st.widthFt = Math.max(5, Number(document.getElementById("inpVasthuW")?.value || 30) || 30);
         st.lengthFt = Math.max(5, Number(document.getElementById("inpVasthuL")?.value || 40) || 40);
         st.facing = document.getElementById("inpVasthuFacing")?.value || "கிழக்கு";
+        st.bedrooms = Number(document.getElementById("inpVasthuBedrooms")?.value || st.bedrooms || 2);
+        st.floors = document.getElementById("inpVasthuFloors")?.value || st.floors || "g";
+        st.parking = (document.getElementById("inpVasthuParking")?.value || (st.parking === false ? "no" : "yes")) !== "no";
 
         const area = Math.round(st.widthFt * st.lengthFt);
         const aayam = ((area * 8) % 12) || 12;
@@ -16625,6 +16665,15 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                 <li><b>வடமேற்கு (வாயு மூலை):</b> விருந்தினர் அறை, கழிப்பறை / செப்டிக் டேங்க், வாகன நிறுத்தம்.</li>
               </ul>
             </div>
+
+            <div id="mjVasthu3dBlueprintCard" class="p-3.5 rounded-2xl bg-[#06162b] border-2 border-cyan-400 shadow-xl space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div class="font-black text-amber-300">🏗️ 3D வாஸ்து வீடு Blueprint (${st.widthFt} × ${st.lengthFt} அடி • ${st.facing})</div>
+                <button type="button" onclick="mjDownloadVasthu3dPng()" class="no-print px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-[11px] shadow cursor-pointer">📥 3D Blueprint PNG சேமி</button>
+              </div>
+              <canvas id="mjVasthu3dCanvas" width="960" height="640" class="w-full h-auto rounded-xl border border-cyan-500/40 bg-[#06162b]"></canvas>
+            </div>
+
           </div>
         `;
 
@@ -17043,6 +17092,344 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       } else {
         initWelcome();
       }
+    })();
+  </script>
+
+
+  <script id="mjPoruthamVasthu3dEnhancer">
+    (function() {
+      const PORUTHAM_INFO = {
+        "தினம்": {
+          why: "தம்பதிகளின் உடல் ஆரோக்கியம், மன அமைதி மற்றும் நீண்ட ஆயுள் நலத்திற்காகப் பார்க்கப்படுகிறது.",
+          good: "நோய் நொடியின்றி ஆரோக்கியமான, நிம்மதியான குடும்ப வாழ்க்கை அமையும்.",
+          bad: "அடிக்கடி சிறு உடல்நலக் குறைவு அல்லது மன அழுத்தம் வரலாம்; ஜாதக ஆரோக்கிய ஸ்தானம் பார்க்கவும்."
+        },
+        "கணம்": {
+          why: "இருவரின் குணநலன், கோபம்–பொறுமை மற்றும் மன ஒற்றுமையைக் கணிக்க உதவுகிறது.",
+          good: "இருவரும் ஒருவரை ஒருவர் புரிந்துகொண்டு ஒற்றுமையாக வாழ்வார்கள்.",
+          bad: "கருத்து வேறுபாடு மற்றும் ஈகோ மோதல்கள் வர வாய்ப்புண்டு; பொறுமை அவசியம்."
+        },
+        "மகேந்திரம்": {
+          why: "புத்திர பாக்கியம் (குழந்தைச் செல்வம்) மற்றும் குடும்ப விருத்திக்காகப் பார்க்கப்படுகிறது.",
+          good: "நல்ல சந்ததி, வம்ச விருத்தி மற்றும் செல்வச் செழிப்பு உண்டாகும்.",
+          bad: "குழந்தை பாக்கியத்தில் தாமதம் ஏற்படலாம்; இருவரின் 5-ம் இடம் (புத்திர ஸ்தானம்) சரிபார்க்க வேண்டும்."
+        },
+        "ஸ்திரீ தீர்க்கம்": {
+          why: "மணமகளின் தீர்க்க சுமங்கலி பாக்கியம் மற்றும் குடும்பத்தின் நீண்டகால வளர்ச்சிக்காகப் பார்க்கப்படுகிறது.",
+          good: "குடும்பத்தில் சுப காரியங்கள், நீண்ட ஆயுள் மற்றும் நிலைத்த செல்வம் பெருகும்.",
+          bad: "பொருளாதார ஏற்றத்தாழ்வுகள் வரலாம்; கணவன் ஜாதக ஆயுள் பலம் சிறப்பாக இருக்க வேண்டும்."
+        },
+        "யோனி": {
+          why: "தம்பதிகளுக்கு இடையேயான தாம்பத்ய இணக்கம் மற்றும் உடல்-மன நெருக்கத்திற்காகப் பார்க்கப்படுகிறது.",
+          good: "சிறந்த அன்னியோன்யம், பாசம் மற்றும் இல்லற மகிழ்ச்சி நிலைக்கும்.",
+          bad: "இல்லற இணக்கத்தில் சற்று இடைவெளி ஏற்படலாம்; சுக்கிரன்/செவ்வாய் பலம் பார்க்கவும்."
+        },
+        "ராசி": {
+          why: "வம்ச விருத்தி, குடும்ப ஒற்றுமை மற்றும் இரு குடும்பங்களின் இணைப்பிற்காகப் பார்க்கப்படுகிறது.",
+          good: "இரு குடும்பங்களும் ஒற்றுமையுடன் வாழ்வார்கள்; வம்சம் தழைக்கும்.",
+          bad: "சஷ்டாஷ்டக / துவிதுவாதச ராசி எனில் மனக்கசப்பு வரலாம்; ராசி அதிபதி பொருத்தம் இருந்தால் தோஷம் குறையும்."
+        },
+        "ராசி அதிபதி": {
+          why: "கணவன்–மனைவி இடையே நிரந்தர நட்பு, புரிதல் மற்றும் பரஸ்பர மரியாதைக்காகப் பார்க்கப்படுகிறது.",
+          good: "வாழ்நாள் முழுவதும் நல்ல நட்பும், விட்டுக்கொடுக்கும் மனப்பான்மையும் இருக்கும்.",
+          bad: "சிறிய விஷயங்களிலும் வாக்குவாதம் வரலாம்; குரு/சுக்கிர பார்வை இருந்தால் சரியாகும்."
+        },
+        "வசியம்": {
+          why: "ஒருவர் மீது ஒருவர் கொள்ளும் இயற்கையான ஈர்ப்பு, அன்பு மற்றும் ஈடுபாட்டிற்காகப் பார்க்கப்படுகிறது.",
+          good: "தம்பதிகளுக்குள் ஆழமான அன்பும், ஒருவர் கருத்துக்கு மற்றவர் மதிப்பும் இருக்கும்.",
+          bad: "அன்பின் வெளிப்பாடு சற்று குறைவாகத் தெரியலாம்; மற்ற முக்கியப் பொருத்தங்கள் இருந்தால் போதும்."
+        },
+        "ரஜ்ஜு": {
+          why: "மிக முக்கியமான மாங்கல்ய பலம், கணவன்–மனைவி நீண்ட ஆயுள் மற்றும் பிரிவின்மைக்காகப் பார்க்கப்படுகிறது.",
+          good: "மாங்கல்ய பலம் உறுதியாக இருக்கும்; நீண்ட காலம் இணைபிரியாமல் வாழ்வார்கள்.",
+          bad: "ஏக ரஜ்ஜு (ஒரே ரஜ்ஜு) இருப்பது மாங்கல்ய/ஆயுள் சோதனையாகக் கருதப்படுகிறது — ஜோதிட விதிவிலக்கு இல்லாமல் தவிர்ப்பது நல்லது."
+        },
+        "வேதை": {
+          why: "இல்லற வாழ்வில் மனக்கசப்பு, பிரிவு அல்லது தேவையற்ற தடைகள் வராமல் இருக்கப் பார்க்கப்படுகிறது.",
+          good: "தடைகளின்றி இனிமையான, அமைதியான இல்லற வாழ்க்கை அமையும்.",
+          bad: "வேதை தோஷம் உள்ள நட்சத்திரங்கள் எனில் மன வருத்தம்/தடைகள் வரலாம் — கவனமாக ஆராய வேண்டும்."
+        },
+        "நாடி": {
+          why: "இருவரின் உடல் இயல்பு (வாத-பித்த-கபம்), மரபணு ஆரோக்கியம் மற்றும் சந்ததி நலத்திற்காகப் பார்க்கப்படுகிறது.",
+          good: "ஆரோக்கியமான குழந்தைகள் மற்றும் தம்பதி உடல் நலம் சிறப்பாக இருக்கும்.",
+          bad: "ஏக நாடி (ஒரே நாடி) எனில் உடல்நலம்/சந்ததி நலனில் கவனம் தேவை; ராசி அதிபதி நட்பு & குரு பலம் பார்க்க வேண்டும்."
+        }
+      };
+
+      function getInfoForName(name) {
+        for (const k in PORUTHAM_INFO) {
+          if (name.indexOf(k) !== -1) return PORUTHAM_INFO[k];
+        }
+        return {
+          why: "குடும்ப ஒற்றுமை மற்றும் இல்லற நலத்திற்காகப் பார்க்கப்படுகிறது.",
+          good: "குடும்பத்தில் நற்பலன்கள் பெருகும்.",
+          bad: "ஜாதகக் கட்டம் மூலம் ஜோதிடரிடம் சரிபார்க்கவும்."
+        };
+      }
+
+      window.mjBuildPoruthamDetailedHtml = function(res) {
+        const allRows = (res.items || []).map(function(it) {
+          return { no: it.no, name: it.name, ok: !!it.ok, note: it.note || "" };
+        });
+        allRows.push({
+          no: 11,
+          name: "நாடிப் பொருத்தம்",
+          ok: !!res.nadiGood,
+          note: (res.bNadi || "") + " + " + (res.gNadi || "")
+        });
+
+        const cardsHtml = allRows.map(function(r) {
+          const info = getInfoForName(r.name);
+          const borderCls = r.ok ? "border-emerald-300 bg-emerald-50/50" : "border-rose-300 bg-rose-50/60";
+          const badgeCls = r.ok ? "bg-emerald-600 text-white" : "bg-rose-600 text-white";
+          const statusTxt = r.ok ? "✅ உண்டு" : "❌ இல்லை";
+          const effectHtml = r.ok
+            ? '<div class="text-emerald-900"><b>✅ இருப்பதால் நன்மை:</b> ' + info.good + '</div>'
+            : '<div class="text-rose-900"><b>⚠️ இல்லாததால் பாதிப்பு / கவனம்:</b> ' + info.bad + '</div>';
+          return (
+            '<div class="p-3 rounded-xl border ' + borderCls + ' space-y-1 text-xs">' +
+              '<div class="flex flex-wrap items-center justify-between gap-2">' +
+                '<div class="font-black text-slate-900">' + r.no + '. ' + r.name + ' <span class="text-slate-600 font-bold">(' + r.note + ')</span></div>' +
+                '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-black ' + badgeCls + '">' + statusTxt + '</span>' +
+              '</div>' +
+              '<div class="text-slate-700 font-semibold"><b>📌 எதற்காக:</b> ' + info.why + '</div>' +
+              '<div class="font-semibold">' + effectHtml + '</div>' +
+            '</div>'
+          );
+        }).join("");
+
+        let finalTitle = "";
+        let finalDesc = "";
+        let finalCls = "";
+        if (res.rajjuGood && res.vedhaGood && res.score >= 7 && res.nadiGood) {
+          finalTitle = "✅ இறுதித் தீர்ப்பு: தாராளமாகத் திருமணம் செய்யலாம் (உத்தமப் பொருத்தம்)";
+          finalDesc = "மிக முக்கியமான ரஜ்ஜு, வேதை, நாடி தோஷங்கள் எதுவும் இல்லை. " + res.score + "/10 பொருத்தங்கள் சிறப்பாக அமைந்துள்ளதால் ஆயுள், ஆரோக்கியம், சந்ததி மற்றும் குடும்ப ஒற்றுமை நன்றாக இருக்கும்.";
+          finalCls = "bg-emerald-100 border-emerald-500 text-emerald-950";
+        } else if (res.rajjuGood && res.vedhaGood && res.score >= 6) {
+          finalTitle = "✅ இறுதித் தீர்ப்பு: திருமணம் செய்யலாம் (நல்ல பொருத்தம்)";
+          finalDesc = "ரஜ்ஜு மற்றும் வேதை பொருத்தம் நன்றாக உள்ளது (" + res.score + "/10). சிறிய குறைகள் இருந்தாலும் இருவரின் ஜாதகக் கட்டம் (லக்னம், 7-ம் இடம்) நன்றாக இருந்தால் தாராளமாகத் திருமணம் செய்யலாம்.";
+          finalCls = "bg-emerald-50 border-emerald-400 text-emerald-950";
+        } else if (res.rajjuGood && res.score >= 5) {
+          finalTitle = "🟡 இறுதித் தீர்ப்பு: ஜாதகக் கட்டம் சரிபார்த்து திருமணம் செய்யலாம் (மத்திமம்)";
+          finalDesc = "ரஜ்ஜு பலம் இருந்தாலும் சில பொருத்தங்கள் (" + res.score + "/10) அல்லது நாடி/வேதை கவனிக்க வேண்டிய நிலையில் உள்ளது. இருவரின் லக்னம், 7-ம் அதிபதி, செவ்வாய் தோஷம் மற்றும் தசா சந்தி ஆகியவற்றை ஜோதிடரிடம் சரிபார்த்த பின் முடிவு செய்யவும்.";
+          finalCls = "bg-amber-100 border-amber-500 text-amber-950";
+        } else {
+          finalTitle = "⚠️ இறுதித் தீர்ப்பு: நேரடித் திருமணம் தவிர்க்கவும் / முழு ஜாதக ஆய்வு அவசியம்";
+          finalDesc = (!res.rajjuGood ? "மிக முக்கியமான ரஜ்ஜு பொருத்தம் இல்லை (ஏக ரஜ்ஜு தோஷம்). " : "") + (!res.vedhaGood ? "வேதை தோஷம் உள்ளது. " : "") + "மதிப்பெண்: " + res.score + "/10. இதுபோன்ற நிலையில் நட்சத்திரப் பொருத்தத்தை மட்டும் நம்பித் திருமணம் செய்யக் கூடாது; தக்க ஜோதிடரிடம் முழு ஜாதக விதிவிலக்கு இருந்தால் மட்டுமே தொடரவும்.";
+          finalCls = "bg-rose-100 border-rose-500 text-rose-950";
+        }
+
+        return (
+          '<div class="mt-4 space-y-3">' +
+            '<div class="p-3.5 rounded-2xl border-2 ' + finalCls + ' space-y-1">' +
+              '<div class="font-black text-sm sm:text-base">' + finalTitle + '</div>' +
+              '<div class="text-xs font-bold leading-relaxed">' + finalDesc + '</div>' +
+            '</div>' +
+            '<div class="space-y-2">' +
+              '<div class="font-black text-xs sm:text-sm text-[#6b0f22] border-b border-amber-300 pb-1">📋 ஒவ்வொரு பொருத்தத்தின் முழு விளக்கம் (எதற்காக • நன்மை • பாதிப்பு)</div>' +
+              '<div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">' + cardsHtml + '</div>' +
+            '</div>' +
+          '</div>'
+        );
+      };
+
+      window.mjDrawVasthu3dBlueprint = function(widthFt, lengthFt, facing, opts) {
+        const cv = document.getElementById("mjVasthu3dCanvas");
+        if (!cv) return;
+        opts = opts || (window._mjVasthuState ? {
+          bedrooms: Number(window._mjVasthuState.bedrooms || 2),
+          floors: window._mjVasthuState.floors || "g",
+          parking: window._mjVasthuState.parking !== false
+        } : { bedrooms: 2, floors: "g", parking: true });
+
+        const bedrooms = Math.max(1, Math.min(4, Number(opts.bedrooms || 2)));
+        const isG1 = (opts.floors === "g1");
+        const hasParking = (opts.parking !== false);
+
+        const ctx = cv.getContext("2d");
+        const W = cv.width, H = cv.height;
+
+        ctx.fillStyle = "#06162b";
+        ctx.fillRect(0, 0, W, H);
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.10)";
+        ctx.lineWidth = 1;
+        for (let gx = 0; gx < W; gx += 32) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
+        for (let gy = 0; gy < H; gy += 32) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
+
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.45)";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(14, 14, W - 28, H - 28);
+
+        const area = Math.round(widthFt * lengthFt);
+        const cfgLabel = bedrooms + " BHK  •  " + (isG1 ? "G+1 (2 Floors)" : "Ground Floor") + "  •  " + (hasParking ? "Car Parking" : "No Parking");
+        ctx.fillStyle = "#fde68a";
+        ctx.font = "bold 19px sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText("3D VASTHU ARCHITECTURAL BLUEPRINT", 32, 44);
+        ctx.fillStyle = "#7dd3fc";
+        ctx.font = "bold 13px sans-serif";
+        ctx.fillText(widthFt + " ft x " + lengthFt + " ft (" + area + " Sq.Ft) | " + facing + " பார்த்த மனை | " + cfgLabel, 32, 66);
+
+        const scale = isG1 ? 255 : 290;
+        const ox = W * 0.50;
+        const oy = isG1 ? H * 0.43 : H * 0.30;
+        function iso(u, v, z) {
+          const x = (u - 0.5) * scale;
+          const y = (v - 0.5) * scale;
+          return {
+            x: ox + (x - y) * 0.88,
+            y: oy + (x + y) * 0.48 - (z || 0)
+          };
+        }
+
+        function drawPoly(pts, fill, stroke, lw) {
+          ctx.beginPath();
+          ctx.moveTo(pts[0].x, pts[0].y);
+          for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+          ctx.closePath();
+          if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+          if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw || 1.5; ctx.stroke(); }
+        }
+
+        function drawBox3D(u1, v1, u2, v2, zBase, h, topCol, leftCol, rightCol, strokeCol) {
+          const zTop = zBase + h;
+          drawPoly([iso(u1,v1,zTop), iso(u2,v1,zTop), iso(u2,v2,zTop), iso(u1,v2,zTop)], topCol, strokeCol, 1.4);
+          drawPoly([iso(u1,v2,zBase), iso(u2,v2,zBase), iso(u2,v2,zTop), iso(u1,v2,zTop)], leftCol, strokeCol, 1.1);
+          drawPoly([iso(u2,v1,zBase), iso(u2,v2,zBase), iso(u2,v2,zTop), iso(u2,v1,zTop)], rightCol, strokeCol, 1.1);
+        }
+
+        function drawFloorShell(z0, wh, fh, labelTag) {
+          drawBox3D(-0.04, -0.04, 1.04, 1.04, z0, 12, "#0d2847", "#0a1e36", "#071528", "#38bdf8");
+          drawBox3D(0.0, 0.0, 1.0, 0.025, z0 + 12, wh, "rgba(186,230,253,0.45)", "rgba(56,189,248,0.26)", "rgba(14,165,233,0.34)", "#7dd3fc");
+          drawBox3D(0.0, 0.0, 0.025, 1.0, z0 + 12, wh, "rgba(186,230,253,0.45)", "rgba(56,189,248,0.26)", "rgba(14,165,233,0.34)", "#7dd3fc");
+          drawBox3D(0.0, 0.975, 1.0, 1.0, z0 + 12, fh, "rgba(186,230,253,0.38)", "rgba(56,189,248,0.20)", "rgba(14,165,233,0.28)", "#7dd3fc");
+          drawBox3D(0.975, 0.0, 1.0, 1.0, z0 + 12, fh, "rgba(186,230,253,0.38)", "rgba(56,189,248,0.20)", "rgba(14,165,233,0.28)", "#7dd3fc");
+          if (labelTag) {
+            const pTag = iso(-0.08, 0.5, z0 + 24);
+            ctx.textAlign = "right";
+            ctx.fillStyle = "#fde68a";
+            ctx.font = "bold 12px sans-serif";
+            ctx.fillText(labelTag, pTag.x - 10, pTag.y);
+          }
+        }
+
+        // Ground Floor
+        drawFloorShell(0, isG1 ? 38 : 46, isG1 ? 20 : 26, isG1 ? "தரைத்தளம் (Ground)" : "");
+
+        const groundRooms = [
+          { u1: 0.56, v1: 0.03, u2: 0.97, v2: 0.38, fill: "rgba(14, 165, 233, 0.28)", stroke: "#38bdf8", title: "பூஜை & போர்வெல்", sub: "வடகிழக்கு (NE)" },
+          { u1: 0.56, v1: 0.58, u2: 0.97, v2: 0.97, fill: "rgba(249, 115, 22, 0.28)", stroke: "#fb923c", title: "சமையலறை (Kitchen)", sub: "தென்கிழக்கு (SE)" },
+          { u1: 0.03, v1: 0.55, u2: 0.48, v2: 0.97, fill: "rgba(168, 85, 247, 0.30)", stroke: "#c084fc", title: "Master Bedroom 1", sub: "தென்மேற்கு (SW)" },
+          { u1: 0.30, v1: 0.30, u2: 0.70, v2: 0.68, fill: "rgba(250, 204, 21, 0.16)", stroke: "#fde047", title: "வரவேற்பறை (Hall)", sub: "பிரம்மஸ்தானம்" }
+        ];
+
+        if (hasParking) {
+          groundRooms.push({ u1: 0.03, v1: 0.03, u2: 0.44, v2: 0.38, fill: "rgba(34, 197, 94, 0.28)", stroke: "#4ade80", title: "🚗 Car Parking", sub: "வடமேற்கு போர்டிகோ" });
+        } else if (bedrooms >= 2) {
+          groundRooms.push({ u1: 0.03, v1: 0.03, u2: 0.44, v2: 0.38, fill: "rgba(16, 185, 129, 0.28)", stroke: "#34d399", title: "Bedroom 2 (Guest)", sub: "வடமேற்கு (NW)" });
+        }
+
+        if (bedrooms >= 2 && hasParking && !isG1) {
+          groundRooms.push({ u1: 0.03, v1: 0.39, u2: 0.34, v2: 0.54, fill: "rgba(16, 185, 129, 0.25)", stroke: "#34d399", title: "Bedroom 2", sub: "மேற்கு (West)" });
+        }
+        if (bedrooms >= 3 && !isG1) {
+          groundRooms.push({ u1: 0.35, v1: 0.03, u2: 0.55, v2: 0.28, fill: "rgba(56, 189, 248, 0.24)", stroke: "#7dd3fc", title: "Bedroom 3", sub: "வடக்கு (North)" });
+        }
+        if (bedrooms >= 4 && !isG1) {
+          groundRooms.push({ u1: 0.49, v1: 0.72, u2: 0.72, v2: 0.97, fill: "rgba(244, 114, 182, 0.24)", stroke: "#f472b6", title: "Bedroom 4", sub: "தெற்கு (South)" });
+        }
+
+        groundRooms.forEach(function(rm) {
+          drawPoly([iso(rm.u1,rm.v1,14), iso(rm.u2,rm.v1,14), iso(rm.u2,rm.v2,14), iso(rm.u1,rm.v2,14)], rm.fill, rm.stroke, 1.5);
+          const c = iso((rm.u1 + rm.u2) / 2, (rm.v1 + rm.v2) / 2, 16);
+          ctx.textAlign = "center";
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "bold 11px sans-serif";
+          ctx.fillText(rm.title, c.x, c.y - 1);
+          ctx.fillStyle = "#bae6fd";
+          ctx.font = "9.5px sans-serif";
+          ctx.fillText(rm.sub, c.x, c.y + 12);
+        });
+
+        // 1st Floor (if G+1)
+        if (isG1) {
+          const z1 = 105;
+          drawFloorShell(z1, 36, 20, "முதல் மாடி (1st Floor)");
+          const upperRooms = [
+            { u1: 0.03, v1: 0.54, u2: 0.48, v2: 0.97, fill: "rgba(168, 85, 247, 0.30)", stroke: "#c084fc", title: bedrooms >= 2 ? "Bedroom 2 (Upper)" : "Study / Lounge", sub: "தென்மேற்கு (SW)" },
+            { u1: 0.03, v1: 0.03, u2: 0.46, v2: 0.42, fill: "rgba(16, 185, 129, 0.28)", stroke: "#34d399", title: bedrooms >= 3 ? "Bedroom 3" : "படிக்கட்டு & Guest", sub: "வடமேற்கு (NW)" },
+            { u1: 0.55, v1: 0.03, u2: 0.97, v2: 0.42, fill: "rgba(14, 165, 233, 0.25)", stroke: "#38bdf8", title: "திறந்த பால்கனி (Balcony)", sub: "வடகிழக்கு (NE)" },
+            { u1: 0.55, v1: 0.56, u2: 0.97, v2: 0.97, fill: "rgba(244, 114, 182, 0.26)", stroke: "#f472b6", title: bedrooms >= 4 ? "Bedroom 4" : "Family Lounge", sub: "தென்கிழக்கு (SE)" }
+          ];
+          upperRooms.forEach(function(rm) {
+            drawPoly([iso(rm.u1,rm.v1,z1+14), iso(rm.u2,rm.v1,z1+14), iso(rm.u2,rm.v2,z1+14), iso(rm.u1,rm.v2,z1+14)], rm.fill, rm.stroke, 1.5);
+            const c = iso((rm.u1 + rm.u2) / 2, (rm.v1 + rm.v2) / 2, z1+16);
+            ctx.textAlign = "center";
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 11px sans-serif";
+            ctx.fillText(rm.title, c.x, c.y - 1);
+            ctx.fillStyle = "#bae6fd";
+            ctx.font = "9.5px sans-serif";
+            ctx.fillText(rm.sub, c.x, c.y + 12);
+          });
+        }
+
+        const doorMap = {
+          "வடக்கு": { u: 0.62, v: 0.0, du: 0.62, dv: -0.14 },
+          "கிழக்கு": { u: 1.0, v: 0.35, du: 1.14, dv: 0.35 },
+          "தெற்கு": { u: 0.60, v: 1.0, du: 0.60, dv: 1.14 },
+          "மேற்கு": { u: 0.0, v: 0.35, du: -0.14, dv: 0.35 },
+          "வடகிழக்கு": { u: 0.90, v: 0.05, du: 1.06, dv: -0.08 },
+          "தென்கிழக்கு": { u: 0.95, v: 0.90, du: 1.08, dv: 1.05 },
+          "தென்மேற்கு": { u: 0.10, v: 0.95, du: -0.05, dv: 1.08 },
+          "வடமேற்கு": { u: 0.05, v: 0.10, du: -0.08, dv: -0.05 }
+        };
+        const dm = doorMap[facing] || doorMap["கிழக்கு"];
+        const dp1 = iso(dm.u, dm.v, 22);
+        const dp2 = iso(dm.du, dm.dv, 22);
+        ctx.strokeStyle = "#facc15";
+        ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(dp2.x, dp2.y); ctx.lineTo(dp1.x, dp1.y); ctx.stroke();
+        ctx.fillStyle = "#facc15";
+        ctx.beginPath(); ctx.arc(dp1.x, dp1.y, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.font = "bold 12.5px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("🚪 முக்கிய வாசல் (" + facing + ")", dp2.x, dp2.y - 10);
+
+        ctx.fillStyle = "#fde68a";
+        ctx.font = "bold 13px sans-serif";
+        const dimW = iso(0.5, 1.15, 0);
+        ctx.fillText("◄── அகலம்: " + widthFt + " அடி ──►", dimW.x, dimW.y + 18);
+        const dimL = iso(1.16, 0.5, 0);
+        ctx.fillText("நீளம்: " + lengthFt + " அடி", dimL.x + 28, dimL.y);
+
+        const cx = W - 82, cy = 82;
+        ctx.strokeStyle = "rgba(125, 211, 252, 0.65)";
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(cx, cy, 36, 0, Math.PI * 2); ctx.stroke();
+        ctx.fillStyle = "#facc15";
+        ctx.font = "bold 12.5px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("வ (N)", cx, cy - 20);
+        ctx.fillStyle = "#bae6fd";
+        ctx.fillText("தெ (S)", cx, cy + 30);
+        ctx.fillText("கி", cx + 23, cy + 5);
+        ctx.fillText("மே", cx - 23, cy + 5);
+
+        ctx.textAlign = "left";
+        ctx.fillStyle = "rgba(186, 230, 253, 0.78)";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText("© முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. | 7418609681", 32, H - 26);
+      };
+
+      window.mjDownloadVasthu3dPng = function() {
+        const cv = document.getElementById("mjVasthu3dCanvas");
+        if (!cv) return;
+        const a = document.createElement("a");
+        a.download = "Murugesan_Vasthu_3D_Blueprint.png";
+        a.href = cv.toDataURL("image/png");
+        a.click();
+      };
     })();
   </script>
 
