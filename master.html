@@ -661,7 +661,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — முதன்மை ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.34</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.37</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white shadow">👑 முதன்மைப் பதிப்பு (ரகசிய எண் உருவாக்கி)</span>
           </div>
@@ -18109,7 +18109,62 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
       window._mjAuditState = window._mjAuditState || {
         reportHtml: "",
         busy: false,
+        verifyingKey: false,
+        forceShowKeyInput: false,
         statusText: ""
+      };
+
+      function getVerifiedState() {
+        const key = (typeof window.mjGetLocalGeminiKey === "function") ? (window.mjGetLocalGeminiKey() || "").trim() : "";
+        let verified = false;
+        try {
+          verified = (localStorage.getItem("mj_gemini_api_key_verified_v1") === "1") && !!key;
+        } catch (e) { verified = !!key; }
+        return { key: key, verified: verified };
+      }
+
+      window.mjVerifyAndSaveAuditKey = async function() {
+        const st = window._mjAuditState;
+        const inp = document.getElementById("inpAuditGeminiKey");
+        const key = (inp && inp.value ? inp.value : "").trim();
+        if (!key) {
+          if (typeof showToast === "function") showToast("⚠️ முதலில் Gemini API Key உள்ளிடவும்!", "error");
+          return;
+        }
+        st.verifyingKey = true;
+        st.statusText = "🔌 Gemini API Key சரிபார்க்கப்படுகிறது...";
+        window.mjRenderAuditTab();
+        try {
+          const resp = await fetch("https://generativelanguage.googleapis.com/v1beta/models?key=" + encodeURIComponent(key));
+          if (!resp.ok) {
+            const errJson = await resp.json().catch(function(){ return {}; });
+            throw new Error((errJson && errJson.error && errJson.error.message) ? errJson.error.message : ("HTTP " + resp.status));
+          }
+          try {
+            localStorage.setItem("mj_gemini_api_key_v1", key);
+            localStorage.setItem("mj_gemini_api_key_verified_v1", "1");
+          } catch (e) {}
+          st.forceShowKeyInput = false;
+          st.statusText = "✅ API Key Verified & Saved! இனி மீண்டும் கேட்காது.";
+          if (typeof showToast === "function") showToast("✅ Gemini API Key Verified!", "success");
+        } catch (e) {
+          try { localStorage.removeItem("mj_gemini_api_key_verified_v1"); } catch (ex) {}
+          st.forceShowKeyInput = true;
+          st.statusText = "❌ தவறான API Key: " + (e.message || e);
+        } finally {
+          st.verifyingKey = false;
+          window.mjRenderAuditTab();
+        }
+      };
+
+      window.mjResetAuditKey = function() {
+        try {
+          localStorage.removeItem("mj_gemini_api_key_v1");
+          localStorage.removeItem("mj_gemini_api_key_verified_v1");
+        } catch (e) {}
+        window._mjAuditState.forceShowKeyInput = true;
+        window._mjAuditState.statusText = "🔑 புதிய Gemini API Key உள்ளிட்டு Verify செய்யவும்.";
+        window.mjRenderAuditTab();
       };
 
       function fileToBase64(file) {
@@ -18132,7 +18187,6 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         const buf = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
         const total = pdf.numPages;
-        // Pick key calculation & chart pages if > maxPages (e.g. 1,2,8,9,11,12,13,14,19,20,26,27)
         const priority = [1, 2, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19, 20, 26, 27];
         let pages = [];
         if (total <= maxPages) {
@@ -18169,14 +18223,19 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           return;
         }
 
-        let apiKey = (typeof window.mjGetLocalGeminiKey === "function") ? window.mjGetLocalGeminiKey() : "";
+        let apiKey = (typeof window.mjGetLocalGeminiKey === "function") ? (window.mjGetLocalGeminiKey() || "").trim() : "";
         const customKey = (document.getElementById("inpAuditGeminiKey")?.value || "").trim();
         if (customKey) {
           apiKey = customKey;
-          try { localStorage.setItem("mj_gemini_api_key_v1", customKey); } catch (e) {}
+          try {
+            localStorage.setItem("mj_gemini_api_key_v1", customKey);
+            localStorage.setItem("mj_gemini_api_key_verified_v1", "1");
+          } catch (e) {}
         }
         if (!apiKey) {
-          if (typeof showToast === "function") showToast("🔑 Gemini API Key உள்ளிடவும்!", "error");
+          st.forceShowKeyInput = true;
+          st.statusText = "🔑 முதலில் Gemini API Key உள்ளிட்டு Verify செய்யவும்!";
+          window.mjRenderAuditTab();
           return;
         }
 
@@ -18214,34 +18273,47 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
             "### 📋 பக்க வாரியான / இறுதிப் பரிந்துரை"
           ].join("\n");
 
-          // Live-discover available Gemini models for this API key (avoids deprecated 2.5-flash-lite errors)
           let models = ["gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3.0-flash", "gemini-2.5-flash"];
-          try {
-            const mResp = await fetch("https://generativelanguage.googleapis.com/v1beta/models?key=" + encodeURIComponent(apiKey));
-            if (mResp.ok) {
-              const mJson = await mResp.json();
-              const live = (mJson.models || [])
-                .filter(function(m) {
-                  const methods = m.supportedGenerationMethods || [];
-                  const n = (m.name || "").toLowerCase();
-                  return methods.indexOf("generateContent") !== -1 && n.indexOf("gemini") !== -1 && n.indexOf("embedding") === -1 && n.indexOf("imagen") === -1;
-                })
-                .map(function(m) { return String(m.name || "").replace(/^models\//, ""); })
-                .sort(function(a, b) {
-                  const score = function(s) {
-                    let sc = 0;
-                    if (s.indexOf("3.5") !== -1) sc += 50;
-                    else if (s.indexOf("3.0") !== -1 || s.indexOf("gemini-3") !== -1) sc += 40;
-                    else if (s.indexOf("2.5") !== -1) sc += 20;
-                    if (s.indexOf("flash") !== -1) sc += 10;
-                    if (s.indexOf("lite") !== -1) sc -= 2;
-                    return sc;
-                  };
-                  return score(b) - score(a);
-                });
-              if (live.length > 0) models = live;
+          const mResp = await fetch("https://generativelanguage.googleapis.com/v1beta/models?key=" + encodeURIComponent(apiKey));
+          if (!mResp.ok) {
+            const errJ = await mResp.json().catch(function(){ return {}; });
+            const msg = (errJ && errJ.error && errJ.error.message) ? errJ.error.message : ("HTTP " + mResp.status);
+            if (mResp.status === 400 || mResp.status === 401 || mResp.status === 403 || msg.toLowerCase().indexOf("api key") !== -1) {
+              try { localStorage.removeItem("mj_gemini_api_key_verified_v1"); } catch (e) {}
+              st.forceShowKeyInput = true;
+              throw new Error("API Key தவறானது / மாற்றப்பட்டுள்ளது — மீண்டும் புதிய Key உள்ளிடவும் (" + msg + ")");
             }
-          } catch (e) {}
+          } else {
+            const mJson = await mResp.json();
+            const live = (mJson.models || [])
+              .filter(function(m) {
+                const methods = m.supportedGenerationMethods || [];
+                const n = (m.name || "").toLowerCase();
+                return methods.indexOf("generateContent") !== -1 && n.indexOf("gemini") !== -1 && n.indexOf("embedding") === -1 && n.indexOf("imagen") === -1;
+              })
+              .map(function(m) { return String(m.name || "").replace(/^models\//, ""); })
+              .sort(function(a, b) {
+                const needsPro = (inlineParts.length >= 3) || (!!nbFile && !!pdfFile);
+                const score = function(s) {
+                  let sc = 0;
+                  if (s.indexOf("3.5") !== -1) sc += 50;
+                  else if (s.indexOf("3.0") !== -1 || s.indexOf("gemini-3") !== -1) sc += 40;
+                  else if (s.indexOf("2.5") !== -1) sc += 20;
+                  if (needsPro) {
+                    if (s.indexOf("pro") !== -1) sc += 15;
+                    else if (s.indexOf("flash") !== -1) sc += 10;
+                  } else {
+                    if (s.indexOf("flash") !== -1) sc += 15;
+                    else if (s.indexOf("pro") !== -1) sc += 8;
+                  }
+                  if (s.indexOf("lite") !== -1) sc -= 3;
+                  return sc;
+                };
+                return score(b) - score(a);
+              });
+            if (live.length > 0) models = live;
+          }
+
           let replyText = "";
           let lastErr = "";
           for (let m = 0; m < models.length; m++) {
@@ -18257,16 +18329,25 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               const data = await resp.json();
               if (!resp.ok) {
                 lastErr = (data && data.error && data.error.message) ? data.error.message : ("HTTP " + resp.status);
+                if (resp.status === 400 || resp.status === 401 || resp.status === 403 || lastErr.toLowerCase().indexOf("api key") !== -1) {
+                  try { localStorage.removeItem("mj_gemini_api_key_verified_v1"); } catch (e) {}
+                  st.forceShowKeyInput = true;
+                  throw new Error("API Key தவறானது / மாற்றப்பட்டுள்ளது — மீண்டும் புதிய Key உள்ளிடவும் (" + lastErr + ")");
+                }
                 continue;
               }
               replyText = data?.candidates?.[0]?.content?.parts?.map(function(pt){ return pt.text || ""; }).join("\n") || "";
               if (replyText) break;
             } catch (err) {
               lastErr = err.message || String(err);
+              if (st.forceShowKeyInput) throw err;
             }
           }
 
           if (!replyText) throw new Error(lastErr || "AI பதில் கிடைக்கவில்லை.");
+
+          try { localStorage.setItem("mj_gemini_api_key_verified_v1", "1"); } catch (e) {}
+          st.forceShowKeyInput = false;
 
           const formatted = escapeHtml(replyText)
             .replace(/^### (.*)$/gm, '<div class="font-black text-sm text-[#6b0f22] mt-3 mb-1 border-b border-amber-300 pb-1">$1</div>')
@@ -18287,7 +18368,23 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         const box = document.getElementById("auditTabContainer");
         if (!box) return;
         const st = window._mjAuditState;
-        const savedKey = (typeof window.mjGetLocalGeminiKey === "function") ? window.mjGetLocalGeminiKey() : "";
+        const ks = getVerifiedState();
+        const showInput = !ks.verified || st.forceShowKeyInput;
+
+        const keySectionHtml = showInput ? `
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-300 space-y-2">
+                <label class="block text-[11px] font-extrabold text-slate-800">🔑 Gemini API Key உள்ளிடவும் (ஒருமுறை மட்டும் Verify செய்தால் போதும்)</label>
+                <div class="flex flex-wrap gap-2">
+                  <input id="inpAuditGeminiKey" type="password" value="" placeholder="AIza... API Key இங்கே ஒட்டவும்" class="flex-1 min-w-[180px] px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-white" />
+                  <button type="button" onclick="mjVerifyAndSaveAuditKey()" ${st.verifyingKey ? 'disabled' : ''} class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow cursor-pointer">
+                    ${st.verifyingKey ? '⏳ சரிபார்க்கிறது...' : '✅ Verify & Save'}
+                  </button>
+                </div>
+              </div>` : `
+              <div class="px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-300 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-black text-emerald-900">✅ Gemini API Key: Verified &amp; Active</span>
+                <button type="button" onclick="mjResetAuditKey()" class="px-2.5 py-1 rounded-lg bg-white border border-emerald-400 text-emerald-900 font-extrabold text-[11px] cursor-pointer">🔄 Key மாற்று / நீக்கு</button>
+              </div>`;
 
         box.innerHTML = `
           <div class="space-y-4">
@@ -18308,10 +18405,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
                 </div>
               </div>
 
-              <div>
-                <label class="block text-[11px] font-extrabold text-slate-700 mb-1">🔑 Gemini API Key ${savedKey ? '<span class="text-emerald-700">(✅ சேமிக்கப்பட்டுள்ளது — மாற்ற வேண்டுமானால் மட்டும் உள்ளிடவும்)</span>' : '(முதல் முறை மட்டும் உள்ளிடவும்)'}</label>
-                <input id="inpAuditGeminiKey" type="password" value="" placeholder="${savedKey ? '•••••••••••• (ஏற்கனவே சேமிப்பில் உள்ளது)' : 'AIza... API Key இங்கே ஒட்டவும்'}" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-slate-50" />
-              </div>
+              ${keySectionHtml}
 
               <div class="flex flex-wrap items-center gap-3">
                 <button type="button" onclick="mjRunNotebookPdfAudit()" ${st.busy ? 'disabled' : ''} class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-600 hover:to-violet-600 text-white font-black text-xs sm:text-sm shadow cursor-pointer disabled:opacity-60">
