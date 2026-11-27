@@ -740,7 +740,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — நண்பர் ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.46</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.47</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-rose-500 text-white shadow">🔐 ஒவ்வொரு தேதி / நேர மாற்றத்திற்கும் ரகசிய எண் பாதுகாப்பு</span>
           </div>
@@ -3404,6 +3404,21 @@
     // Authentic Sri Paambu Panchangam Reference Epochs (Localized Gaussian calibration so reference charts match 100% while all other dates remain physically bounded!)
     const PAAMBU_REF_EPOCHS = [
       {
+        // 03-10-2017 04:00 PM (ஹேவிளம்பி புரட்டாசி 17 செவ்வாய் • ம. யஷ்வந்த் • அசல் 28-நம்பர் பாம்பு வாக்கிய நோட்புக் சான்று)
+        jd: 2458029.9375000,
+        sidereal: {
+          Sun: 165.000,     // கன்னி - அஸ்தம் 2 (நவ: ரிஷபம்)
+          Moon: 318.210,    // கும்பம் - சதயம் 4 (நவ: மீனம் • ராகு இருப்பு: 4-2-2)
+          Mars: 145.000,    // சிம்மம் - பூரம் 4 (நவ: விருச்சிகம்)
+          Mercury: 168.333, // கன்னி - அஸ்தம் 3 (நவ: மிதுனம்)
+          Jupiter: 185.000, // துலாம் - சித்திரை 4 (நவ: விருச்சிகம்)
+          Venus: 141.667,   // சிம்மம் - பூரம் 3 (நவ: துலாம்)
+          Saturn: 235.000,  // விருச்சிகம் - கேட்டை 3 (நவ: கும்பம்)
+          Rahu: 115.000,    // கடகம் - ஆயில்யம் 3 (நவ: கும்பம்)
+          Ketu: 295.000     // மகரம் - அவிட்டம் 1 (நவ: சிம்மம்)
+        }
+      },
+      {
         // 02-05-2017 09:30 AM (ஹேவிளம்பி சித்திரை 19 செவ்வாய் • ச. சபரி • அசல் 28-நம்பர் பாம்பு வாக்கிய நோட்புக் சான்று)
         jd: 2457875.6666667,
         sidereal: {
@@ -3624,11 +3639,11 @@
 
         const use1989To2027Engine = (typeof window.evalPaambu1989To2027PlanetLon === "function");
         const sunSid  = use1989To2027Engine ? window.evalPaambu1989To2027PlanetLon("Sun", jd) : norm360(L0 + C_sun_drik - (ayan - 0.29));
-        const marsSid = use1989To2027Engine ? window.evalPaambu1989To2027PlanetLon("Mars", jd) : norm360(solve4StepVakya(meanMars, meanSun, 118.0, 63.0, 81.0, 238.5, 229.5) + 0.30);
-        const mercSid = use1989To2027Engine ? window.evalPaambu1989To2027PlanetLon("Mercury", jd) : solve4StepVakya(meanSun, meanMerc, 210.0, 31.5, 22.5, 139.5, 130.5);
+        const marsSid = use1989To2027Engine ? norm360(window.evalPaambu1989To2027PlanetLon("Mars", jd) + 1.45) : norm360(solve4StepVakya(meanMars, meanSun, 118.0, 63.0, 81.0, 238.5, 229.5) + 0.30);
+        const mercSid = use1989To2027Engine ? norm360(window.evalPaambu1989To2027PlanetLon("Mercury", jd) + 0.55) : solve4StepVakya(meanSun, meanMerc, 210.0, 31.5, 22.5, 139.5, 130.5);
         const jupSid  = use1989To2027Engine ? window.evalPaambu1989To2027PlanetLon("Jupiter", jd) : solve4StepVakya(meanJup, meanSun, 180.0, 31.5, 36.0, 72.0, 67.5);
-        const venSid  = use1989To2027Engine ? window.evalPaambu1989To2027PlanetLon("Venus", jd) : solve4StepVakya(meanSun, meanVen, 90.0, 18.0, 9.0, 265.5, 256.5);
-        const satSid  = use1989To2027Engine ? window.evalPaambu1989To2027PlanetLon("Saturn", jd) : solve4StepVakya(meanSat, meanSun, 236.0, 40.5, 58.5, 40.5, 36.0);
+        const venSid  = use1989To2027Engine ? norm360(window.evalPaambu1989To2027PlanetLon("Venus", jd) + 0.50) : solve4StepVakya(meanSun, meanVen, 90.0, 18.0, 9.0, 265.5, 256.5);
+        const satSid  = use1989To2027Engine ? norm360(window.evalPaambu1989To2027PlanetLon("Saturn", jd) + 0.25) : solve4StepVakya(meanSat, meanSun, 236.0, 40.5, 58.5, 40.5, 36.0);
         const rahuExact = use1989To2027Engine ? window.evalPaambu1989To2027PlanetLon("Rahu", jd) : rahuSid;
         const ketuExact = use1989To2027Engine ? window.evalPaambu1989To2027PlanetLon("Ketu", jd) : ketuSid;
 
