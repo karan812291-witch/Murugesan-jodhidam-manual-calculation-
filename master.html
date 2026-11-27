@@ -661,7 +661,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — முதன்மை ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.19</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.30</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white shadow">👑 முதன்மைப் பதிப்பு (ரகசிய எண் உருவாக்கி)</span>
           </div>
@@ -1055,6 +1055,7 @@
 
     <div id="poruthamTabContainer" class="hidden max-w-5xl mx-auto px-3 sm:px-6 pb-8"></div>
     <div id="vasthuTabContainer" class="hidden max-w-5xl mx-auto px-3 sm:px-6 pb-8"></div>
+    <div id="calendarTabContainer" class="hidden max-w-6xl mx-auto px-3 sm:px-6 pb-8"></div>
   <div id="masterOtpTabContainer" class="hidden max-w-5xl mx-auto px-3 sm:px-6 py-4 space-y-4">
 <!-- 💰 Master App: Friend App Payment Fee Settings (Cloud Sync) -->
     <div class="bg-white rounded-2xl shadow-md border-2 border-amber-400 p-4 space-y-3 mt-4">
@@ -12339,6 +12340,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
           </button>
       <button id="btnTabPoruthamView" type="button" onclick="switchMainAppTab('porutham')" class="px-4 py-2.5 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-950 border-2 border-pink-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition"><span>💍</span><span>திருமண பொருத்தம் (10 பொருத்தம்)</span></button>
       <button id="btnTabVasthuView" type="button" onclick="switchMainAppTab('vasthu')" class="px-4 py-2.5 rounded-xl bg-teal-100 hover:bg-teal-200 text-teal-950 border-2 border-teal-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition"><span>🏠</span><span>வாஸ்து சாஸ்திரம் (ஆயாதி)</span></button>
+      <button id="btnTabCalendarView" type="button" onclick="switchMainAppTab('calendar')" class="px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 border-2 border-amber-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition"><span>📅</span><span>நல்ல நாள் காலண்டர் (Full Year)</span></button>
           <button id="btnTabDasa100View" type="button" onclick="switchMainAppTab('dasa100')" class="px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 border-2 border-amber-400 font-extrabold text-xs sm:text-sm shadow-2xs flex items-center gap-2 cursor-pointer transition">
             <span>📅</span>
             <span>2. தசா புத்தி விபரம் (பிறந்தது முதல் 100 வயது வரை)</span>
@@ -16958,12 +16960,31 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               </ul>
             </div>
 
-            <div id="mjVasthu3dBlueprintCard" class="p-3.5 rounded-2xl bg-[#06162b] border-2 border-cyan-400 shadow-xl space-y-2.5">
+            <div id="mjVasthu3dBlueprintCard" class="p-3.5 rounded-2xl bg-slate-900 border-2 border-amber-400 shadow-xl space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
-                <div class="font-black text-amber-300">🏗️ 3D வாஸ்து வீடு Blueprint (${st.widthFt} × ${st.lengthFt} அடி • ${st.facing})</div>
-                <button type="button" onclick="mjDownloadVasthu3dPng()" class="no-print px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-[11px] shadow cursor-pointer">📥 3D Blueprint PNG சேமி</button>
+                <div class="font-black text-amber-300">🏗️ வாஸ்து வீடு &amp; மனை வரைபடம் (${st.widthFt} × ${st.lengthFt} அடி • ${st.facing} • ${Number(st.bedrooms||2)} BHK • ${st.floors==="g1"?"G+1":"Ground"})</div>
+                <div class="no-print flex flex-wrap gap-1.5">
+                  <button type="button" id="btnVasthuType1" onclick="mjSetVasthuPlanType('3d')" class="px-3 py-1.5 rounded-xl font-black text-[11px] shadow cursor-pointer ${(st.planType||'3d')==='3d' ? 'bg-amber-400 text-stone-950' : 'bg-slate-700 text-white'}">🏡 Type 1: 3D House Plan</button>
+                  <button type="button" id="btnVasthuType2" onclick="mjSetVasthuPlanType('site')" class="px-3 py-1.5 rounded-xl font-black text-[11px] shadow cursor-pointer ${(st.planType||'3d')==='site' ? 'bg-cyan-400 text-slate-950' : 'bg-slate-700 text-white'}">🧭 Type 2: Vastu Site Plan</button>
+                </div>
               </div>
-              <canvas id="mjVasthu3dCanvas" width="960" height="640" class="w-full h-auto rounded-xl border border-cyan-500/40 bg-[#06162b]"></canvas>
+              <div class="grid grid-cols-1 ${st.floors==='g1' ? 'lg:grid-cols-2' : ''} gap-3">
+                <div class="bg-white rounded-xl p-2 border border-slate-300 space-y-1.5">
+                  <div class="flex items-center justify-between gap-2 px-1">
+                    <span class="font-black text-xs text-slate-900">🏢 தரைத்தளம் (Ground Floor)</span>
+                    <button type="button" onclick="mjDownloadVasthuCanvas('mjVasthuGroundCanvas', 'Ground_Floor')" class="no-print px-2.5 py-1 rounded-lg bg-slate-900 text-amber-300 font-black text-[10px] cursor-pointer">📥 PNG சேமி</button>
+                  </div>
+                  <canvas id="mjVasthuGroundCanvas" width="840" height="720" class="w-full h-auto rounded-lg border border-slate-200"></canvas>
+                </div>
+                ${st.floors==='g1' ? `
+                <div class="bg-white rounded-xl p-2 border border-slate-300 space-y-1.5">
+                  <div class="flex items-center justify-between gap-2 px-1">
+                    <span class="font-black text-xs text-slate-900">🏢 முதல் மாடி (1st Floor)</span>
+                    <button type="button" onclick="mjDownloadVasthuCanvas('mjVasthuFirstCanvas', 'First_Floor')" class="no-print px-2.5 py-1 rounded-lg bg-slate-900 text-amber-300 font-black text-[10px] cursor-pointer">📥 PNG சேமி</button>
+                  </div>
+                  <canvas id="mjVasthuFirstCanvas" width="840" height="720" class="w-full h-auto rounded-lg border border-slate-200"></canvas>
+                </div>` : ''}
+              </div>
             </div>
 
           </div>
@@ -17525,203 +17546,557 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         );
       };
 
-      window.mjDrawVasthu3dBlueprint = function(widthFt, lengthFt, facing, opts) {
-        const cv = document.getElementById("mjVasthu3dCanvas");
+      window.mjSetVasthuPlanType = function(ptype) {
+        if (!window._mjVasthuState) return;
+        window._mjVasthuState.planType = ptype;
+        var b1 = document.getElementById("btnVasthuType1");
+        var b2 = document.getElementById("btnVasthuType2");
+        if (b1) b1.className = "px-3 py-1.5 rounded-xl font-black text-[11px] shadow cursor-pointer " + (ptype === "3d" ? "bg-amber-400 text-stone-950" : "bg-slate-700 text-white");
+        if (b2) b2.className = "px-3 py-1.5 rounded-xl font-black text-[11px] shadow cursor-pointer " + (ptype === "site" ? "bg-cyan-400 text-slate-950" : "bg-slate-700 text-white");
+        window.mjDrawVasthu3dBlueprint(
+          window._mjVasthuState.widthFt,
+          window._mjVasthuState.lengthFt,
+          window._mjVasthuState.facing,
+          {
+            bedrooms: Number(window._mjVasthuState.bedrooms || 2),
+            floors: window._mjVasthuState.floors || "g",
+            parking: window._mjVasthuState.parking !== false,
+            planType: ptype
+          }
+        );
+      };
+
+      window.mjDownloadVasthuCanvas = function(canvasId, tag) {
+        const cv = document.getElementById(canvasId);
         if (!cv) return;
+        const a = document.createElement("a");
+        a.download = "Murugesan_Vasthu_" + tag + ".png";
+        a.href = cv.toDataURL("image/png");
+        a.click();
+      };
+
+      window.mjDrawVasthu3dBlueprint = function(widthFt, lengthFt, facing, opts) {
         opts = opts || (window._mjVasthuState ? {
           bedrooms: Number(window._mjVasthuState.bedrooms || 2),
           floors: window._mjVasthuState.floors || "g",
-          parking: window._mjVasthuState.parking !== false
-        } : { bedrooms: 2, floors: "g", parking: true });
+          parking: window._mjVasthuState.parking !== false,
+          planType: window._mjVasthuState.planType || "3d"
+        } : { bedrooms: 2, floors: "g", parking: true, planType: "3d" });
 
         const bedrooms = Math.max(1, Math.min(4, Number(opts.bedrooms || 2)));
         const isG1 = (opts.floors === "g1");
         const hasParking = (opts.parking !== false);
+        const planType = opts.planType || "3d";
 
-        const ctx = cv.getContext("2d");
-        const W = cv.width, H = cv.height;
-
-        ctx.fillStyle = "#06162b";
-        ctx.fillRect(0, 0, W, H);
-        ctx.strokeStyle = "rgba(56, 189, 248, 0.10)";
-        ctx.lineWidth = 1;
-        for (let gx = 0; gx < W; gx += 32) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
-        for (let gy = 0; gy < H; gy += 32) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
-
-        ctx.strokeStyle = "rgba(56, 189, 248, 0.45)";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(14, 14, W - 28, H - 28);
-
-        const area = Math.round(widthFt * lengthFt);
-        const cfgLabel = bedrooms + " BHK  •  " + (isG1 ? "G+1 (2 Floors)" : "Ground Floor") + "  •  " + (hasParking ? "Car Parking" : "No Parking");
-        ctx.fillStyle = "#fde68a";
-        ctx.font = "bold 19px sans-serif";
-        ctx.textAlign = "left";
-        ctx.fillText("3D VASTHU ARCHITECTURAL BLUEPRINT", 32, 44);
-        ctx.fillStyle = "#7dd3fc";
-        ctx.font = "bold 13px sans-serif";
-        ctx.fillText(widthFt + " ft x " + lengthFt + " ft (" + area + " Sq.Ft) | " + facing + " பார்த்த மனை | " + cfgLabel, 32, 66);
-
-        const scale = isG1 ? 255 : 290;
-        const ox = W * 0.50;
-        const oy = isG1 ? H * 0.43 : H * 0.30;
-        function iso(u, v, z) {
-          const x = (u - 0.5) * scale;
-          const y = (v - 0.5) * scale;
-          return {
-            x: ox + (x - y) * 0.88,
-            y: oy + (x + y) * 0.48 - (z || 0)
-          };
-        }
-
-        function drawPoly(pts, fill, stroke, lw) {
-          ctx.beginPath();
-          ctx.moveTo(pts[0].x, pts[0].y);
-          for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
-          ctx.closePath();
-          if (fill) { ctx.fillStyle = fill; ctx.fill(); }
-          if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw || 1.5; ctx.stroke(); }
-        }
-
-        function drawBox3D(u1, v1, u2, v2, zBase, h, topCol, leftCol, rightCol, strokeCol) {
-          const zTop = zBase + h;
-          drawPoly([iso(u1,v1,zTop), iso(u2,v1,zTop), iso(u2,v2,zTop), iso(u1,v2,zTop)], topCol, strokeCol, 1.4);
-          drawPoly([iso(u1,v2,zBase), iso(u2,v2,zBase), iso(u2,v2,zTop), iso(u1,v2,zTop)], leftCol, strokeCol, 1.1);
-          drawPoly([iso(u2,v1,zBase), iso(u2,v2,zBase), iso(u2,v2,zTop), iso(u2,v1,zTop)], rightCol, strokeCol, 1.1);
-        }
-
-        function drawFloorShell(z0, wh, fh, labelTag) {
-          drawBox3D(-0.04, -0.04, 1.04, 1.04, z0, 12, "#0d2847", "#0a1e36", "#071528", "#38bdf8");
-          drawBox3D(0.0, 0.0, 1.0, 0.025, z0 + 12, wh, "rgba(186,230,253,0.45)", "rgba(56,189,248,0.26)", "rgba(14,165,233,0.34)", "#7dd3fc");
-          drawBox3D(0.0, 0.0, 0.025, 1.0, z0 + 12, wh, "rgba(186,230,253,0.45)", "rgba(56,189,248,0.26)", "rgba(14,165,233,0.34)", "#7dd3fc");
-          drawBox3D(0.0, 0.975, 1.0, 1.0, z0 + 12, fh, "rgba(186,230,253,0.38)", "rgba(56,189,248,0.20)", "rgba(14,165,233,0.28)", "#7dd3fc");
-          drawBox3D(0.975, 0.0, 1.0, 1.0, z0 + 12, fh, "rgba(186,230,253,0.38)", "rgba(56,189,248,0.20)", "rgba(14,165,233,0.28)", "#7dd3fc");
-          if (labelTag) {
-            const pTag = iso(-0.08, 0.5, z0 + 24);
-            ctx.textAlign = "right";
-            ctx.fillStyle = "#fde68a";
-            ctx.font = "bold 12px sans-serif";
-            ctx.fillText(labelTag, pTag.x - 10, pTag.y);
-          }
-        }
-
-        // Ground Floor
-        drawFloorShell(0, isG1 ? 38 : 46, isG1 ? 20 : 26, isG1 ? "தரைத்தளம் (Ground)" : "");
-
-        const groundRooms = [
-          { u1: 0.56, v1: 0.03, u2: 0.97, v2: 0.38, fill: "rgba(14, 165, 233, 0.28)", stroke: "#38bdf8", title: "பூஜை & போர்வெல்", sub: "வடகிழக்கு (NE)" },
-          { u1: 0.56, v1: 0.58, u2: 0.97, v2: 0.97, fill: "rgba(249, 115, 22, 0.28)", stroke: "#fb923c", title: "சமையலறை (Kitchen)", sub: "தென்கிழக்கு (SE)" },
-          { u1: 0.03, v1: 0.55, u2: 0.48, v2: 0.97, fill: "rgba(168, 85, 247, 0.30)", stroke: "#c084fc", title: "Master Bedroom 1", sub: "தென்மேற்கு (SW)" },
-          { u1: 0.30, v1: 0.30, u2: 0.70, v2: 0.68, fill: "rgba(250, 204, 21, 0.16)", stroke: "#fde047", title: "வரவேற்பறை (Hall)", sub: "பிரம்மஸ்தானம்" }
-        ];
-
-        if (hasParking) {
-          groundRooms.push({ u1: 0.03, v1: 0.03, u2: 0.44, v2: 0.38, fill: "rgba(34, 197, 94, 0.28)", stroke: "#4ade80", title: "🚗 Car Parking", sub: "வடமேற்கு போர்டிகோ" });
-        } else if (bedrooms >= 2) {
-          groundRooms.push({ u1: 0.03, v1: 0.03, u2: 0.44, v2: 0.38, fill: "rgba(16, 185, 129, 0.28)", stroke: "#34d399", title: "Bedroom 2 (Guest)", sub: "வடமேற்கு (NW)" });
-        }
-
-        if (bedrooms >= 2 && hasParking && !isG1) {
-          groundRooms.push({ u1: 0.03, v1: 0.39, u2: 0.34, v2: 0.54, fill: "rgba(16, 185, 129, 0.25)", stroke: "#34d399", title: "Bedroom 2", sub: "மேற்கு (West)" });
-        }
-        if (bedrooms >= 3 && !isG1) {
-          groundRooms.push({ u1: 0.35, v1: 0.03, u2: 0.55, v2: 0.28, fill: "rgba(56, 189, 248, 0.24)", stroke: "#7dd3fc", title: "Bedroom 3", sub: "வடக்கு (North)" });
-        }
-        if (bedrooms >= 4 && !isG1) {
-          groundRooms.push({ u1: 0.49, v1: 0.72, u2: 0.72, v2: 0.97, fill: "rgba(244, 114, 182, 0.24)", stroke: "#f472b6", title: "Bedroom 4", sub: "தெற்கு (South)" });
-        }
-
-        groundRooms.forEach(function(rm) {
-          drawPoly([iso(rm.u1,rm.v1,14), iso(rm.u2,rm.v1,14), iso(rm.u2,rm.v2,14), iso(rm.u1,rm.v2,14)], rm.fill, rm.stroke, 1.5);
-          const c = iso((rm.u1 + rm.u2) / 2, (rm.v1 + rm.v2) / 2, 16);
-          ctx.textAlign = "center";
-          ctx.fillStyle = "#ffffff";
-          ctx.font = "bold 11px sans-serif";
-          ctx.fillText(rm.title, c.x, c.y - 1);
-          ctx.fillStyle = "#bae6fd";
-          ctx.font = "9.5px sans-serif";
-          ctx.fillText(rm.sub, c.x, c.y + 12);
-        });
-
-        // 1st Floor (if G+1)
-        if (isG1) {
-          const z1 = 105;
-          drawFloorShell(z1, 36, 20, "முதல் மாடி (1st Floor)");
-          const upperRooms = [
-            { u1: 0.03, v1: 0.54, u2: 0.48, v2: 0.97, fill: "rgba(168, 85, 247, 0.30)", stroke: "#c084fc", title: bedrooms >= 2 ? "Bedroom 2 (Upper)" : "Study / Lounge", sub: "தென்மேற்கு (SW)" },
-            { u1: 0.03, v1: 0.03, u2: 0.46, v2: 0.42, fill: "rgba(16, 185, 129, 0.28)", stroke: "#34d399", title: bedrooms >= 3 ? "Bedroom 3" : "படிக்கட்டு & Guest", sub: "வடமேற்கு (NW)" },
-            { u1: 0.55, v1: 0.03, u2: 0.97, v2: 0.42, fill: "rgba(14, 165, 233, 0.25)", stroke: "#38bdf8", title: "திறந்த பால்கனி (Balcony)", sub: "வடகிழக்கு (NE)" },
-            { u1: 0.55, v1: 0.56, u2: 0.97, v2: 0.97, fill: "rgba(244, 114, 182, 0.26)", stroke: "#f472b6", title: bedrooms >= 4 ? "Bedroom 4" : "Family Lounge", sub: "தென்கிழக்கு (SE)" }
-          ];
-          upperRooms.forEach(function(rm) {
-            drawPoly([iso(rm.u1,rm.v1,z1+14), iso(rm.u2,rm.v1,z1+14), iso(rm.u2,rm.v2,z1+14), iso(rm.u1,rm.v2,z1+14)], rm.fill, rm.stroke, 1.5);
-            const c = iso((rm.u1 + rm.u2) / 2, (rm.v1 + rm.v2) / 2, z1+16);
-            ctx.textAlign = "center";
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 11px sans-serif";
-            ctx.fillText(rm.title, c.x, c.y - 1);
+        function drawFurniture(ctx, kind, rx, ry, rw, rh) {
+          ctx.save();
+          if (kind === "bed") {
+            const bw = Math.min(rw * 0.56, 78), bh = Math.min(rh * 0.58, 92);
+            const bx = rx + (rw - bw) / 2, by = ry + (rh - bh) / 2 + 8;
+            ctx.fillStyle = "#e7e5e4"; ctx.strokeStyle = "#57534e"; ctx.lineWidth = 1.5;
+            ctx.fillRect(bx, by, bw, bh); ctx.strokeRect(bx, by, bw, bh);
+            ctx.fillStyle = "#d6d3d1";
+            ctx.fillRect(bx + 6, by + 5, bw / 2 - 9, 14);
+            ctx.fillRect(bx + bw / 2 + 3, by + 5, bw / 2 - 9, 14);
+            ctx.fillStyle = "#a8a29e";
+            ctx.fillRect(bx, by + bh * 0.45, bw, bh * 0.55);
+          } else if (kind === "kitchen") {
+            ctx.fillStyle = "#78716c";
+            ctx.fillRect(rx + 6, ry + 6, rw - 12, 18);
+            ctx.fillRect(rx + 6, ry + 6, 18, rh * 0.65);
+            ctx.fillStyle = "#1c1917";
+            ctx.beginPath(); ctx.arc(rx + rw * 0.45, ry + 15, 5, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(rx + rw * 0.62, ry + 15, 5, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = "#cbd5e1";
+            ctx.fillRect(rx + 9, ry + rh * 0.35, 12, 22);
+          } else if (kind === "sofa") {
+            const sx = rx + rw * 0.2, sy = ry + rh * 0.25, sw = rw * 0.6, sh = rh * 0.5;
+            ctx.strokeStyle = "#78350f"; ctx.fillStyle = "#d6d3d1"; ctx.lineWidth = 1.5;
+            ctx.fillRect(sx, sy, sw, 18); ctx.strokeRect(sx, sy, sw, 18);
+            ctx.fillRect(sx, sy + 24, 18, sh - 24); ctx.strokeRect(sx, sy + 24, 18, sh - 24);
+            ctx.fillStyle = "#92400e";
+            ctx.fillRect(sx + sw * 0.3, sy + sh * 0.4, sw * 0.45, 22);
+          } else if (kind === "dining") {
+            const cx = rx + rw / 2, cy = ry + rh / 2 + 6;
+            ctx.fillStyle = "#92400e"; ctx.fillRect(cx - 28, cy - 16, 56, 32);
+            ctx.fillStyle = "#d6d3d1";
+            [-18, 0, 18].forEach(function(dx) {
+              ctx.fillRect(cx + dx - 5, cy - 24, 10, 6);
+              ctx.fillRect(cx + dx - 5, cy + 18, 10, 6);
+            });
+          } else if (kind === "car") {
+            const cx = rx + rw / 2 - 28, cy = ry + rh / 2 - 12;
+            ctx.fillStyle = "#0284c7"; ctx.strokeStyle = "#0c4a6e"; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.roundRect(cx, cy, 56, 28, 8); ctx.fill(); ctx.stroke();
             ctx.fillStyle = "#bae6fd";
-            ctx.font = "9.5px sans-serif";
-            ctx.fillText(rm.sub, c.x, c.y + 12);
-          });
+            ctx.fillRect(cx + 12, cy + 4, 28, 20);
+          } else if (kind === "pooja") {
+            ctx.fillStyle = "#f59e0b"; ctx.fillRect(rx + rw / 2 - 18, ry + 10, 36, 16);
+            ctx.fillStyle = "#fef08a"; ctx.beginPath(); ctx.arc(rx + rw / 2, ry + 36, 6, 0, Math.PI * 2); ctx.fill();
+          } else if (kind === "bath") {
+            ctx.fillStyle = "#f8fafc"; ctx.strokeStyle = "#64748b"; ctx.lineWidth = 1.2;
+            ctx.beginPath(); ctx.ellipse(rx + rw * 0.72, ry + rh * 0.55, 11, 15, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.fillRect(rx + 10, ry + 10, 22, 14); ctx.strokeRect(rx + 10, ry + 10, 22, 14);
+          } else if (kind === "stairs") {
+            ctx.strokeStyle = "#78350f"; ctx.fillStyle = "#d6b48c";
+            ctx.fillRect(rx + 8, ry + 8, rw - 16, rh - 16);
+            for (let s = 1; s <= 6; s++) {
+              const yy = ry + 8 + ((rh - 16) * s) / 7;
+              ctx.beginPath(); ctx.moveTo(rx + 8, yy); ctx.lineTo(rx + rw - 8, yy); ctx.stroke();
+            }
+          }
+          ctx.restore();
         }
 
-        const doorMap = {
-          "வடக்கு": { u: 0.62, v: 0.0, du: 0.62, dv: -0.14 },
-          "கிழக்கு": { u: 1.0, v: 0.35, du: 1.14, dv: 0.35 },
-          "தெற்கு": { u: 0.60, v: 1.0, du: 0.60, dv: 1.14 },
-          "மேற்கு": { u: 0.0, v: 0.35, du: -0.14, dv: 0.35 },
-          "வடகிழக்கு": { u: 0.90, v: 0.05, du: 1.06, dv: -0.08 },
-          "தென்கிழக்கு": { u: 0.95, v: 0.90, du: 1.08, dv: 1.05 },
-          "தென்மேற்கு": { u: 0.10, v: 0.95, du: -0.05, dv: 1.08 },
-          "வடமேற்கு": { u: 0.05, v: 0.10, du: -0.08, dv: -0.05 }
+        function renderOneFloor(canvasId, floorTitle, isUpper) {
+          const cv = document.getElementById(canvasId);
+          if (!cv) return;
+          const ctx = cv.getContext("2d");
+          const W = cv.width, H = cv.height;
+          ctx.clearRect(0, 0, W, H);
+
+          const isSite = (planType === "site");
+          ctx.fillStyle = isSite ? "#fdf8f0" : "#ffffff";
+          ctx.fillRect(0, 0, W, H);
+
+          // Top Title
+          ctx.fillStyle = "#0f172a";
+          ctx.font = "bold 18px sans-serif";
+          ctx.textAlign = "left";
+          ctx.fillText(floorTitle + " (" + (isSite ? "Vastu Site Plan" : "3D House Plan") + ")", 26, 34);
+          ctx.fillStyle = "#475569";
+          ctx.font = "bold 12px sans-serif";
+          ctx.fillText(widthFt + " ft × " + lengthFt + " ft  •  " + Math.round(widthFt * lengthFt) + " Sq.Ft  •  " + facing + " பார்த்த மனை", 26, 54);
+
+          // Road Banner if Site Plan (Type 2)
+          const padL = 92, padT = 104, padR = 92, padB = 82;
+          const plotX = padL, plotY = padT, plotW = W - padL - padR, plotH = H - padT - padB;
+
+          if (isSite) {
+            ctx.fillStyle = "#334155";
+            if (facing === "கிழக்கு" || facing === "வடகிழக்கு" || facing === "தென்கிழக்கு") {
+              ctx.fillRect(W - 46, plotY, 34, plotH);
+              ctx.save(); ctx.translate(W - 24, plotY + plotH / 2); ctx.rotate(-Math.PI / 2);
+              ctx.fillStyle = "#ffffff"; ctx.font = "bold 13px sans-serif"; ctx.textAlign = "center";
+              ctx.fillText("EAST ROAD (கிழக்கு சாலை)", 0, 0); ctx.restore();
+            } else if (facing === "வடக்கு") {
+              ctx.fillRect(plotX, 64, plotW, 28);
+              ctx.fillStyle = "#ffffff"; ctx.font = "bold 13px sans-serif"; ctx.textAlign = "center";
+              ctx.fillText("NORTH ROAD (வடக்கு சாலை)", plotX + plotW / 2, 83);
+            } else if (facing === "தெற்கு") {
+              ctx.fillRect(plotX, H - 56, plotW, 28);
+              ctx.fillStyle = "#ffffff"; ctx.font = "bold 13px sans-serif"; ctx.textAlign = "center";
+              ctx.fillText("SOUTH ROAD (தெற்கு சாலை)", plotX + plotW / 2, H - 37);
+            } else {
+              ctx.fillRect(12, plotY, 34, plotH);
+              ctx.save(); ctx.translate(33, plotY + plotH / 2); ctx.rotate(-Math.PI / 2);
+              ctx.fillStyle = "#ffffff"; ctx.font = "bold 13px sans-serif"; ctx.textAlign = "center";
+              ctx.fillText("WEST ROAD (மேற்கு சாலை)", 0, 0); ctx.restore();
+            }
+          }
+
+          // Outer Site Boundary (Site plan has setback margin + Borewell + Septic Tank)
+          let bx = plotX, by = plotY, bw = plotW, bh = plotH;
+          if (isSite) {
+            ctx.strokeStyle = "#14532d"; ctx.lineWidth = 3;
+            ctx.strokeRect(plotX, plotY, plotW, plotH);
+            // Borewell (NE) & Septic Tank (NW)
+            ctx.fillStyle = "#2563eb";
+            ctx.beginPath(); ctx.arc(plotX + plotW - 24, plotY + 22, 8, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = "#1e3a8a"; ctx.font = "bold 10px sans-serif"; ctx.textAlign = "right";
+            ctx.fillText("💧 BOREWELL (NE)", plotX + plotW - 36, plotY + 26);
+
+            ctx.fillStyle = "#14532d";
+            ctx.fillRect(plotX + 6, plotY + 18, 16, 48);
+            ctx.save(); ctx.translate(plotX + 18, plotY + 120); ctx.rotate(-Math.PI / 2);
+            ctx.fillStyle = "#14532d"; ctx.textAlign = "left";
+            ctx.fillText("SEPTIC TANK (NW)", 0, 0); ctx.restore();
+
+            bx = plotX + 42; by = plotY + 42; bw = plotW - 84; bh = plotH - 84;
+          }
+
+          // Outer Architectural Dimension Callouts (like Type 1)
+          ctx.strokeStyle = "#334155"; ctx.fillStyle = "#0f172a"; ctx.lineWidth = 1.2; ctx.font = "bold 11.5px sans-serif";
+          ctx.beginPath(); ctx.moveTo(bx, by - 14); ctx.lineTo(bx + bw, by - 14); ctx.stroke();
+          ctx.textAlign = "center"; ctx.fillText(widthFt + " ft (" + (widthFt * 0.3048).toFixed(2) + " m)", bx + bw / 2, by - 20);
+          ctx.beginPath(); ctx.moveTo(bx - 16, by); ctx.lineTo(bx - 16, by + bh); ctx.stroke();
+          ctx.save(); ctx.translate(bx - 24, by + bh / 2); ctx.rotate(-Math.PI / 2);
+          ctx.fillText(lengthFt + " ft (" + (lengthFt * 0.3048).toFixed(2) + " m)", 0, 0); ctx.restore();
+
+          // 3D Wall Drop Shadow for Type 1
+          if (!isSite) {
+            ctx.fillStyle = "rgba(15, 23, 42, 0.22)";
+            ctx.fillRect(bx + 10, by + 10, bw, bh);
+          }
+
+          // Room Grid Definitions (x1, y1, x2, y2 normalized 0..1 inside house)
+          const rList = [];
+          if (!isUpper) {
+            if (hasParking) {
+              rList.push({ x1:0, y1:0, x2:0.34, y2:0.30, bg: isSite?"#f1f5f9":"#e2e8f0", furn:"car", title:"Portico & Car Parking", sub:"வடமேற்கு (NW)" });
+            } else {
+              rList.push({ x1:0, y1:0, x2:0.34, y2:0.30, bg: isSite?"#ecfdf5":"#fef3c7", furn:"bed", title:"Bedroom 2 (Guest)", sub:"வடமேற்கு (NW)" });
+            }
+            rList.push({ x1:0.34, y1:0, x2:0.68, y2:0.30, bg: isSite?"#eff6ff":"#f5f5f4", furn: bedrooms>=3 ? "bed" : "dining", title: bedrooms>=3 ? "Bedroom 3" : "Dining Hall", sub:"வடக்கு (North)" });
+            rList.push({ x1:0.68, y1:0, x2:1, y2:0.30, bg: isSite?"#fb923c":"#ffedd5", furn:"pooja", title:"Pooja Room", sub:"வடகிழக்கு (NE)" });
+
+            rList.push({ x1:0, y1:0.30, x2:0.30, y2:0.62, bg: isSite?"#fef9c3":"#f5ebe0", furn: isG1 ? "stairs" : (bedrooms>=2 && hasParking ? "bed" : "bath"), title: isG1 ? "Staircase (படிக்கட்டு)" : (bedrooms>=2 && hasParking ? "Bedroom 2" : "Bath / WC"), sub:"மேற்கு (West)" });
+            rList.push({ x1:0.30, y1:0.30, x2:0.70, y2:0.70, bg: isSite?"#dbeafe":"#faf5eb", furn:"sofa", title:"Living Hall (வரவேற்பறை)", sub:"பிரம்மஸ்தானம்" });
+            rList.push({ x1:0.70, y1:0.30, x2:1, y2:0.62, bg: isSite?"#fef3c7":"#fef9c3", furn:"dining", title:"Dining / Verandah", sub:"கிழக்கு (East)" });
+
+            rList.push({ x1:0, y1:0.62, x2:0.42, y2:1, bg: isSite?"#dcfce7":"#ede9fe", furn:"bed", title:"Master Bedroom", sub:"தென்மேற்கு (SW)" });
+            rList.push({ x1:0.42, y1:0.70, x2:0.68, y2:1, bg: isSite?"#ecfccb":"#f1f5f9", furn: bedrooms>=4 ? "bed" : "bath", title: bedrooms>=4 ? "Bedroom 4" : "Bath / WC", sub:"தெற்கு (South)" });
+            rList.push({ x1:0.68, y1:0.62, x2:1, y2:1, bg: isSite?"#fed7aa":"#ffedd5", furn:"kitchen", title:"Kitchen (சமையலறை)", sub:"தென்கிழக்கு (SE)" });
+          } else {
+            rList.push({ x1:0, y1:0, x2:0.35, y2:0.38, bg: isSite?"#ecfdf5":"#e0f2fe", furn:"bed", title: bedrooms>=3 ? "Bedroom 3" : "Guest Bedroom", sub:"வடமேற்கு (NW)" });
+            rList.push({ x1:0.35, y1:0, x2:0.68, y2:0.34, bg: isSite?"#eff6ff":"#f1f5f9", furn:"bath", title:"Common Bath / WC", sub:"வடக்கு (North)" });
+            rList.push({ x1:0.68, y1:0, x2:1, y2:0.38, bg: isSite?"#dbeafe":"#ecfeff", furn:"sofa", title:"Open Terrace / Balcony", sub:"வடகிழக்கு (NE)" });
+            rList.push({ x1:0, y1:0.38, x2:0.30, y2:0.65, bg: isSite?"#fef9c3":"#f5ebe0", furn:"stairs", title:"Staircase Landing", sub:"மேற்கு (West)" });
+            rList.push({ x1:0.30, y1:0.34, x2:0.70, y2:0.70, bg: isSite?"#f8fafc":"#faf5eb", furn:"sofa", title:"Family Lounge", sub:"நடுப்பகுதி" });
+            rList.push({ x1:0.70, y1:0.38, x2:1, y2:0.68, bg: isSite?"#fef3c7":"#fef9c3", furn:"dining", title:"Study / Sit-out", sub:"கிழக்கு (East)" });
+            rList.push({ x1:0, y1:0.65, x2:0.46, y2:1, bg: isSite?"#dcfce7":"#ede9fe", furn:"bed", title: bedrooms>=2 ? "Bedroom 2 (Master)" : "Upper Bedroom", sub:"தென்மேற்கு (SW)" });
+            rList.push({ x1:0.46, y1:0.70, x2:1, y2:1, bg: isSite?"#fce7f3":"#ffedd5", furn: bedrooms>=4 ? "bed" : "sofa", title: bedrooms>=4 ? "Bedroom 4" : "Home Office / Gym", sub:"தென்கிழக்கு (SE)" });
+          }
+
+          // Draw rooms + thick architectural 3D walls
+          rList.forEach(function(rm) {
+            const rx = bx + rm.x1 * bw, ry = by + rm.y1 * bh;
+            const rw = (rm.x2 - rm.x1) * bw, rh = (rm.y2 - rm.y1) * bh;
+            ctx.fillStyle = rm.bg;
+            ctx.fillRect(rx, ry, rw, rh);
+            drawFurniture(ctx, rm.furn, rx, ry, rw, rh);
+            ctx.strokeStyle = isSite ? "#14532d" : "#44403c";
+            ctx.lineWidth = isSite ? 3 : 6;
+            ctx.strokeRect(rx, ry, rw, rh);
+
+            // Inner bevel for 3D wall look in Type 1
+            if (!isSite) {
+              ctx.strokeStyle = "#a8a29e";
+              ctx.lineWidth = 1.5;
+              ctx.strokeRect(rx + 3, ry + 3, rw - 6, rh - 6);
+            }
+
+            // Text Pill
+            ctx.fillStyle = "rgba(255,255,255,0.88)";
+            ctx.fillRect(rx + 6, ry + 6, rw - 12, 30);
+            ctx.textAlign = "center";
+            ctx.fillStyle = "#0f172a";
+            ctx.font = "bold 11px sans-serif";
+            ctx.fillText(rm.title, rx + rw / 2, ry + 19);
+            ctx.fillStyle = "#475569";
+            ctx.font = "bold 9.5px sans-serif";
+            ctx.fillText(rm.sub, rx + rw / 2, ry + 32);
+          });
+
+          // Main Entrance Marker on Ground Floor
+          if (!isUpper) {
+            let dx = bx + bw, dy = by + bh * 0.45;
+            if (facing === "வடக்கு") { dx = bx + bw * 0.55; dy = by; }
+            else if (facing === "தெற்கு") { dx = bx + bw * 0.55; dy = by + bh; }
+            else if (facing === "மேற்கு") { dx = bx; dy = by + bh * 0.45; }
+            ctx.fillStyle = "#f59e0b";
+            ctx.beginPath(); ctx.arc(dx, dy, 10, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = "#0f172a"; ctx.font = "bold 11px sans-serif"; ctx.textAlign = "center";
+            ctx.fillText("🚪 Main Door (" + facing + ")", dx, dy - 14);
+          }
+
+          // Compass Rose (Top-Right)
+          const cx = W - 44, cy = 44;
+          ctx.strokeStyle = "#0f172a"; ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.arc(cx, cy, 24, 0, Math.PI * 2); ctx.stroke();
+          ctx.fillStyle = "#dc2626"; ctx.font = "bold 10px sans-serif"; ctx.textAlign = "center";
+          ctx.fillText("N (வ)", cx, cy - 12);
+          ctx.fillStyle = "#0f172a";
+          ctx.fillText("S", cx, cy + 19);
+          ctx.fillText("E", cx + 15, cy + 4);
+          ctx.fillText("W", cx - 15, cy + 4);
+
+          // Footer
+          ctx.textAlign = "left";
+          ctx.fillStyle = "#475569";
+          ctx.font = "bold 11px sans-serif";
+          ctx.fillText("© முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. | 7418609681", 26, H - 16);
+        }
+
+        renderOneFloor("mjVasthuGroundCanvas", "🏢 தரைத்தளம் (Ground Floor)", false);
+        if (isG1) {
+          renderOneFloor("mjVasthuFirstCanvas", "🏢 முதல் மாடி (1st Floor)", true);
+        }
+      };
+    })();
+  </script>
+
+
+  <script id="mjFullYearCalendarScript">
+    (function() {
+      const EN_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+      const TA_DAYS = ["ஞாயிறு","திங்கள்","செவ்வாய்","புதன்","வியாழன்","வெள்ளி","சனி"];
+      const TITHI_15 = ["பிரதமை","துவிதியை","திருதியை","சதுர்த்தி","பஞ்சமி","சஷ்டி","சப்தமி","அஷ்டமி","நவமி","தசமி","ஏகாதசி","துவாதசி","திரயோதசி","சதுர்தசி","பௌர்ணமி"];
+      const NAK_27 = ["அஸ்வினி","பரணி","கார்த்திகை","ரோகிணி","மிருகசீரிஷம்","திருவாதிரை","புனர்பூசம்","பூசம்","ஆயில்யம்","மகம்","பூரம்","உத்திரம்","ஹஸ்தம்","சித்திரை","சுவாதி","விசாகம்","அனுஷம்","கேட்டை","மூலம்","பூராடம்","உத்திராடம்","திருவோணம்","அவிட்டம்","சதயம்","பூரட்டாதி","உத்திரட்டாதி","ரேவதி"];
+      const SUBHA_NAKS = [0, 3, 4, 6, 7, 11, 12, 13, 14, 16, 20, 21, 22, 23, 25, 26];
+      const AVOID_NAKS = [1, 2, 5, 8, 9, 17, 18]; // Bharani, Karthigai, Thiruvadirai, Ayilyam, Magam, Kettai, Moolam
+
+      // Traditional Tamil Weekday Timings (0=Sun .. 6=Sat)
+      const WD_TIMINGS = [
+        { nalla: "காலை 7:30–8:30 • மாலை 3:30–4:30", gowri: "காலை 10:30–11:30 • மாலை 1:30–2:30", rahu: "மாலை 4:30–6:00", yama: "மதியம் 12:00–1:30", kuligai: "மாலை 3:00–4:30", soolam: "மேற்கு (பரிகாரம்: வெல்லம்)" },
+        { nalla: "காலை 6:00–7:00 • மாலை 4:30–5:30", gowri: "காலை 9:00–10:00 • இரவு 7:30–8:30", rahu: "காலை 7:30–9:00", yama: "காலை 10:30–12:00", kuligai: "மதியம் 1:30–3:00", soolam: "கிழக்கு (பரிகாரம்: தயிர்)" },
+        { nalla: "காலை 7:30–8:30 • மாலை 4:30–5:30", gowri: "காலை 10:30–11:30 • மாலை 1:30–2:30", rahu: "மாலை 3:00–4:30", yama: "காலை 9:00–10:30", kuligai: "மதியம் 12:00–1:30", soolam: "வடக்கு (பரிகாரம்: பால்)" },
+        { nalla: "காலை 9:00–10:00 • மாலை 4:30–5:30", gowri: "காலை 10:30–11:30 • மாலை 6:30–7:30", rahu: "மதியம் 12:00–1:30", yama: "காலை 7:30–9:00", kuligai: "காலை 10:30–12:00", soolam: "வடக்கு (பரிகாரம்: பால்)" },
+        { nalla: "காலை 10:30–11:30 • மாலை 4:30–5:30", gowri: "மதியம் 12:00–1:00 • மாலை 6:30–7:30", rahu: "மதியம் 1:30–3:00", yama: "காலை 6:00–7:30", kuligai: "காலை 9:00–10:30", soolam: "தெற்கு (பரிகாரம்: தைலம்)" },
+        { nalla: "காலை 9:00–10:00 • மாலை 4:30–5:30", gowri: "மதியம் 12:00–1:00 • மாலை 6:30–7:30", rahu: "காலை 10:30–12:00", yama: "மாலை 3:00–4:30", kuligai: "காலை 7:30–9:00", soolam: "மேற்கு (பரிகாரம்: வெல்லம்)" },
+        { nalla: "காலை 7:30–8:30 • மாலை 4:30–5:30", gowri: "காலை 10:30–11:30 • மாலை 6:30–7:30", rahu: "காலை 9:00–10:30", yama: "மதியம் 1:30–3:00", kuligai: "காலை 6:00–7:30", soolam: "கிழக்கு (பரிகாரம்: தயிர்)" }
+      ];
+
+      function computeDayInfo(y, m0, d) {
+        const dt = new Date(y, m0, d, 7, 0, 0);
+        const wd = dt.getDay();
+        const isoDate = y + "-" + String(m0 + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+
+        let nakIdx = -1, tithiNum = 1, isValarpirai = true, tamilDateStr = "";
+        // Astronomical fallback (Meeus / Lahiri Ayanamsa approx)
+        const jd = dt.getTime() / 86400000 + 2440587.5 - (5.5 / 24);
+        const D = jd - 2451545.0;
+        const g = (357.529 + 0.98560028 * D) * Math.PI / 180;
+        const q = 280.459 + 0.98564736 * D;
+        const sunTrop = ((q + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) % 360 + 360) % 360;
+        const moonTrop = ((218.316 + 13.176396 * D + 6.289 * Math.sin((134.963 + 13.064993 * D) * Math.PI / 180)) % 360 + 360) % 360;
+        const ayan = 23.85 + (D / 36525) * 1.397;
+        const moonSid = ((moonTrop - ayan) % 360 + 360) % 360;
+        const diff = ((moonTrop - sunTrop) % 360 + 360) % 360;
+
+        nakIdx = Math.floor(moonSid / (360 / 27)) % 27;
+        const t30 = Math.floor(diff / 12) + 1; // 1..30
+        isValarpirai = (t30 <= 15);
+        tithiNum = isValarpirai ? t30 : (t30 - 15);
+
+        // Try exact app calculator if available for Tamil date & Cloud Panchangam
+        if (typeof calculateFullJathagam === "function") {
+          try {
+            const c = calculateFullJathagam({
+              id: "cal_" + isoDate, dob: isoDate, tob: "07:00:00",
+              cityId: "sankarapuram", panchangamMode: "vakya_paambu_28",
+              lat: 11.89, lon: 78.92, tz: 5.5
+            });
+            if (c) {
+              if (c.planets && c.planets.Moon && typeof c.planets.Moon.nakIdx === "number") nakIdx = c.planets.Moon.nakIdx;
+              if (c.tamilDate && c.tamilDate.month) {
+                tamilDateStr = (c.tamilDate.year || "") + " " + c.tamilDate.month + " " + (c.tamilDate.day || "");
+              }
+            }
+          } catch (e) {}
+        }
+
+        const tithiName = (t30 === 30) ? "அமாவாசை" : (t30 === 15 ? "பௌர்ணமி" : TITHI_15[tithiNum - 1]);
+        const piraiName = (t30 === 30) ? "அமாவாசை" : (t30 === 15 ? "பௌர்ணமி" : (isValarpirai ? "வளர்பிறை" : "தேய்பிறை"));
+        const nakName = NAK_27[nakIdx] || "—";
+
+        // Good / Normal / Avoid classification
+        let status = "normal"; // good | normal | avoid
+        let shortBadge = "சாதாரணம்";
+        let reason = "";
+        let goodFor = "";
+
+        const isAshtamiNavami = (tithiNum === 8 || tithiNum === 9);
+        const isChaturdashi = (tithiNum === 14);
+        const isAmavasai = (t30 === 30);
+        const isPournami = (t30 === 15);
+        const isAvoidNak = AVOID_NAKS.includes(nakIdx);
+        const isSubhaNak = SUBHA_NAKS.includes(nakIdx);
+
+        if (isAmavasai) {
+          status = "avoid";
+          shortBadge = "அமாவாசை";
+          reason = "அமாவாசை திதி — முன்னோர் வழிபாட்டிற்கு உகந்தது; புதிய சுப காரியங்கள் தவிர்க்கவும்.";
+          goodFor = "பித்ரு தர்ப்பணம், கோயில் வழிபாடு, தியானம்.";
+        } else if (isAshtamiNavami || isChaturdashi) {
+          status = "avoid";
+          shortBadge = tithiName;
+          reason = tithiName + " திதி — சுப முகூர்த்தம், புதிய தொழில், வீடு குடிபுகுதல் தவிர்க்க வேண்டிய நாள்.";
+          goodFor = "அன்றாடப் பணிகள், ஆலய வழிபாடு மட்டும்.";
+        } else if (isPournami) {
+          status = "good";
+          shortBadge = "பௌர்ணமி ✨";
+          reason = "பௌர்ணமி சுப நாள் — வழிபாடு, கிரகப்பிரவேசம் மற்றும் நற்காரியங்களுக்கு மிகவும் உகந்தது.";
+          goodFor = "சத்தியநாராயண பூஜை, கிரகப்பிரவேசம், நகை/வாகனம் வாங்குதல், சுப பேச்சுவார்த்தை.";
+        } else if (isValarpirai && isSubhaNak && !isAvoidNak) {
+          status = "good";
+          shortBadge = "சுப நாள்";
+          reason = "வளர்பிறை " + tithiName + " + " + nakName + " சுப நட்சத்திரம் இணைந்த உத்தம முகூர்த்த நாள்.";
+          goodFor = "திருமணப் பேச்சு, கிரகப்பிரவேசம், கடை திறப்பு, வாகனம் வாங்குதல், பூமி பூஜை.";
+        } else if (isAvoidNak && !isValarpirai) {
+          status = "avoid";
+          shortBadge = "தவிர்க்க";
+          reason = "தேய்பிறை + " + nakName + " நட்சத்திரம் — முக்கிய சுப காரியங்கள் தவிர்ப்பது நல்லது.";
+          goodFor = "வழக்கமான வேலைகள், பழைய பணிகளை முடித்தல்.";
+        } else {
+          status = "normal";
+          shortBadge = "சாதாரணம்";
+          reason = piraiName + " " + tithiName + " (" + nakName + ") — அன்றாடப் பணிகள் மற்றும் சிறிய காரியங்களுக்கு நல்ல நேரத்தில் பயன்படுத்தலாம்.";
+          goodFor = "நல்ல நேரத்தில் வியாபாரம், பயணம், கல்வி & ஆவணப் பணிகள்.";
+        }
+
+        return {
+          y: y, m0: m0, d: d, wd: wd, isoDate: isoDate,
+          dayName: TA_DAYS[wd], tamilDateStr: tamilDateStr,
+          tithiName: tithiName, piraiName: piraiName, nakName: nakName,
+          status: status, shortBadge: shortBadge, reason: reason, goodFor: goodFor,
+          timings: WD_TIMINGS[wd], isPournami: isPournami, isAmavasai: isAmavasai
         };
-        const dm = doorMap[facing] || doorMap["கிழக்கு"];
-        const dp1 = iso(dm.u, dm.v, 22);
-        const dp2 = iso(dm.du, dm.dv, 22);
-        ctx.strokeStyle = "#facc15";
-        ctx.lineWidth = 4;
-        ctx.beginPath(); ctx.moveTo(dp2.x, dp2.y); ctx.lineTo(dp1.x, dp1.y); ctx.stroke();
-        ctx.fillStyle = "#facc15";
-        ctx.beginPath(); ctx.arc(dp1.x, dp1.y, 6, 0, Math.PI * 2); ctx.fill();
-        ctx.font = "bold 12.5px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText("🚪 முக்கிய வாசல் (" + facing + ")", dp2.x, dp2.y - 10);
+      }
 
-        ctx.fillStyle = "#fde68a";
-        ctx.font = "bold 13px sans-serif";
-        const dimW = iso(0.5, 1.15, 0);
-        ctx.fillText("◄── அகலம்: " + widthFt + " அடி ──►", dimW.x, dimW.y + 18);
-        const dimL = iso(1.16, 0.5, 0);
-        ctx.fillText("நீளம்: " + lengthFt + " அடி", dimL.x + 28, dimL.y);
-
-        const cx = W - 82, cy = 82;
-        ctx.strokeStyle = "rgba(125, 211, 252, 0.65)";
-        ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.arc(cx, cy, 36, 0, Math.PI * 2); ctx.stroke();
-        ctx.fillStyle = "#facc15";
-        ctx.font = "bold 12.5px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText("வ (N)", cx, cy - 20);
-        ctx.fillStyle = "#bae6fd";
-        ctx.fillText("தெ (S)", cx, cy + 30);
-        ctx.fillText("கி", cx + 23, cy + 5);
-        ctx.fillText("மே", cx - 23, cy + 5);
-
-        ctx.textAlign = "left";
-        ctx.fillStyle = "rgba(186, 230, 253, 0.78)";
-        ctx.font = "bold 12px sans-serif";
-        ctx.fillText("© முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. | 7418609681", 32, H - 26);
+      const now = new Date();
+      window._mjCalState = window._mjCalState || {
+        year: now.getFullYear(),
+        month: now.getMonth(),
+        selectedDay: now.getDate()
       };
 
-      window.mjDownloadVasthu3dPng = function() {
-        const cv = document.getElementById("mjVasthu3dCanvas");
-        if (!cv) return;
-        const a = document.createElement("a");
-        a.download = "Murugesan_Vasthu_3D_Blueprint.png";
-        a.href = cv.toDataURL("image/png");
-        a.click();
+      window.mjSelectCalendarDay = function(d) {
+        window._mjCalState.selectedDay = d;
+        window.mjRenderCalendarTab();
       };
+
+      window.mjJumpCalendarDate = function(iso) {
+        if (!iso) return;
+        const pts = iso.split("-");
+        if (pts.length === 3) {
+          window._mjCalState.year = Number(pts[0]);
+          window._mjCalState.month = Number(pts[1]) - 1;
+          window._mjCalState.selectedDay = Number(pts[2]);
+          window.mjRenderCalendarTab();
+        }
+      };
+
+      window.mjRenderCalendarTab = function() {
+        const box = document.getElementById("calendarTabContainer");
+        if (!box) return;
+        const st = window._mjCalState;
+        const daysInMonth = new Date(st.year, st.month + 1, 0).getDate();
+        if (st.selectedDay > daysInMonth) st.selectedDay = daysInMonth;
+        const firstWd = new Date(st.year, st.month, 1).getDay();
+
+        let yearOpts = "";
+        for (let yy = 1987; yy <= 2035; yy++) {
+          yearOpts += '<option value="' + yy + '"' + (yy === st.year ? ' selected' : '') + '>' + yy + '</option>';
+        }
+        let monthOpts = EN_MONTHS.map(function(mn, idx) {
+          return '<option value="' + idx + '"' + (idx === st.month ? ' selected' : '') + '>' + mn + '</option>';
+        }).join("");
+
+        let cellsHtml = "";
+        for (let b = 0; b < firstWd; b++) {
+          cellsHtml += '<div class="rounded-xl bg-slate-100/60 border border-slate-200/60 min-h-[68px]"></div>';
+        }
+        let selInfo = null;
+        for (let d = 1; d <= daysInMonth; d++) {
+          const info = computeDayInfo(st.year, st.month, d);
+          if (d === st.selectedDay) selInfo = info;
+          const isSel = (d === st.selectedDay);
+          const cellBg = info.status === "good" ? "bg-emerald-50 border-emerald-400" : (info.status === "avoid" ? "bg-rose-50 border-rose-300" : "bg-amber-50/50 border-amber-300");
+          const pillCls = info.status === "good" ? "bg-emerald-600 text-white" : (info.status === "avoid" ? "bg-rose-600 text-white" : "bg-amber-500 text-stone-950");
+          const ringCls = isSel ? "ring-4 ring-[#6b0f22] scale-[1.02] shadow-lg" : "hover:shadow";
+          cellsHtml +=
+            '<button type="button" onclick="mjSelectCalendarDay(' + d + ')" class="text-left p-1.5 rounded-xl border-2 ' + cellBg + ' ' + ringCls + ' min-h-[72px] flex flex-col justify-between cursor-pointer transition">' +
+              '<div class="flex items-center justify-between gap-1 w-full">' +
+                '<span class="font-black text-sm text-slate-900">' + d + '</span>' +
+                '<span class="text-[9px] font-black px-1.5 py-0.5 rounded-full ' + pillCls + ' truncate max-w-[68px]">' + info.shortBadge + '</span>' +
+              '</div>' +
+              '<div class="text-[9.5px] font-bold text-slate-700 leading-tight truncate w-full">' + info.nakName + '</div>' +
+              '<div class="text-[9px] font-semibold text-slate-500 truncate w-full">' + info.tithiName + '</div>' +
+            '</button>';
+        }
+
+        const selBannerCls = selInfo.status === "good" ? "bg-emerald-100 border-emerald-500 text-emerald-950" : (selInfo.status === "avoid" ? "bg-rose-100 border-rose-500 text-rose-950" : "bg-amber-100 border-amber-500 text-amber-950");
+        const selTitle = selInfo.status === "good" ? "✅ சுப நாள் / நல்ல நாள்" : (selInfo.status === "avoid" ? "🔴 தவிர்க்க வேண்டிய நாள்" : "🟡 சாதாரண (மத்திம) நாள்");
+        const curIso = st.year + "-" + String(st.month + 1).padStart(2, "0") + "-" + String(st.selectedDay).padStart(2, "0");
+
+        box.innerHTML = `
+          <div class="space-y-4">
+            <div class="p-4 rounded-2xl bg-gradient-to-r from-[#2e050d] via-[#6b0f22] to-[#2e050d] text-white shadow-lg border-2 border-amber-400">
+              <div class="text-base sm:text-lg font-black">📅 முழு வருட நல்ல நாள் &amp; நல்ல நேரம் காலண்டர்</div>
+              <div class="text-xs text-amber-100 font-bold mt-0.5">ஒவ்வொரு தேதியின் மீதும் சுப நாளா / இல்லையா எனப் பார்க்கலாம் — தேதியைத் தட்டினால் முழு நல்ல நேரம் &amp; பஞ்சாங்கம் தெரியும்.</div>
+            </div>
+
+            <!-- Controls + Quick Date Checker -->
+            <div class="p-3.5 rounded-2xl bg-white border-2 border-amber-300 shadow-sm flex flex-wrap items-end gap-2.5">
+              <div>
+                <label class="block text-[11px] font-extrabold text-slate-700 mb-0.5">வருடம் (Year)</label>
+                <select onchange="window._mjCalState.year=Number(this.value); mjRenderCalendarTab();" class="px-3 py-2 rounded-xl border-2 border-amber-400 bg-white text-xs font-black">${yearOpts}</select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold text-slate-700 mb-0.5">மாதம் (Month)</label>
+                <select onchange="window._mjCalState.month=Number(this.value); mjRenderCalendarTab();" class="px-3 py-2 rounded-xl border-2 border-amber-400 bg-white text-xs font-black">${monthOpts}</select>
+              </div>
+              <div class="flex-1 min-w-[165px]">
+                <label class="block text-[11px] font-extrabold text-slate-700 mb-0.5">🔍 எந்தத் தேதியையும் உடனே Check செய்</label>
+                <input type="date" value="${curIso}" onchange="mjJumpCalendarDate(this.value)" class="w-full px-3 py-1.5 rounded-xl border-2 border-sky-400 bg-sky-50/40 text-xs font-black" />
+              </div>
+              <button type="button" onclick="var n=new Date(); window._mjCalState={year:n.getFullYear(),month:n.getMonth(),selectedDay:n.getDate()}; mjRenderCalendarTab();" class="px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-black text-xs shadow cursor-pointer">📍 இன்று</button>
+            </div>
+
+            <!-- Selected Date Full Details Card -->
+            <div class="p-4 rounded-2xl bg-white border-2 border-amber-400 shadow-md space-y-3">
+              <div class="p-3 rounded-xl border-2 ${selBannerCls} flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <div class="font-black text-sm sm:text-base">${selInfo.d} ${EN_MONTHS[selInfo.m0]} ${selInfo.y} (${selInfo.dayName}) — ${selTitle}</div>
+                  ${selInfo.tamilDateStr ? '<div class="text-xs font-extrabold mt-0.5">📜 தமிழ் தேதி: ' + selInfo.tamilDateStr + '</div>' : ''}
+                </div>
+                <span class="px-3 py-1 rounded-full bg-white font-black text-xs border border-current">${selInfo.piraiName} • ${selInfo.tithiName}</span>
+              </div>
+
+              <div class="text-xs font-bold text-slate-800 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                <b>📌 காரணம்:</b> ${selInfo.reason}
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
+                <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-300"><div class="text-emerald-800 font-bold">⏰ நல்ல நேரம் (Nalla Neram)</div><div class="font-black text-emerald-950 mt-0.5">${selInfo.timings.nalla}</div></div>
+                <div class="p-3 rounded-xl bg-amber-50 border border-amber-300"><div class="text-amber-800 font-bold">🌟 கெளரி நல்ல நேரம்</div><div class="font-black text-amber-950 mt-0.5">${selInfo.timings.gowri}</div></div>
+                <div class="p-3 rounded-xl bg-sky-50 border border-sky-300"><div class="text-sky-800 font-bold">✨ நட்சத்திரம் &amp; திதி</div><div class="font-black text-sky-950 mt-0.5">${selInfo.nakName} • ${selInfo.tithiName}</div></div>
+                <div class="p-3 rounded-xl bg-rose-50 border border-rose-300"><div class="text-rose-800 font-bold">⛔ ராகு காலம்</div><div class="font-black text-rose-950 mt-0.5">${selInfo.timings.rahu}</div></div>
+                <div class="p-3 rounded-xl bg-orange-50 border border-orange-300"><div class="text-orange-800 font-bold">⚠️ எமகண்டம் &amp; குளிகை</div><div class="font-black text-orange-950 mt-0.5">எம: ${selInfo.timings.yama} | குளி: ${selInfo.timings.kuligai}</div></div>
+                <div class="p-3 rounded-xl bg-purple-50 border border-purple-300"><div class="text-purple-800 font-bold">🔱 சூலம் &amp; பரிகாரம்</div><div class="font-black text-purple-950 mt-0.5">${selInfo.timings.soolam}</div></div>
+              </div>
+
+              <div class="p-3 rounded-xl bg-teal-50 border border-teal-300 text-xs font-bold text-teal-950">
+                <b>🏡 இந்த நாளில் செய்ய உகந்தவை:</b> ${selInfo.goodFor}
+              </div>
+            </div>
+
+            <!-- Monthly Grid Legend -->
+            <div class="flex flex-wrap items-center gap-3 text-[11px] font-extrabold px-1">
+              <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-400">🟢 சுப நாள் / பௌர்ணமி</span>
+              <span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-400">🟡 சாதாரண நாள்</span>
+              <span class="px-2.5 py-1 rounded-full bg-rose-100 text-rose-900 border border-rose-400">🔴 அஷ்டமி / நவமி / அமாவாசை / தவிர்க்க</span>
+            </div>
+
+            <!-- 7-Column Calendar Grid -->
+            <div class="bg-white p-3 rounded-2xl border-2 border-slate-300 shadow-sm">
+              <div class="grid grid-cols-7 gap-1.5 text-center text-[11px] font-black text-[#6b0f22] pb-2 border-b border-slate-200 mb-2">
+                <div>ஞாயிறு</div><div>திங்கள்</div><div>செவ்வாய்</div><div>புதன்</div><div>வியாழன்</div><div>வெள்ளி</div><div>சனி</div>
+              </div>
+              <div class="grid grid-cols-7 gap-1.5">
+                ${cellsHtml}
+              </div>
+            </div>
+          </div>
+        `;
+      };
+
+      if (typeof switchMainAppTab === "function") {
+        const _prevSwitchCal = switchMainAppTab;
+        window.switchMainAppTab = function(tabName) {
+          _prevSwitchCal(tabName);
+          const cEl = document.getElementById("calendarTabContainer");
+          const isCal = (tabName === "calendar");
+          if (cEl) cEl.classList.toggle("hidden", !isCal);
+          if (isCal) {
+            window.mjRenderCalendarTab();
+            const topTitle = document.getElementById("mjSubPageTopTitle");
+            if (topTitle) topTitle.textContent = "📅 முழு வருட நல்ல நாள் காலண்டர்";
+          }
+          if (typeof window.mjCloseSideMenu === "function") window.mjCloseSideMenu();
+        };
+      }
     })();
   </script>
 
