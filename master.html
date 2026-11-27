@@ -661,7 +661,7 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — முதன்மை ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.44</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.45</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white shadow">👑 முதன்மைப் பதிப்பு (ரகசிய எண் உருவாக்கி)</span>
           </div>
@@ -3389,6 +3389,21 @@
 
     // Authentic Sri Paambu Panchangam Reference Epochs (Localized Gaussian calibration so reference charts match 100% while all other dates remain physically bounded!)
     const PAAMBU_REF_EPOCHS = [
+      {
+        // 02-05-2017 09:30 AM (ஹேவிளம்பி சித்திரை 19 செவ்வாய் • ச. சபரி • அசல் 28-நம்பர் பாம்பு வாக்கிய நோட்புக் சான்று)
+        jd: 2457875.6666667,
+        sidereal: {
+          Sun: 18.333,      // மேஷம் - பரணி 2 (நவ: கன்னி)
+          Moon: 92.600,     // கடகம் - புனர்பூசம் 4 (நவ: கடகம் • குரு இருப்பு: 0-10-17)
+          Mars: 45.000,     // ரிஷபம் - ரோகிணி 2 (நவ: ரிஷபம்)
+          Mercury: 355.000, // மீனம் - ரேவதி 3 (நவ: கும்பம்)
+          Jupiter: 175.000, // கன்னி - சித்திரை 1 (நவ: சிம்மம்)
+          Venus: 338.333,   // மீனம் - உத்திரட்டாதி 2 (நவ: கன்னி)
+          Saturn: 235.000,  // விருச்சிகம் - கேட்டை 3 (நவ: கும்பம்)
+          Rahu: 125.000,    // சிம்மம் - மகம் 2 (நவ: ரிஷபம்)
+          Ketu: 305.000     // கும்பம் - அவிட்டம் 4 (நவ: விருச்சிகம்)
+        }
+      },
       {
         // 14-03-2014 08:40 AM (விஜய மாசி 30 வெள்ளி • ச. கேசவர்தினி • அசல் 28-நம்பர் பாம்பு வாக்கிய நோட்புக் சான்று)
         jd: 2456730.6319444,
@@ -14641,7 +14656,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
         if (m) m.remove();
       };
 
-      window.mjOpenBorderlineExplainModal = function() {
+      window.mjOpenBorderlineExplainModal = function() { return;
         const existing = document.getElementById("mjBorderlineExplainModal");
         if (existing) existing.remove();
         const items = window._mjLastBorderlineItems || [];
@@ -14730,7 +14745,7 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
               </button>
             `;
           }
-          if (grid.parentNode) grid.parentNode.insertBefore(wrap, grid);
+          /* Borderline alert pill removed per user request */
         });
       }
 
