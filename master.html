@@ -738,7 +738,8 @@
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white">முருகேசன் ஜோதிடம் — முதன்மை ஆப் (கைக்கணக்கு பதிப்பு)</h1>
-            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.48</span>
+            <span id="mjTopVersionBadge" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-cyan-300 text-slate-950 border border-white/80 shadow">⚡ பதிப்பு: v26.50</span>
+            <button id="mjTanglishToggleBtn" type="button" class="text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-emerald-300 text-slate-950 border border-white/80 shadow cursor-pointer">அ தமிழ்: ON</button>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950">ஆப் உரிமையாளர்: © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681</span>
             <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white shadow">👑 முதன்மைப் பதிப்பு (ரகசிய எண் உருவாக்கி)</span>
           </div>
@@ -18766,5 +18767,444 @@ const PAAMBU_PDF_EXACT_YEAR_META = {"2011":{"tamilYearName":"கர","gregorianS
     })();
   </script>
 
+
+  <script id="mjTanglishToTamilScript">
+    (function () {
+      if (window.__mjTanglishInit) return;
+      window.__mjTanglishInit = true;
+
+      const STORAGE_KEY = "MJ_TANGLISH_MODE_V1";
+      const TARGET_IDS = new Set([
+        "inpName",
+        "inpFather",
+        "inpMother",
+        "inpTown",
+        "inpAstrologer",
+        "inpAstroTown",
+        "inpCloudSearchPhone",
+        "inpPorBrideName",
+        "inpPorGroomName",
+        "inpVasthuOwner",
+        "inpAddPanTamilName",
+        "inpQuickAddTamilYear"
+      ]);
+
+      const QUICK_DICT = {
+        "jathagam": "ஜாதகம்",
+        "jaathagam": "ஜாதகம்",
+        "porutham": "பொருத்தம்",
+        "vasthu": "வாஸ்து",
+        "vaasthu": "வாஸ்து",
+        "tamil": "தமிழ்",
+        "thamizh": "தமிழ்",
+        "chennai": "சென்னை",
+        "sankarapuram": "சங்கராபுரம்",
+        "kallakurichi": "கள்ளக்குறிச்சி",
+        "vanakkam": "வணக்கம்",
+        "murugan": "முருகன்",
+        "murugesan": "முருகேசன்",
+        "karthik": "கார்த்திக்",
+        "subramani": "சுப்ரமணி",
+        "vignesh": "விக்னேஷ்",
+        "ramesh": "ரமேஷ்",
+        "ganesh": "கணேஷ்",
+        "suresh": "சுரேஷ்",
+        "meena": "மீனா",
+        "priya": "பிரியா",
+        "arun": "அருண்",
+        "lakshmi": "லட்சுமி",
+        "karan": "கரன்",
+        "madurai": "மதுரை",
+        "coimbatore": "கோயம்புத்தூர்",
+        "trichy": "திருச்சி",
+        "salem": "சேலம்",
+        "vellore": "வேலூர்",
+        "thanjavur": "தஞ்சாவூர்",
+        "tirunelveli": "திருநெல்வேலி",
+        "erode": "ஈரோடு",
+        "villupuram": "விழுப்புரம்",
+        "cuddalore": "கடலூர்",
+        "kanchipuram": "காஞ்சிபுரம்",
+        "puducherry": "புதுச்சேரி",
+        "pondicherry": "பாண்டிச்சேரி"
+      };
+
+      const VOWELS = [
+        ["aa", "\u0B86", "\u0BBE"],
+        ["A",  "\u0B86", "\u0BBE"],
+        ["ii", "\u0B88", "\u0BC0"],
+        ["ee", "\u0B88", "\u0BC0"],
+        ["I",  "\u0B88", "\u0BC0"],
+        ["uu", "\u0B8A", "\u0BC2"],
+        ["oo", "\u0B8A", "\u0BC2"],
+        ["U",  "\u0B8A", "\u0BC2"],
+        ["ai", "\u0B90", "\u0BC8"],
+        ["ae", "\u0B8F", "\u0BC7"],
+        ["E",  "\u0B8F", "\u0BC7"],
+        ["au", "\u0B94", "\u0BCC"],
+        ["ou", "\u0B94", "\u0BCC"],
+        ["oa", "\u0B93", "\u0BCB"],
+        ["O",  "\u0B93", "\u0BCB"],
+        ["a",  "\u0B85", ""],
+        ["i",  "\u0B87", "\u0BBF"],
+        ["u",  "\u0B89", "\u0BC1"],
+        ["e",  "\u0B8E", "\u0BC6"],
+        ["o",  "\u0B92", "\u0BCA"]
+      ];
+
+      const CONS = [
+        ["ksh", "\u0B95\u0BCD\u0BB7"],
+        ["ng",  "\u0B99"],
+        ["nj",  "\u0B9E"],
+        ["ny",  "\u0B9E"],
+        ["nk",  "\u0B99\u0BCD\u0B95"],
+        ["ch",  "\u0B9A"],
+        ["sh",  "\u0BB7"],
+        ["zh",  "\u0BB4"],
+        ["th",  "\u0BA4"],
+        ["dh",  "\u0BA4"],
+        ["nh",  "\u0BA3"],
+        ["ph",  "\u0BAA"],
+        ["bh",  "\u0BAA"],
+        ["kh",  "\u0B95"],
+        ["gh",  "\u0B95"],
+        ["ss",  "\u0BB8"],
+        ["tr",  "\u0BA4\u0BCD\u0BB0"],
+        ["sr",  "\u0BB8\u0BCD\u0BB0"],
+        ["N",   "\u0BA3"],
+        ["L",   "\u0BB3"],
+        ["R",   "\u0BB1"],
+        ["S",   "\u0BB8"],
+        ["k",   "\u0B95"],
+        ["g",   "\u0B95"],
+        ["c",   "\u0B9A"],
+        ["s",   "\u0B9A"],
+        ["j",   "\u0B9C"],
+        ["t",   "\u0B9F"],
+        ["d",   "\u0B9F"],
+        ["n",   "\u0BA9"],
+        ["p",   "\u0BAA"],
+        ["b",   "\u0BAA"],
+        ["m",   "\u0BAE"],
+        ["y",   "\u0BAF"],
+        ["r",   "\u0BB0"],
+        ["l",   "\u0BB2"],
+        ["v",   "\u0BB5"],
+        ["w",   "\u0BB5"],
+        ["f",   "\u0BAA"],
+        ["h",   "\u0BB9"],
+        ["z",   "\u0BB4"],
+        ["q",   "\u0B95"],
+        ["x",   "\u0B95\u0BCD\u0BB8"]
+      ];
+
+      const PULLI = "\u0BCD";
+
+      function isTanglishEnabled() {
+        try {
+          const val = localStorage.getItem(STORAGE_KEY);
+          return val === null ? true : val === "1";
+        } catch (e) {
+          return true;
+        }
+      }
+
+      function setTanglishEnabled(on) {
+        try {
+          localStorage.setItem(STORAGE_KEY, on ? "1" : "0");
+        } catch (e) {}
+        updateToggleUi();
+      }
+
+      function mjTransliterateWordToTamil(word) {
+        if (!word || !/[A-Za-z]/.test(word)) return word;
+        const m = word.match(/^([^A-Za-z]*)([A-Za-z]+)([^A-Za-z]*)$/);
+        if (!m) return word;
+        const lead = m[1], core = m[2], trail = m[3];
+        const lower = core.toLowerCase();
+        if (QUICK_DICT[lower]) {
+          return lead + QUICK_DICT[lower] + trail;
+        }
+
+        let out = "";
+        let i = 0;
+        let atStart = true;
+
+        while (i < core.length) {
+          let matchedC = null;
+          for (let cIdx = 0; cIdx < CONS.length; cIdx++) {
+            if (core.startsWith(CONS[cIdx][0], i)) {
+              matchedC = CONS[cIdx];
+              break;
+            }
+          }
+          if (matchedC) {
+            const pat = matchedC[0];
+            let ch = matchedC[1];
+            if (pat === "n") {
+              const rest = core.slice(i + 1);
+              if (atStart || rest.startsWith("th") || rest.startsWith("dh")) {
+                ch = "\u0BA8";
+              }
+            }
+            if (pat === "s" && i + 1 < core.length) {
+              const nextChar = core[i + 1];
+              if (!"aeiouAEIOU".includes(nextChar)) {
+                ch = "\u0BB8";
+              }
+            }
+            i += pat.length;
+            atStart = false;
+
+            let matchedV = null;
+            for (let vIdx = 0; vIdx < VOWELS.length; vIdx++) {
+              if (core.startsWith(VOWELS[vIdx][0], i)) {
+                matchedV = VOWELS[vIdx];
+                break;
+              }
+            }
+            if (matchedV) {
+              out += ch + matchedV[2];
+              i += matchedV[0].length;
+            } else {
+              out += ch + PULLI;
+            }
+            continue;
+          }
+
+          let matchedV = null;
+          for (let vIdx = 0; vIdx < VOWELS.length; vIdx++) {
+            if (core.startsWith(VOWELS[vIdx][0], i)) {
+              matchedV = VOWELS[vIdx];
+              break;
+            }
+          }
+          if (matchedV) {
+            out += matchedV[1];
+            i += matchedV[0].length;
+            atStart = false;
+            continue;
+          }
+
+          out += core[i];
+          i += 1;
+          atStart = false;
+        }
+        return lead + out + trail;
+      }
+
+      window.mjTransliterateTanglishToTamil = mjTransliterateWordToTamil;
+
+      function isEligibleInput(el) {
+        if (!el || el.tagName !== "INPUT") return false;
+        if (el.readOnly || el.disabled) return false;
+        const typ = (el.type || "text").toLowerCase();
+        if (typ !== "text" && typ !== "search") return false;
+        return TARGET_IDS.has(el.id) || el.getAttribute("data-mj-tamil") === "1";
+      }
+
+      let activeInput = null;
+      let previewPill = null;
+
+      function ensurePreviewPill() {
+        if (previewPill) return previewPill;
+        previewPill = document.createElement("div");
+        previewPill.id = "mjTanglishPreviewPill";
+        previewPill.style.cssText = [
+          "position:fixed",
+          "z-index:99999",
+          "display:none",
+          "align-items:center",
+          "gap:8px",
+          "padding:5px 10px",
+          "border-radius:9999px",
+          "background:#0f172a",
+          "color:#fde68a",
+          "border:1px solid #f59e0b",
+          "box-shadow:0 8px 20px rgba(0,0,0,0.35)",
+          "font-size:12px",
+          "font-weight:700",
+          "max-width:90vw"
+        ].join(";");
+        document.body.appendChild(previewPill);
+        return previewPill;
+      }
+
+      function hidePreview() {
+        if (previewPill) previewPill.style.display = "none";
+      }
+
+      function getCurrentAsciiWordBeforeCaret(el) {
+        const pos = typeof el.selectionStart === "number" ? el.selectionStart : el.value.length;
+        const left = el.value.slice(0, pos);
+        const m = left.match(/([A-Za-z]+)$/);
+        return m ? { word: m[1], start: pos - m[1].length, end: pos } : null;
+      }
+
+      function showPreviewFor(el) {
+        if (!isTanglishEnabled() || !isEligibleInput(el)) {
+          hidePreview();
+          return;
+        }
+        const info = getCurrentAsciiWordBeforeCaret(el);
+        if (!info || !info.word) {
+          hidePreview();
+          return;
+        }
+        const tamil = mjTransliterateWordToTamil(info.word);
+        const pill = ensurePreviewPill();
+        const rect = el.getBoundingClientRect();
+        const top = Math.max(8, rect.top - 36);
+        const left = Math.min(window.innerWidth - 220, Math.max(8, rect.left));
+        pill.style.top = top + "px";
+        pill.style.left = left + "px";
+        pill.innerHTML = "";
+
+        const span = document.createElement("button");
+        span.type = "button";
+        span.style.cssText = "background:transparent;border:none;color:#fde68a;font-weight:800;cursor:pointer;padding:0;";
+        span.textContent = "அ " + tamil + " (Space)";
+        span.title = "தமிழில் மாற்ற தட்டவும்";
+        span.onmousedown = function (ev) {
+          ev.preventDefault();
+          convertWordBeforeCaret(el, false);
+        };
+
+        const offBtn = document.createElement("button");
+        offBtn.type = "button";
+        offBtn.style.cssText = "background:#334155;color:#fff;border:none;border-radius:9999px;padding:1px 7px;font-size:10px;font-weight:800;cursor:pointer;";
+        offBtn.textContent = "EN";
+        offBtn.title = "English-ல் தட்டச்சு செய்ய";
+        offBtn.onmousedown = function (ev) {
+          ev.preventDefault();
+          setTanglishEnabled(false);
+          hidePreview();
+        };
+
+        pill.appendChild(span);
+        pill.appendChild(offBtn);
+        pill.style.display = "flex";
+      }
+
+      function convertWordBeforeCaret(el, appendSpace) {
+        if (!isTanglishEnabled() || !isEligibleInput(el)) return false;
+        const pos = typeof el.selectionStart === "number" ? el.selectionStart : el.value.length;
+        const left = el.value.slice(0, pos);
+        const right = el.value.slice(pos);
+        const m = left.match(/([A-Za-z]+)$/);
+        if (!m) return false;
+        const tamil = mjTransliterateWordToTamil(m[1]);
+        const spacer = appendSpace ? " " : "";
+        const newLeft = left.slice(0, left.length - m[1].length) + tamil + spacer;
+        el.value = newLeft + right;
+        if (typeof el.setSelectionRange === "function") {
+          el.setSelectionRange(newLeft.length, newLeft.length);
+        }
+        el.dispatchEvent(new Event("input", { bubbles: true }));
+        hidePreview();
+        return true;
+      }
+
+      function convertTrailingWordsOnBlur(el) {
+        if (!isTanglishEnabled() || !isEligibleInput(el)) return;
+        if (!/[A-Za-z]/.test(el.value)) return;
+        const converted = el.value.replace(/[A-Za-z]+/g, function (w) {
+          return mjTransliterateWordToTamil(w);
+        });
+        if (converted !== el.value) {
+          el.value = converted;
+          el.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+      }
+
+      function updateToggleUi() {
+        const btn = document.getElementById("mjTanglishToggleBtn");
+        if (!btn) return;
+        const on = isTanglishEnabled();
+        btn.textContent = on ? "அ தமிழ்: ON" : "A Eng: ON";
+        btn.className = on
+          ? "text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-emerald-300 text-slate-950 border border-white/80 shadow cursor-pointer"
+          : "text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-900 border border-white/80 shadow cursor-pointer";
+      }
+
+      function installTanglishListeners() {
+        const btn = document.getElementById("mjTanglishToggleBtn");
+        if (btn && !btn.__mjBound) {
+          btn.__mjBound = true;
+          btn.addEventListener("click", function () {
+            const next = !isTanglishEnabled();
+            setTanglishEnabled(next);
+            if (!next) hidePreview();
+            else if (activeInput) showPreviewFor(activeInput);
+          });
+        }
+        updateToggleUi();
+
+        if (!document.__mjTanglishBound) {
+          document.__mjTanglishBound = true;
+
+          document.addEventListener("focusin", function (e) {
+            if (isEligibleInput(e.target)) {
+              activeInput = e.target;
+              showPreviewFor(activeInput);
+            } else {
+              activeInput = null;
+              hidePreview();
+            }
+          });
+
+          document.addEventListener("input", function (e) {
+            if (!isEligibleInput(e.target) || !isTanglishEnabled()) return;
+            activeInput = e.target;
+            // Handle mobile keyboards that insert space via input event rather than keydown Space
+            const pos = typeof e.target.selectionStart === "number" ? e.target.selectionStart : e.target.value.length;
+            const left = e.target.value.slice(0, pos);
+            const m = left.match(/([A-Za-z]+)(\s)$/);
+            if (m) {
+              const tamil = mjTransliterateWordToTamil(m[1]);
+              const right = e.target.value.slice(pos);
+              const newLeft = left.slice(0, left.length - m[0].length) + tamil + m[2];
+              e.target.value = newLeft + right;
+              if (typeof e.target.setSelectionRange === "function") {
+                e.target.setSelectionRange(newLeft.length, newLeft.length);
+              }
+              hidePreview();
+              return;
+            }
+            showPreviewFor(e.target);
+          });
+
+          document.addEventListener("keydown", function (e) {
+            if (!isEligibleInput(e.target) || !isTanglishEnabled()) return;
+            if (e.key === " " || e.key === "Enter") {
+              const info = getCurrentAsciiWordBeforeCaret(e.target);
+              if (info && info.word) {
+                if (e.key === " ") {
+                  e.preventDefault();
+                  convertWordBeforeCaret(e.target, true);
+                } else if (e.key === "Enter") {
+                  convertWordBeforeCaret(e.target, false);
+                }
+              }
+            }
+          });
+
+          document.addEventListener("focusout", function (e) {
+            if (isEligibleInput(e.target)) {
+              convertTrailingWordsOnBlur(e.target);
+              setTimeout(hidePreview, 120);
+            }
+          });
+        }
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", installTanglishListeners);
+      } else {
+        installTanglishListeners();
+      }
+      setTimeout(installTanglishListeners, 600);
+    })();
+  </script>
 </body>
 </html>

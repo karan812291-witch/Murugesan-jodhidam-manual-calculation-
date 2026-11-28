@@ -1,7 +1,8 @@
-const MJ_CACHE_NAME = "murugesan-kaikanakku-v26-48";
+const MJ_CACHE_NAME = "murugesan-kaikanakku-v26-50";
 const MJ_PRECACHE_URLS = [
   "./",
   "./index.html",
+  "./unlocked.html",
   "./master.html",
   "./manifest.json",
   "./manifest-master.json",

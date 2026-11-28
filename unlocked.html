@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🔓 கட்டண சரிபார்ப்பு | முருகேசன் ஜோதிடம் — கைக்கணக்கு நண்பர் ஆப்</title>
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="icon" type="image/png" href="./icon-192.png" />
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-[#091224] via-[#13294b] to-[#070f1e] text-slate-900 flex items-center justify-center p-4">
+  <main class="w-full max-w-md bg-[#f8fbff] border-4 double border-[#1e3a5f] rounded-3xl shadow-2xl p-6 text-center space-y-4">
+    <div class="w-20 h-20 mx-auto rounded-full bg-sky-100 border-2 border-[#1e3a5f] p-1 shadow-lg overflow-hidden flex items-center justify-center">
+      <img src="./icon-192.png" alt="முருகேசன் ஜோதிடம் கைக்கணக்கு நண்பர் ஆப்" class="w-full h-full object-cover rounded-full" />
+    </div>
+
+    <div>
+      <div class="inline-block px-3 py-0.5 rounded-full bg-sky-100 text-[#0f172a] text-xs font-extrabold border border-sky-300 mb-1">
+        🔐 கைக்கணக்கு நண்பர் ஆப் — கட்டண சரிபார்ப்பு
+      </div>
+      <h1 class="text-xl font-extrabold text-[#0f172a]">முருகேசன் ஜோதிடம்</h1>
+      <p class="text-xs font-bold text-slate-600">சங்கராபுரம், கள்ளக்குறிச்சி</p>
+    </div>
+
+    <div id="unlockStatusCard" class="p-4 rounded-2xl bg-sky-50 border-2 border-[#13294b] space-y-2">
+      <div id="unlockStatusIcon" class="text-3xl">⏳</div>
+      <h2 id="unlockStatusTitle" class="text-base font-extrabold text-[#0f172a]">கட்டண விவரம் சரிபார்க்கப்படுகிறது...</h2>
+      <p id="unlockStatusDesc" class="text-xs font-bold text-slate-700">தயவுசெய்து சில விநாடிகள் காத்திருக்கவும்.</p>
+      <div id="unlockPaymentIdBadge" class="hidden inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-400 font-mono text-xs font-black"></div>
+    </div>
+
+    <div id="unlockActions" class="space-y-2">
+      <a id="btnReturnToApp" href="./index.html" class="block w-full py-3 rounded-xl bg-gradient-to-r from-[#091224] via-[#13294b] to-[#1e3a5f] text-white font-extrabold text-sm shadow-lg border border-sky-400/60">
+        🏠 ஆப்பிற்குத் திரும்பு (Return to App)
+      </a>
+    </div>
+
+    <div class="pt-2 border-t border-slate-200 text-[11px] font-extrabold text-slate-600">
+      © முருகேசன் ஜோதிடம் - ஜெ. கரண் BE, DA. 7418609681
+    </div>
+  </main>
+
+  <script id="mjUnlockedVerifyScript">
+    (function() {
+      function isValidPaymentId(rawId) {
+        const val = String(rawId || "").trim();
+        if (!val || val.length < 6 || val.length > 80) return false;
+        if (!/^[A-Za-z0-9_-]+$/.test(val)) return false;
+        const lower = val.toLowerCase();
+        if (["null", "undefined", "none", "test", "dummy", "123456", "000000", "false", "true"].includes(lower)) return false;
+        return true;
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const idKeys = ["payment_id", "razorpay_payment_id", "cf_id", "cf_payment_id", "order_id", "txnid", "payment_link_id"];
+      let paymentId = "";
+      for (let i = 0; i < idKeys.length; i++) {
+        const val = (params.get(idKeys[i]) || "").trim();
+        if (val) {
+          paymentId = val;
+          break;
+        }
+      }
+      const serviceParam = (params.get("service") || "").trim().toLowerCase();
+
+      const cardEl = document.getElementById("unlockStatusCard");
+      const iconEl = document.getElementById("unlockStatusIcon");
+      const titleEl = document.getElementById("unlockStatusTitle");
+      const descEl = document.getElementById("unlockStatusDesc");
+      const badgeEl = document.getElementById("unlockPaymentIdBadge");
+      const btnReturn = document.getElementById("btnReturnToApp");
+
+      if (!isValidPaymentId(paymentId)) {
+        // Block URL Direct Access Bypass!
+        if (cardEl) cardEl.className = "p-4 rounded-2xl bg-rose-50 border-2 border-rose-500 space-y-2";
+        if (iconEl) iconEl.textContent = "⛔";
+        if (titleEl) titleEl.textContent = "நேரடி அணுகல் தடைசெய்யப்பட்டது! (Direct Access Blocked)";
+        if (descEl) descEl.textContent = "URL-இல் சரியான Payment ID இல்லை. கட்டணம் செலுத்திய பிறகே ஆப் தானாகத் திறக்கப்படும்.";
+        if (btnReturn) btnReturn.href = "./index.html";
+        return;
+      }
+
+      let pending = {};
+      try {
+        const rawP = localStorage.getItem("MJ_PENDING_PAYMENT_UNLOCK_V1");
+        if (rawP) pending = JSON.parse(rawP) || {};
+      } catch (e) {}
+
+      const serviceKey = serviceParam || pending.serviceKey || "jathagam";
+      const verifiedRecord = {
+        paymentId: paymentId,
+        serviceKey: serviceKey,
+        dobTobKey: pending.dobTobKey || "",
+        poruthamKey: pending.poruthamKey || "",
+        vasthuKey: pending.vasthuKey || "",
+        verifiedAt: Date.now()
+      };
+      try {
+        localStorage.setItem("MJ_VERIFIED_PAYMENT_UNLOCK_V1", JSON.stringify(verifiedRecord));
+      } catch (e) {}
+
+      const targetUrl = "./index.html?payment_id=" + encodeURIComponent(paymentId) + "&service=" + encodeURIComponent(serviceKey);
+      if (cardEl) cardEl.className = "p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-500 space-y-2";
+      if (iconEl) iconEl.textContent = "✅";
+      if (titleEl) titleEl.textContent = "கட்டணம் வெற்றிகரமாக சரிபார்க்கப்பட்டது!";
+      if (descEl) descEl.textContent = "சில விநாடிகளில் கைக்கணக்கு நண்பர் ஆப்பிற்குத் திரும்பி தானாகத் திறக்கப்படும்...";
+      if (badgeEl) {
+        badgeEl.textContent = "Payment ID: " + paymentId;
+        badgeEl.classList.remove("hidden");
+      }
+      if (btnReturn) btnReturn.href = targetUrl;
+
+      setTimeout(function() {
+        window.location.replace(targetUrl);
+      }, 900);
+    })();
+  </script>
+</body>
+</html>
