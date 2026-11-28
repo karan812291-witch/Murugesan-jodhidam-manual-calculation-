@@ -1,4 +1,4 @@
-const MJ_CACHE_NAME = "murugesan-jodhidam-v26-47";
+const MJ_CACHE_NAME = "murugesan-kaikanakku-v26-48";
 const MJ_PRECACHE_URLS = [
   "./",
   "./index.html",
@@ -13,12 +13,20 @@ const MJ_PRECACHE_URLS = [
   "./screenshot-wide.png"
 ];
 
+self.addEventListener("message", function(event) {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener("install", function(event) {
   event.waitUntil(
     caches.open(MJ_CACHE_NAME).then(function(cache) {
       return Promise.all(
         MJ_PRECACHE_URLS.map(function(u) {
-          return cache.add(u).catch(function() {});
+          return fetch(u, { cache: "no-store" }).then(function(r) {
+            if (r && r.ok) return cache.put(u, r);
+          }).catch(function() {});
         })
       );
     }).then(function() {
@@ -39,12 +47,43 @@ self.addEventListener("activate", function(event) {
   );
 });
 
+function mjIsHtmlRequest(request) {
+  const url = request.url || "";
+  return request.mode === "navigate" || url.endsWith("/") || url.endsWith(".html") || url.includes(".html?");
+}
+
+function mjNetworkFirstHtml(request) {
+  return caches.open(MJ_CACHE_NAME).then(function(cache) {
+    const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timer = controller ? setTimeout(function() { controller.abort(); }, 2800) : null;
+    return fetch(request, { cache: "no-store", signal: controller ? controller.signal : undefined })
+      .then(function(resp) {
+        if (timer) clearTimeout(timer);
+        if (resp && resp.status === 200 && (resp.type === "basic" || resp.type === "cors")) {
+          cache.put(request, resp.clone()).catch(function() {});
+        }
+        return resp;
+      })
+      .catch(function() {
+        if (timer) clearTimeout(timer);
+        return cache.match(request).then(function(cached) {
+          return cached || cache.match("./index.html");
+        });
+      });
+  });
+}
+
 self.addEventListener("fetch", function(event) {
   if (event.request.method !== "GET") return;
   const url = event.request.url || "";
   if (url.includes("firestore.googleapis.com") || url.includes("generativelanguage.googleapis.com") || url.includes("emailjs.com")) return;
 
-  // Stale-While-Revalidate: Instant open from cache + silent background update
+  if (mjIsHtmlRequest(event.request)) {
+    event.respondWith(mjNetworkFirstHtml(event.request));
+    return;
+  }
+
+  // Static assets: Stale-While-Revalidate for instant shell load
   event.respondWith(
     caches.open(MJ_CACHE_NAME).then(function(cache) {
       return cache.match(event.request).then(function(cached) {
